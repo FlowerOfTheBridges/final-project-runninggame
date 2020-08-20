@@ -2,7 +2,6 @@ const scene = new THREE.Scene();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
 
 function onWindowResize() {
@@ -16,7 +15,7 @@ function onWindowResize() {
 
 function init() {
 
-    loadModel('resources/models/character.glb', scene, null);
+    loadModel(CHARACTER_URL, scene, run);
 
     camera.position.set(0, 1, 4);
 
@@ -26,11 +25,11 @@ function init() {
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    //var controls = new THREE.OrbitControls( camera, renderer.domElement );
-    //controls.enablePan = false;
-    //controls.enableZoom = false;
-    //controls.target.set( 0, 1, 0 );
-    //controls.update();
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.target.set( 0, 1, 0 );
+    controls.update();
 
     window.addEventListener('resize', onWindowResize, false);
 
@@ -45,6 +44,7 @@ function init() {
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
+    TWEEN.update();
 }
 
 init();

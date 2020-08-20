@@ -22,6 +22,16 @@ function loadModel(url, scene, callback) {
             if (node.isMesh) {
                 node.castShadow = true;
             }
+
+            if (node.name == 'Armature') {
+                skeleton = new THREE.Skeleton([node.children[0]]);
+                console.log(skeleton, skeleton.bones);
+            }
+            else if(node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm'){
+                // set character model arms in standard position
+                console.log("shoulder: %o", node);
+                node.rotation.z = node.name == 'mixamorigRightArm' ? 1 : -1;
+            }
         });
         console.log(dumpObject(model).join('\n'));
 
