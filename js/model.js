@@ -36,14 +36,18 @@ function loadModel(url, scene, callback) {
         console.log(dumpObject(model).join('\n'));
 
         scene.add(model);
-        let playerBox = new Physijs.BoxMesh(
-			new THREE.CubeGeometry( 2, 2, 2 ),
-            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.01}),
+        playerBox = new Physijs.BoxMesh(
+			new THREE.CubeGeometry( 0.5, 3, 0.5 ),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: CHARACTER_BOX_OPACITY}),
             0
         );
         playerBox.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
             console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, other_object, relative_velocity, relative_rotation, contact_normal);
+            clearInterval(buildingInterval);
+            clearInterval(groundInterval);
+            gameOver = true;
         });
+        
         scene.add(playerBox);
 
         if (callback != null) {
@@ -63,8 +67,12 @@ function loadModel(url, scene, callback) {
 function addBuilding(scene, isRight) {
     let box = new Physijs.BoxMesh(
         new THREE.CubeGeometry( 2, 10, 2 ),
-        new THREE.MeshBasicMaterial({ map: textureLoader.load('resources/textures/building.jpg')})
+        new THREE.MeshBasicMaterial({ map: textureLoader.load('resources/textures/building.jpg')}),
+        100000
     );
-    box.position.set((isRight ? -1 : 1) * 5, 5, 50);
+    box.position.set((isRight ? -1 : 1) * 3, 5, 50);
+    box.castShadow = true;
     scene.add(box);
 }
+
+

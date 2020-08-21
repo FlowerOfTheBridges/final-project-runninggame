@@ -1,12 +1,16 @@
 Physijs.scripts.worker = '/js/libs/physijs_worker.js';
 Physijs.scripts.ammo = '/js/libs/ammo.js';
 
+var controls, soundtrack = null;
+var gameOver = false;
+var buildingInterval, groundInterval = null;
+
 const scene = new Physijs.Scene;
-scene.setGravity(new THREE.Vector3(0,0,-5))
+scene.setGravity(new THREE.Vector3(0, 0, -6))
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 
 function onWindowResize() {
 
@@ -18,22 +22,23 @@ function onWindowResize() {
 }
 
 function init() {
-
-    //createjs.Sound.registerSound("resources/audio/soundtrack.ogg", SOUNDTRACK);
+    createjs.Sound.addEventListener("fileload", startSoundtrack);
+    createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
 
     loadModel(CHARACTER_URL, scene, run);
 
-    camera.position.set(0, 1, 4);
-    
+    camera.position.set(0, 1, -4);
+
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.enableZoom = false;
+    controls.enableRotate = false;
     controls.target.set(0, 1, 0);
     controls.update();
 
@@ -42,18 +47,24 @@ function init() {
     createSimpleScenario(scene, renderer.capabilities.getMaxAnisotropy());
 
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
-    createDirectionalLigth(0xFFFFFF, 1, [3, 10, 10],
+    createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
         { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, true);
+}
+
+function startSoundtrack(event){
+
+    createjs.Sound.play(event.src);
 }
 
 
 function animate() {
-    scene.simulate(); // run physics
+    if (!gameOver) {
+        scene.simulate(); // run physics
+    }
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     TWEEN.update();
 }
 
 init();
-//createjs.Sound.play(SOUNDTRACK);
 animate();

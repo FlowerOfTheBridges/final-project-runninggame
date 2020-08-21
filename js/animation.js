@@ -1,4 +1,4 @@
-var skeleton = null;
+var skeleton, playerBox = null;
 
 const leftUpperLegFinal = { x: UPPER_LEG_FINISH };
 const rightUpperLegFinal = { x: UPPER_LEG_FINISH };
@@ -19,6 +19,7 @@ function run() {
 
     moveLegs();
     moveArms();
+    moveCharacter();
 }
 
 function moveLegs() {
@@ -39,7 +40,7 @@ function moveLegs() {
 
     let leftLeg = skeleton.bones[0].children[1].children[0];
     let leftLegInit = { x: leftLeg.rotation.x, y: leftLeg.rotation.y, z: leftLeg.rotation.z };
-    
+
     let tweenLeftLeg = new TWEEN.Tween(leftLegInit)
         .to(leftLegFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -71,7 +72,7 @@ function moveLegs() {
 
     let rightLeg = skeleton.bones[0].children[2].children[0];
     let rightLegInit = { x: rightLeg.rotation.x, y: rightLeg.rotation.y, z: rightLeg.rotation.z };
-    
+
     let tweenRightLeg = new TWEEN.Tween(rightLegInit)
         .to(rightLegFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -104,7 +105,7 @@ function moveLegs() {
 function moveArms() {
     let leftArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0];
     let leftArmInit = { x: leftArm.rotation.x, y: leftArm.rotation.y, z: leftArm.rotation.z };
-    
+
     let tweenLeftArm = new TWEEN.Tween(leftArmInit)
         .to(leftArmFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -118,7 +119,7 @@ function moveArms() {
 
     let rightArm = skeleton.bones[0].children[0].children[0].children[0].children[2].children[0];
     let rightArmInit = { x: rightArm.rotation.x, y: rightArm.rotation.y, z: rightArm.rotation.z };
-    
+
     let tweenRightArm = new TWEEN.Tween(rightArmInit)
         .to(rightArmFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -142,7 +143,7 @@ function moveArms() {
 
     let rightHand = skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].children[0];
     let rightHandInit = { x: rightHand.rotation.x, y: rightHand.rotation.y, z: rightHand.rotation.z };
-    
+
     let tweenRightHand = new TWEEN.Tween(rightHandInit)
         .to(rightHandFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -155,7 +156,7 @@ function moveArms() {
 
     let leftHand = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0];
     let leftHandInit = { x: leftHand.rotation.x, y: leftHand.rotation.y, z: leftHand.rotation.z };
-    
+
     let tweenLeftHand = new TWEEN.Tween(leftHandInit)
         .to(leftHandFinal, RUNNING_SPEED)
         .easing(TWEEN.Easing.Quadratic.In)
@@ -168,4 +169,36 @@ function moveArms() {
     tweenLeftHand.start();
     tweenRightArm.start();
     tweenRightHand.start();
+}
+
+function moveCharacter() {
+
+    document.addEventListener(
+        'keydown',
+        function (ev) {
+            switch (ev.keyCode) {
+                case 37:
+                    // Left
+                    if (skeleton.bones[0].position.x < 340) {
+                        //console.log("left", skeleton.bones[0].position.x);
+                        skeleton.bones[0].position.x += MOVING_SPEED;
+                        playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), 0, 0);
+                        camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 1, -4);
+                        playerBox.__dirtyPosition = true;
+                    }
+                    break;
+                case 39:
+                    // Right
+                    if (skeleton.bones[0].position.x > -340) {
+                        //console.log("right", skeleton.bones[0].position.x);
+                        playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), 0, 0);
+                        playerBox.__dirtyPosition = true;
+                        camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 1, -4);
+                        skeleton.bones[0].position.x -= MOVING_SPEED;
+                    }
+                    break;
+            }
+        }
+    );
+
 }
