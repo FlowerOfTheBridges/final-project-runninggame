@@ -17,7 +17,7 @@ function loadModel(url, scene, callback) {
     gltfLoader.load(url, (gltf) => {
         // called when resource is loaded
         let model = gltf.scene;
-        scene.add(model);
+        //scene.add(model);
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
@@ -27,13 +27,24 @@ function loadModel(url, scene, callback) {
                 skeleton = new THREE.Skeleton([node.children[0]]);
                 console.log(skeleton, skeleton.bones);
             }
-            else if(node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm'){
+            else if (node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm') {
                 // set character model arms in standard position
                 console.log("shoulder: %o", node);
                 node.rotation.z = node.name == 'mixamorigRightArm' ? 1 : -1;
             }
         });
         console.log(dumpObject(model).join('\n'));
+
+        scene.add(model);
+        let playerBox = new Physijs.BoxMesh(
+			new THREE.CubeGeometry( 2, 2, 2 ),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.01}),
+            0
+        );
+        playerBox.addEventListener( 'collision', function( other_object, relative_velocity, relative_rotation, contact_normal ) {
+            console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, other_object, relative_velocity, relative_rotation, contact_normal);
+        });
+        scene.add(playerBox);
 
         if (callback != null) {
             callback();
@@ -49,9 +60,11 @@ function loadModel(url, scene, callback) {
     });
 }
 
-function addBoxGeometry(color, scene) {
-    let geometry = new THREE.BoxGeometry();
-    let material = new THREE.MeshBasicMaterial({ color: color }); // 0x00ff00
-    let cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+function addBuilding(scene, isRight) {
+    let box = new Physijs.BoxMesh(
+        new THREE.CubeGeometry( 2, 10, 2 ),
+        new THREE.MeshBasicMaterial({ map: textureLoader.load('resources/textures/building.jpg')})
+    );
+    box.position.set((isRight ? -1 : 1) * 5, 5, 50);
+    scene.add(box);
 }
