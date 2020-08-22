@@ -1,5 +1,5 @@
-Physijs.scripts.worker = '/js/libs/physijs_worker.js';
-Physijs.scripts.ammo = '/js/libs/ammo.js';
+Physijs.scripts.worker = 'js/libs/physijs_worker.js';
+Physijs.scripts.ammo = 'ammo.js';
 
 var controls, soundtrack = null;
 var gameOver = false;
