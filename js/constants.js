@@ -7,4 +7,8 @@ const ARM_FINISH = -0.5;
 const HAND_FINISH = 1.3;
 
 const CHARACTER_URL = 'resources/models/character.glb';
-const CHARACTER_BOX_OPACITY = 0.01;
+const BOX_OPACITY = 0.01;
+
+const OBJ_DISTANCE = 50;
+
+const IS_DEBUG = false; // set to true to enable helpers and collision boxes

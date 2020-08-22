@@ -183,7 +183,7 @@ function moveCharacter() {
                         //console.log("left", skeleton.bones[0].position.x);
                         skeleton.bones[0].position.x += MOVING_SPEED;
                         playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), 0, 0);
-                        camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 1, -4);
+                        camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 2, -4);
                         playerBox.__dirtyPosition = true;
                     }
                     break;
@@ -193,7 +193,7 @@ function moveCharacter() {
                         //console.log("right", skeleton.bones[0].position.x);
                         playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), 0, 0);
                         playerBox.__dirtyPosition = true;
-                        camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 1, -4);
+                        camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 2, -4);
                         skeleton.bones[0].position.x -= MOVING_SPEED;
                     }
                     break;

@@ -11,27 +11,27 @@ function createSimpleScenario(scene, anisotropy) {
     groundTexture.wrapS = THREE.RepeatWrapping;
     groundTexture.wrapT = THREE.RepeatWrappi
 
-    let leftBarrierTexture = textureLoader.load('resources/textures/skyline.jpg');
+    let leftBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     leftBarrierTexture.anisotropy = anisotropy;
     leftBarrierTexture.repeat.set(10, 3);
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
     leftBarrierTexture.wrapT = THREE.RepeatWrapping;
     let leftBarrier = new Physijs.BoxMesh(
-        new THREE.CubeGeometry( 2, 100, 100),
-        new THREE.MeshBasicMaterial({ map: leftBarrierTexture}),
+        new THREE.CubeGeometry(2, 10, 100),
+        new THREE.MeshBasicMaterial({ map: leftBarrierTexture }),
         0
     );
     leftBarrier.position.set(5, 5, 0);
     leftBarrier.castShadow = false;
 
-    let rightBarrierTexture = textureLoader.load('resources/textures/skyline.jpg');
+    let rightBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     rightBarrierTexture.anisotropy = anisotropy;
     rightBarrierTexture.repeat.set(10, 3);
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
     rightBarrierTexture.wrapT = THREE.RepeatWrapping;
     let rightBarrier = new Physijs.BoxMesh(
-        new THREE.CubeGeometry( 2, 100, 100),
-        new THREE.MeshBasicMaterial({ map: rightBarrierTexture}),
+        new THREE.CubeGeometry(2, 10, 100),
+        new THREE.MeshBasicMaterial({ map: rightBarrierTexture }),
         0
     );
     rightBarrier.position.set(-5, 5, 0);
@@ -54,6 +54,7 @@ function createSimpleScenario(scene, anisotropy) {
     buildingInterval = setInterval(() => {
         addBuilding(scene, false);
         addBuilding(scene, true);
+        addCar(scene, randomNumber(-1.5, 1.5));
     }, 2000);
 
     groundInterval = setInterval(() => {
@@ -61,4 +62,10 @@ function createSimpleScenario(scene, anisotropy) {
         leftBarrierTexture.offset.x -= 0.99;
         groundTexture.offset.y -= 0.2;
     }, 50)
+}
+
+function randomNumber(min, max) {
+    let randomNumber = Math.random() * (max - min) + min;
+    console.log("random is ",randomNumber);
+    return randomNumber;
 }
