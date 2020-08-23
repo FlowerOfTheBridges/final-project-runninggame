@@ -3,10 +3,13 @@ Physijs.scripts.ammo = 'ammo.js';
 
 var controls, soundtrack = null;
 var gameOver = false;
-var buildingInterval, groundInterval = null;
+var objectInterval, groundInterval = null;
 var cars = [];
+var coins = [];
+var defaultCarModel, coinGeometry = null;
 
 const scene = new Physijs.Scene;
+const stats = new Stats();
 scene.setGravity(new THREE.Vector3(0, 0, -6))
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -26,6 +29,8 @@ function init() {
     createjs.Sound.addEventListener("fileload", startSoundtrack);
     createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
 
+    createCar();
+    createCoin();
     loadModel(CHARACTER_URL, scene, run);
 
     camera.position.set(0, 2, -4);
@@ -50,37 +55,63 @@ function init() {
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
     createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
         { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, IS_DEBUG);
+
+    
+    document.body.appendChild(stats.dom);
 }
 
 function startSoundtrack(event) {
-
-    createjs.Sound.play(event.src);
+    !IS_DEBUG && createjs.Sound.play(event.src);
 }
 
 
 function animate() {
+
+    let time = - performance.now() / 1000;
+
     if (!gameOver) {
         scene.simulate(); // run physics
-        cars.forEach((car, index) => {
-            if (playerBox.position.z - 15 <= car.box.position.z) {
-                car.model.position.z = car.box.position.z;
-            }
-            else {
-                cars.splice(index, 1);
-                console.log("car avoided! cars are ", cars);
-            }
-
-            let time = - performance.now() / 1000;
-
-            car.wheels.forEach(wheel => {
-                wheel.rotation.x = time * Math.PI;
-            });
-        })
+        updateCars(time);
     }
+
+    updateCoins(time);
+
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
     TWEEN.update();
+
+    stats.update();
+}
+
+function updateCars(wheelRotation) {
+    cars.forEach((car, index) => {
+        if (playerBox.position.z - 15 <= car.box.position.z) {
+            car.model.position.z = car.box.position.z;
+        }
+        else {
+            scene.remove(car.model);
+            scene.remove(car.box);
+            cars.splice(index, 1);
+            console.log("car avoided! cars are ", cars);
+        }
+
+        car.wheels.forEach(wheel => {
+            wheel.rotation.x = wheelRotation * Math.PI;
+        });
+    })
+}
+
+function updateCoins(rotationTime) {
+    coins.forEach((coin, index) => {
+        coin.rotation.y = rotationTime * Math.PI;
+        if (playerBox.position.z - 5 >= coin.position.z) {
+            scene.remove(coin);
+            coins.splice(index, 1);
+            console.log("coin missed! coins are ", coins);
+        }
+    })
 }
 
 init();
+
 animate();

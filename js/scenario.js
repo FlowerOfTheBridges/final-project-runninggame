@@ -17,11 +17,11 @@ function createSimpleScenario(scene, anisotropy) {
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
     leftBarrierTexture.wrapT = THREE.RepeatWrapping;
     let leftBarrier = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(2, 10, 100),
+        new THREE.CubeGeometry(2, 20, 100),
         new THREE.MeshBasicMaterial({ map: leftBarrierTexture }),
         0
     );
-    leftBarrier.position.set(5, 5, 0);
+    leftBarrier.position.set(5, 3, 0);
     leftBarrier.castShadow = false;
 
     let rightBarrierTexture = textureLoader.load('resources/textures/building.jpg');
@@ -30,11 +30,11 @@ function createSimpleScenario(scene, anisotropy) {
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
     rightBarrierTexture.wrapT = THREE.RepeatWrapping;
     let rightBarrier = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(2, 10, 100),
+        new THREE.CubeGeometry(2, 7, 100),
         new THREE.MeshBasicMaterial({ map: rightBarrierTexture }),
         0
     );
-    rightBarrier.position.set(-5, 5, 0);
+    rightBarrier.position.set(-5, 3, 0);
     rightBarrier.castShadow = false;
 
     scene.add(leftBarrier);
@@ -51,11 +51,14 @@ function createSimpleScenario(scene, anisotropy) {
     mesh.receiveShadow = true;
     scene.add(mesh);
 
-    buildingInterval = setInterval(() => {
+    objectInterval = setInterval(() => {
+        addCar(scene, randomNumber(-1.5, 1.5), true);
         addBuilding(scene, false);
+        addCoin(scene, randomNumber(-1.0, 1.0));
+        addCoin(scene, 3);
         addBuilding(scene, true);
-        addCar(scene, randomNumber(-1.5, 1.5));
-    }, 2000);
+        addCar(scene, randomNumber(-1.5, 1.5), false);
+    }, 4000);
 
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += 0.99;
@@ -65,7 +68,5 @@ function createSimpleScenario(scene, anisotropy) {
 }
 
 function randomNumber(min, max) {
-    let randomNumber = Math.random() * (max - min) + min;
-    console.log("random is ",randomNumber);
-    return randomNumber;
+    return Math.random() * (max - min) + min;
 }
