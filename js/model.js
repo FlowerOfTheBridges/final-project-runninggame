@@ -18,9 +18,28 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
 
 const coinMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xd4af37,
-    roughness: 0.5,
-    metalness: 1.0
+    metalness:0.7,
+    roughness:0.3,
 });
+
+
+
+  // Left point light
+  const pointLightLeft = new THREE.PointLight(0xff4422, 1)
+  pointLightLeft.position.set(-1,-1,3)
+ 
+
+  // Right point light
+  const pointLightRight = new THREE.PointLight(0x44ff88, 1)
+  pointLightRight.position.set(1,2,3)
+  
+
+  // Top point light
+  const pointLightTop = new THREE.PointLight(0xdd3311, 1)
+  pointLightTop.position.set(0,3,2)
+  
+
+  THREE.ImageUtils.crossOrigin = '';
 
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     let localPrefix = isLast ? '└─' : '├─';
@@ -142,7 +161,7 @@ function addCar(scene, offset, isEven) {
         OBJ_MASS
     );
 
-    carBox.position.set(offset, 0, OBJ_DISTANCE +(isEven? 10 : -25));
+    carBox.position.set(offset, 0, OBJ_DISTANCE);
 
     let wheels = [];
     wheels.push(
@@ -170,27 +189,31 @@ function addBuilding(scene, isRight) {
 }
 
 function createCoin(){
-    let ringGeometry = new THREE.TorusGeometry(
-        0.25, 0.25, 0.25, 50
-    );
-    let cylinderGeometry = new THREE.CylinderGeometry(
+   
+     cylinderGeometry = new THREE.CylinderGeometry(
         0.25, 0.25, 0.25, 16
     );
     cylinderGeometry.rotateX(Math.PI / 2);
-    coinGeometry = new THREE.Geometry();
-    coinGeometry.merge(ringGeometry);
-    coinGeometry.merge(cylinderGeometry);
+    scene.add(pointLightLeft);
+    //scene.add(pointLightRight);
+    //scene.add(pointLightTop);
+    
 }
 
 function addCoin(scene, offset) {
+    //scene.add(new THREE.AmbientLight(0xffffff,0.5));
 
     let coin = new Physijs.BoxMesh(
-        coinGeometry.clone(),
+        cylinderGeometry.clone(),
         coinMaterial,
         OBJ_MASS 
     );
+
+    /*scene.add(pointLightLeft);
+    scene.add(pointLightRight);
+    scene.add(pointLightTop);*/
     //coin.castShadow = true;
-    let distance = offset == 3 || offset == -3 ? OBJ_DISTANCE + 30 : OBJ_DISTANCE 
+    let distance =  OBJ_DISTANCE;
     coin.position.set(offset, 1, distance);
     coin.name = "coin_" + coins.length;
     coins.push(coin);

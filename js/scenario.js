@@ -52,14 +52,18 @@ function createSimpleScenario(scene, anisotropy) {
     scene.add(mesh);
 
     objectInterval = setInterval(() => {
-        addCar(scene, randomNumber(-1.5, 1.5), true);
+        setTimeout(() => {addCar(scene, randomNumber(-1.5, 1.5), true)},3000);
         addBuilding(scene, false);
-        addCoin(scene, randomNumber(-1.0, 1.0));
-        addCoin(scene, 3);
+        setTimeout(() => {addCoin(scene, randomNumber(-1.0, 1.0)); addCoin(scene, 3);},5000);
         addBuilding(scene, true);
-        addCar(scene, randomNumber(-1.5, 1.5), false);
-    }, 4000);
+        setTimeout(() => {addCar(scene, randomNumber(-1.5, 1.5), false)}, 3000);
+    }, 7000);
 
+    //BuildInterval = setInterval(() => { addBuilding(scene, false); addBuilding(scene, true); }, 5000);
+   // CarInterval  =  setInterval(() => {  addCar(scene, randomNumber(-1.5, 1.5), true);  addCar(scene, randomNumber(-1.5, 1.5), false);}, 4000);
+   // CoinInterval =  setInterval(() => { addCoin(scene, randomNumber(-1.0, 1.0));   addCoin(scene, 3);}, 4000);
+   
+   
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += 0.99;
         leftBarrierTexture.offset.x -= 0.99;

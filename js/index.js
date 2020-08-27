@@ -10,7 +10,11 @@ var defaultCarModel, coinGeometry = null;
 
 const scene = new Physijs.Scene;
 const stats = new Stats();
-scene.setGravity(new THREE.Vector3(0, 0, -6))
+/*scene.setGravity(new THREE.Vector3(0, 0, -6));
+scene.addEventListener( 'update',
+function(){  scene.simulate(undefined, 1); 
+    stats.update();
+});*/
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -26,13 +30,13 @@ function onWindowResize() {
 }
 
 function init() {
-    createjs.Sound.addEventListener("fileload", startSoundtrack);
-    createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
+    //createjs.Sound.addEventListener("fileload", startSoundtrack);
+    //createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
 
     createCar();
     createCoin();
     loadModel(CHARACTER_URL, scene, run);
-
+    scene.setGravity(new THREE.Vector3(0, 0, -6));
     camera.position.set(0, 2, -4);
 
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -72,9 +76,9 @@ function animate() {
     if (!gameOver) {
         scene.simulate(); // run physics
         updateCars(time);
-    }
+    
 
-    updateCoins(time);
+    updateCoins(time);}   else{ TWEEN.stop();}
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
