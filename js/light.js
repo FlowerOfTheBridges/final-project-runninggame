@@ -29,6 +29,21 @@ function createDirectionalLigth(color, intensity, position, shadow, scene, helpe
     }
 }
 
+function createPointLigth(color, intensity, position, helperOn) {
+
+    positionCheck(position);
+
+    let pointLight = new THREE.PointLight(color, intensity);
+    pointLight.position.set(position[0], position[1], position[2])
+
+    scene.add(pointLight);
+
+    if (helperOn) {
+        let helper = new THREE.PointLightHelper(pointLight);
+        scene.add(helper);
+    }
+}
+
 function createHemiLight(color, intensity, position, scene) {
     positionCheck(position);
 

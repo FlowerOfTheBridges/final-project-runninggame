@@ -6,15 +6,14 @@ var gameOver = false;
 var objectInterval, groundInterval = null;
 var cars = [];
 var coins = [];
+var buildings = [];
 var defaultCarModel, coinGeometry = null;
+
+
+var round = 0;
 
 const scene = new Physijs.Scene;
 const stats = new Stats();
-/*scene.setGravity(new THREE.Vector3(0, 0, -6));
-scene.addEventListener( 'update',
-function(){  scene.simulate(undefined, 1); 
-    stats.update();
-});*/
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -30,13 +29,13 @@ function onWindowResize() {
 }
 
 function init() {
-    //createjs.Sound.addEventListener("fileload", startSoundtrack);
-    //createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
+    createjs.Sound.addEventListener("fileload", startSoundtrack);
+    createjs.Sound.registerSound("resources/audio/soundtrack.ogg", soundtrack);
 
     createCar();
     createCoin();
-    loadModel(CHARACTER_URL, scene, run);
-    scene.setGravity(new THREE.Vector3(0, 0, -6));
+    loadModel(scene, run);
+    scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
     camera.position.set(0, 2, -4);
 
     renderer.setPixelRatio(window.devicePixelRatio);
@@ -57,6 +56,7 @@ function init() {
     createSimpleScenario(scene, renderer.capabilities.getMaxAnisotropy());
 
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
+    createPointLigth(0xff4422, 1, [-1,1,3], IS_DEBUG);
     createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
         { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, IS_DEBUG);
 
@@ -76,9 +76,8 @@ function animate() {
     if (!gameOver) {
         scene.simulate(); // run physics
         updateCars(time);
-    
-
-    updateCoins(time);}   else{ TWEEN.stop();}
+        updateCoins(time);
+    }
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
@@ -116,6 +115,19 @@ function updateCoins(rotationTime) {
     })
 }
 
-init();
+function updateBuildings() {
+    buildings.forEach((building, index) => {
+        if (playerBox.position.z - 10 >= building.position.z) {
+            scene.remove(building);
+            cars.splice(index, 1);
+            console.log("building removed! buildings are ", buildings);
+        }
 
+        car.wheels.forEach(wheel => {
+            wheel.rotation.x = wheelRotation * Math.PI;
+        });
+    })
+}
+
+init();
 animate();

@@ -17,7 +17,7 @@ function createSimpleScenario(scene, anisotropy) {
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
     leftBarrierTexture.wrapT = THREE.RepeatWrapping;
     let leftBarrier = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(2, 20, 100),
+        new THREE.CubeGeometry(2, 7, 100),
         new THREE.MeshBasicMaterial({ map: leftBarrierTexture }),
         0
     );
@@ -52,25 +52,29 @@ function createSimpleScenario(scene, anisotropy) {
     scene.add(mesh);
 
     objectInterval = setInterval(() => {
-        setTimeout(() => {addCar(scene, randomNumber(-1.5, 1.5), true)},3000);
-        addBuilding(scene, false);
-        setTimeout(() => {addCoin(scene, randomNumber(-1.0, 1.0)); addCoin(scene, 3);},5000);
-        addBuilding(scene, true);
-        setTimeout(() => {addCar(scene, randomNumber(-1.5, 1.5), false)}, 3000);
-    }, 7000);
+        spawnObjects(scene);
+        round++;
+        console.log("round is ", round);
+    }, BUILDING_INTERVAL);
 
-    //BuildInterval = setInterval(() => { addBuilding(scene, false); addBuilding(scene, true); }, 5000);
-   // CarInterval  =  setInterval(() => {  addCar(scene, randomNumber(-1.5, 1.5), true);  addCar(scene, randomNumber(-1.5, 1.5), false);}, 4000);
-   // CoinInterval =  setInterval(() => { addCoin(scene, randomNumber(-1.0, 1.0));   addCoin(scene, 3);}, 4000);
-   
-   
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += 0.99;
         leftBarrierTexture.offset.x -= 0.99;
         groundTexture.offset.y -= 0.2;
-    }, 50)
+    }, WALLS_INTERVAL)
+
+    isScenarioLoaded = true;
 }
 
-function randomNumber(min, max) {
-    return Math.random() * (max - min) + min;
+function spawnObjects(scene){
+    
+    addBuilding(scene, false);
+    addBuilding(scene, true);
+    let carOffset = randomNumber(-1.2, 1.2);
+    setTimeout(() => addCar(scene, carOffset), CAR_INTERVAL);
+    round>=4 && setTimeout(() => addCoin(scene, round%2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
+    round>=4 && setTimeout(() => addBuilding(scene, round%2 == 0), COINS_INTERVALS[1]);
+    let coinOffset = carOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6,1.2);
+    setTimeout(() => addCoin(scene, coinOffset), COINS_INTERVALS[0]);
+    setTimeout(() => addCoin(scene, coinOffset), COINS_INTERVALS[2]);
 }

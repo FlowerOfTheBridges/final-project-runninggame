@@ -18,28 +18,11 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
 
 const coinMaterial = new THREE.MeshPhysicalMaterial({
     color: 0xd4af37,
-    metalness:0.7,
-    roughness:0.3,
+    metalness: 0.7,
+    roughness: 0.3,
 });
 
-
-
-  // Left point light
-  const pointLightLeft = new THREE.PointLight(0xff4422, 1)
-  pointLightLeft.position.set(-1,-1,3)
- 
-
-  // Right point light
-  const pointLightRight = new THREE.PointLight(0x44ff88, 1)
-  pointLightRight.position.set(1,2,3)
-  
-
-  // Top point light
-  const pointLightTop = new THREE.PointLight(0xdd3311, 1)
-  pointLightTop.position.set(0,3,2)
-  
-
-  THREE.ImageUtils.crossOrigin = '';
+THREE.ImageUtils.crossOrigin = '';
 
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     let localPrefix = isLast ? '└─' : '├─';
@@ -53,9 +36,9 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     return lines;
 }
 
-function loadModel(url, scene, callback) {
+function loadModel(scene, callback) {
 
-    gltfLoader.load(url, (gltf) => {
+    gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
         let model = gltf.scene;
         //scene.add(model);
@@ -74,7 +57,7 @@ function loadModel(url, scene, callback) {
                 node.rotation.z = node.name == 'mixamorigRightArm' ? 1 : -1;
             }
         });
-        
+
         IS_DEBUG && console.log(dumpObject(model).join('\n'));
 
         scene.add(model);
@@ -135,7 +118,7 @@ function createCar() {
 
 }
 
-function addCar(scene, offset, isEven) {
+function addCar(scene, offset) {
     let carModel = defaultCarModel.clone();
     carModel.scale.set(0.6, 1, 1);
 
@@ -188,32 +171,24 @@ function addBuilding(scene, isRight) {
     scene.add(box);
 }
 
-function createCoin(){
-   
-     cylinderGeometry = new THREE.CylinderGeometry(
+function createCoin() {
+
+    cylinderGeometry = new THREE.CylinderGeometry(
         0.25, 0.25, 0.25, 16
     );
     cylinderGeometry.rotateX(Math.PI / 2);
-    scene.add(pointLightLeft);
-    //scene.add(pointLightRight);
-    //scene.add(pointLightTop);
-    
+
 }
 
 function addCoin(scene, offset) {
-    //scene.add(new THREE.AmbientLight(0xffffff,0.5));
-
     let coin = new Physijs.BoxMesh(
         cylinderGeometry.clone(),
         coinMaterial,
-        OBJ_MASS 
+        OBJ_MASS
     );
 
-    /*scene.add(pointLightLeft);
-    scene.add(pointLightRight);
-    scene.add(pointLightTop);*/
-    //coin.castShadow = true;
-    let distance =  OBJ_DISTANCE;
+    coin.castShadow = true;
+    let distance = OBJ_DISTANCE;
     coin.position.set(offset, 1, distance);
     coin.name = "coin_" + coins.length;
     coins.push(coin);
