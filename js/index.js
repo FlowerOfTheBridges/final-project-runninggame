@@ -56,11 +56,11 @@ function init() {
     createSimpleScenario(scene, renderer.capabilities.getMaxAnisotropy());
 
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
-    createPointLigth(0xff4422, 1, [-1,1,3], IS_DEBUG);
+    createPointLigth(0xff4422, 1, [-1, 1, 3], IS_DEBUG);
     createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
         { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, IS_DEBUG);
 
-    
+
     document.body.appendChild(stats.dom);
 }
 
@@ -77,11 +77,12 @@ function animate() {
         scene.simulate(); // run physics
         updateCars(time);
         updateCoins(time);
+        updateBuildings();
+        TWEEN.update();
     }
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
-    TWEEN.update();
 
     stats.update();
 }

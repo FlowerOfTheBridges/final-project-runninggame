@@ -75,9 +75,15 @@ function loadModel(scene, callback) {
                 gameOver = true;
             }
             else {
-                coins.splice(other_object.name.split("_")[1], 1);
+                coins.some((coin, index) => {
+                    if (coin.name == other_object.name) {
+                        scene.remove(coin);
+                        coins.splice(index, 1);
+                        console.log("coin missed! coins are ", coins);
+                        return true;
+                    }
+                });
                 console.log("coin removed. coins now are: ", coins);
-                scene.remove(other_object);
             }
         });
 
@@ -190,7 +196,7 @@ function addCoin(scene, offset) {
     coin.castShadow = true;
     let distance = OBJ_DISTANCE;
     coin.position.set(offset, 1, distance);
-    coin.name = "coin_" + coins.length;
+    coin.name = "coin_" + Date.now();
     coins.push(coin);
     scene.add(coin);
 }

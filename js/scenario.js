@@ -72,6 +72,7 @@ function spawnObjects(scene){
     addBuilding(scene, true);
     let carOffset = randomNumber(-1.2, 1.2);
     setTimeout(() => addCar(scene, carOffset), CAR_INTERVAL);
+    setTimeout(() => addBuilding(scene, round%2==0), CAR_INTERVAL-500);
     round>=4 && setTimeout(() => addCoin(scene, round%2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
     round>=4 && setTimeout(() => addBuilding(scene, round%2 == 0), COINS_INTERVALS[1]);
     let coinOffset = carOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6,1.2);
