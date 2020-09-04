@@ -35,6 +35,7 @@ function init() {
     createCar();
     createCoin();
     loadModel(scene, run);
+    
     scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
     camera.position.set(0, 2, -4);
 

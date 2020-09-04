@@ -68,6 +68,7 @@ function loadModel(scene, callback) {
             0
         );
         playerBox.addEventListener('collision', function (other_object, relative_velocity, relative_rotation, contact_normal) {
+            
             console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, other_object, relative_velocity, relative_rotation, contact_normal);
             if (!other_object.name.includes("coin")) {
                 clearInterval(objectInterval);
@@ -180,7 +181,7 @@ function addBuilding(scene, isRight) {
 function createCoin() {
 
     cylinderGeometry = new THREE.CylinderGeometry(
-        0.25, 0.25, 0.25, 16
+        0.25, 0.25, 0.06, 16
     );
     cylinderGeometry.rotateX(Math.PI / 2);
 
