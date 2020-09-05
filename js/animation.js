@@ -1,63 +1,66 @@
 var skeleton, playerBox = null;
 
-const leftUpperLegFinal = { x: UPPER_LEG_FINISH };
-const rightUpperLegFinal = { x: UPPER_LEG_FINISH };
-const leftLegFinal = { x: LEG_FINISH };
-const rightLegFinal = { x: LEG_FINISH };
-
-
-const leftArmFinal = { x: ARM_FINISH };
-const rightArmFinal = { x: ARM_FINISH };
-const leftHandFinal = { y: -1 * HAND_FINISH };
-const rightHandFinal = { y: HAND_FINISH };
-const TorsoFinal = {y:TORSO_FINISH, x:TORSO_FINISH};
-const TorsoFinal2 = {y:TORSO_FINISH, x:TORSO_FINISH};
-const leftFootFinal = {x: FOOT_FINISH};
-const rightFootFinal = {x: FOOT_FINISH};
-
 //FALL
-const BonesFinal = {x: BONES_FINISH_FALL};
-const TorsoFinalFall = {x: TORSO_FINISH_FALL};
-const LeftUpperArmFinalFall = {x: LEFTUPPERARM_FINISH_FALL};
-const LeftLowerArmFinalFall = {y: LEFTLOWERARM_FINISH_FALL};
-const LeftUpperLegFinalFall = {x: LEFTUPPERLEG_FINISH_FALLX, z: LEFTUPPERLEG_FINISH_FALLZ};
-const LowerLegFinalFall ={x: LOWERLEG_FINISH_FALL };
-const BonesFinalPos = {y: BONES_POS_FALLY, z: BONES_POS_FALLZ };
-const LeftUpperLegFinalFall1 ={x: LEG_FINISH_FALL};
-const RightUpperLegFinalFall1 ={x: LEG_FINISH_FALL};
-const leftFootFall = {x: LEFTFOOT_FINISH_FALL};
-const HeadFinalFall ={y: HEAD_FINISH_FALL};
+const BonesFinal = { x: BONES_FINISH_FALL };
+const ShoulderFinalFall = { x: SHOULDER_FINISH_FALL };
+const LeftUpperArmFinalFall = { x: LEFTUPPERARM_FINISH_FALL };
+const LeftLowerArmFinalFall = { y: LEFTLOWERARM_FINISH_FALL };
+const LeftUpperLegFinalFall = { x: LEFTUPPERLEG_FINISH_FALLX, z: LEFTUPPERLEG_FINISH_FALLZ };
+const LowerLegFinalFall = { x: LOWERLEG_FINISH_FALL };
+const BonesFinalPos = { y: BONES_POS_FALLY, z: BONES_POS_FALLZ };
+const LeftUpperLegFinalFall1 = { x: LEG_FINISH_FALL };
+const RightUpperLegFinalFall1 = { x: LEG_FINISH_FALL };
+const leftFootFall = { x: LEFTFOOT_FINISH_FALL };
+const HeadFinalFall = { y: HEAD_FINISH_FALL };
 
+var runTween = {
+    leftLeg: null,
+    rightLeg: null,
+    leftUpperLeg: null,
+    rightUpperLeg: null,
+    leftFoot: null,
+    rightFoot: null,
+    rightHand: null,
+    leftHand: null,
+    rightArm: null,
+    leftArm: null,
+    leftShoulder: null,
+    rightShoulder: null
+}
 
+function stopAnimation(animationTween) {
+    Object.keys(animationTween).forEach(tween => {
+        animationTween[tween].stop();
+    })
+}
 
 function run() {
     console.log("skeleton is %o", skeleton);
     while (!skeleton) {
         // waiting for skeleton to be loaded
     }
-    skeleton.bones[0].children[0].rotation.x= Math.PI/5;
-   
-    moveTorso();
+
+    skeleton.bones[0].children[0].rotation.x = Math.PI / 5;
+
+    moveShoulders();
     moveLegs();
-    moveFoot()
+    moveFoot();
     moveArms();
     moveCharacter();
-   
-   
 }
 
 function moveLegs() {
 
     let leftUpperLeg = skeleton.bones[0].children[1];
     let leftUpperLegInit = { x: leftUpperLeg.rotation.x, y: leftUpperLeg.rotation.y, z: leftUpperLeg.rotation.z };
-    
-    let tweenLeftUpperLeg = new TWEEN.Tween(leftUpperLegInit)
-        .to(leftUpperLegFinal, RUNNING_SPEED)
+
+    runTween.leftUpperLeg = new TWEEN.Tween(leftUpperLegInit)
+        .to(UPPER_LEG_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (leftUpperLegFinal.x) leftUpperLeg.rotation.x = d.x;
-            if (leftUpperLegFinal.y) leftUpperLeg.rotation.y = d.y;
-            if (leftUpperLegFinal.z) leftUpperLeg.rotation.z = d.z;
+            if (UPPER_LEG_FINAL.x) leftUpperLeg.rotation.x = d.x;
+            if (UPPER_LEG_FINAL.y) leftUpperLeg.rotation.y = d.y;
+            if (UPPER_LEG_FINAL.z) leftUpperLeg.rotation.z = d.z;
         })
         .repeat(1)
         .yoyo(true);
@@ -65,13 +68,13 @@ function moveLegs() {
     let leftLeg = skeleton.bones[0].children[1].children[0];
     let leftLegInit = { x: leftLeg.rotation.x, y: leftLeg.rotation.y, z: leftLeg.rotation.z };
 
-    let tweenLeftLeg = new TWEEN.Tween(leftLegInit)
-        .to(leftLegFinal, RUNNING_SPEED)
+    runTween.leftLeg = new TWEEN.Tween(leftLegInit)
+        .to(LEG_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (leftLegFinal.x) leftLeg.rotation.x = d.x;
-            if (leftLegFinal.y) leftLeg.rotation.y = d.y;
-            if (leftLegFinal.z) leftLeg.rotation.z = d.z;
+            if (LEG_FINAL.x) leftLeg.rotation.x = d.x;
+            if (LEG_FINAL.y) leftLeg.rotation.y = d.y;
+            if (LEG_FINAL.z) leftLeg.rotation.z = d.z;
         })
         .repeat(1)
         .yoyo(true);
@@ -79,17 +82,17 @@ function moveLegs() {
     let rightUpperLeg = skeleton.bones[0].children[2];
     let rightUpperLegInit = { x: rightUpperLeg.rotation.x, y: rightUpperLeg.rotation.y, z: rightUpperLeg.rotation.z };
 
-    let tweenRightUpperLeg = new TWEEN.Tween(rightUpperLegInit)
-        .to(rightUpperLegFinal, RUNNING_SPEED)
+    runTween.rightUpperLeg = new TWEEN.Tween(rightUpperLegInit)
+        .to(UPPER_LEG_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (rightUpperLegFinal.x) rightUpperLeg.rotation.x = d.x;
-            if (rightUpperLegFinal.y) rightUpperLeg.rotation.y = d.y;
-            if (rightUpperLegFinal.z) rightUpperLeg.rotation.z = d.z;
+            if (UPPER_LEG_FINAL.x) rightUpperLeg.rotation.x = d.x;
+            if (UPPER_LEG_FINAL.y) rightUpperLeg.rotation.y = d.y;
+            if (UPPER_LEG_FINAL.z) rightUpperLeg.rotation.z = d.z;
         })
         .onComplete(() => {
-            tweenLeftUpperLeg.to(leftUpperLegFinal, RUNNING_SPEED).repeat(1);
-            tweenLeftUpperLeg.start();
+            runTween.leftUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
+            runTween.leftUpperLeg.start();
         })
         .repeat(1)
         .yoyo(true);
@@ -97,259 +100,223 @@ function moveLegs() {
     let rightLeg = skeleton.bones[0].children[2].children[0];
     let rightLegInit = { x: rightLeg.rotation.x, y: rightLeg.rotation.y, z: rightLeg.rotation.z };
 
-    let tweenRightLeg = new TWEEN.Tween(rightLegInit)
-        .to(rightLegFinal, RUNNING_SPEED)
+    runTween.rightLeg = new TWEEN.Tween(rightLegInit)
+        .to(LEG_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (rightLegFinal.x) rightLeg.rotation.x = d.x;
-            if (rightLegFinal.y) rightLeg.rotation.y = d.y;
-            if (rightLegFinal.z) rightLeg.rotation.z = d.z;
+            if (LEG_FINAL.x) rightLeg.rotation.x = d.x;
+            if (LEG_FINAL.y) rightLeg.rotation.y = d.y;
+            if (LEG_FINAL.z) rightLeg.rotation.z = d.z;
         })
         .onComplete(() => {
-            tweenLeftLeg.to(leftLegFinal, RUNNING_SPEED).repeat(1);
-            tweenLeftLeg.start();
+            runTween.leftLeg.to(LEG_FINAL, RUNNING_SPEED).repeat(1);
+            runTween.leftLeg.start();
         })
         .repeat(1)
         .yoyo(true);
 
-    tweenLeftUpperLeg.onComplete(() => {
-        tweenRightUpperLeg.to(rightUpperLegFinal, RUNNING_SPEED).repeat(1);
-        tweenRightUpperLeg.start();
+    runTween.leftUpperLeg.onComplete(() => {
+        runTween.rightUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
+        runTween.rightUpperLeg.start();
     })
 
-    tweenLeftLeg.onComplete(() => {
-        tweenRightLeg.to(rightLegFinal, RUNNING_SPEED).repeat(1);
-        tweenRightLeg.start();
+    runTween.leftLeg.onComplete(() => {
+        runTween.rightLeg.to(LEG_FINAL, RUNNING_SPEED).repeat(1);
+        runTween.rightLeg.start();
     })
 
-    tweenLeftUpperLeg.start();
-    tweenLeftLeg.start();
+    runTween.leftUpperLeg.start();
+    runTween.leftLeg.start();
 }
 
 function moveFoot() {
 
     let leftFoot = skeleton.bones[0].children[1].children[0];
     let leftFootInit = { x: leftFoot.rotation.x, y: leftFoot.rotation.y, z: leftFoot.rotation.z };
-    
-    let tweenLeftFoot = new TWEEN.Tween(leftFootInit)
-        .to(leftFootFinal, RUNNING_SPEED)
+
+    runTween.leftFoot = new TWEEN.Tween(leftFootInit)
+        .to(FOOT_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (leftFootFinal.x) leftFoot.rotation.x = d.x;
-            if (leftFootFinal.y) leftFoot.rotation.y = d.y;
-            if (leftFootFinal.z) leftFoot.rotation.z = d.z;})
-        
+            if (FOOT_FINAL.x) leftFoot.rotation.x = d.x;
+            if (FOOT_FINAL.y) leftFoot.rotation.y = d.y;
+            if (FOOT_FINAL.z) leftFoot.rotation.z = d.z;
+        })
+
         .onComplete(() => {
-            tweenLeftFoot.to(leftFootFinal, MOVING_TORSO);
-            tweenLeftFoot.start();
+            runTween.leftFoot.to(FOOT_FINAL, MOVING_TORSO);
+            runTween.leftFoot.start();
         })
         .repeat(Infinity)
         .yoyo(true);
-       
+
 
 
     let rightFoot = skeleton.bones[0].children[2].children[0];
     let rightFootInit = { x: rightFoot.rotation.x, y: rightFoot.rotation.y, z: rightFoot.rotation.z };
-    
-    let tweenrightFoot = new TWEEN.Tween(rightFootInit)
-        .to(rightFootFinal, RUNNING_SPEED)
+
+    runTween.rightFoot = new TWEEN.Tween(rightFootInit)
+        .to(FOOT_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (rightFootFinal.x) rightFoot.rotation.x = d.x;
-            if (rightFootFinal.y) rightFoot.rotation.y = d.y;
-            if (rightFootFinal.z) rightFoot.rotation.z = d.z;})
-        
+            if (FOOT_FINAL.x) rightFoot.rotation.x = d.x;
+            if (FOOT_FINAL.y) rightFoot.rotation.y = d.y;
+            if (FOOT_FINAL.z) rightFoot.rotation.z = d.z;
+        })
+
         .onComplete(() => {
-            tweenrightFoot.to(rightFootFinal, MOVING_TORSO);
-            tweenrightFoot.start();
+            runTween.rightFoot.to(FOOT_FINAL, MOVING_TORSO);
+            runTween.rightFoot.start();
         })
         .repeat(Infinity)
         .yoyo(true);
-        
-        tweenLeftFoot.start();
-        tweenrightFoot.start();
-        
 
-    
+    runTween.leftFoot.start();
+    runTween.rightFoot.start();
+
+
+
 }
 
 function moveArms() {
     let leftArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0];
-    let leftArmInit = { x: leftArm.rotation.x=-Math.PI/4, y: leftArm.rotation.y, z: leftArm.rotation.z };
-    
+    let leftArmInit = { x: leftArm.rotation.x = -Math.PI / 4, y: leftArm.rotation.y, z: leftArm.rotation.z };
 
-    let tweenLeftArm = new TWEEN.Tween(leftArmInit)
-        .to(leftArmFinal, RUNNING_SPEED)
+    runTween.leftArm = new TWEEN.Tween(leftArmInit)
+        .to(ARM_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (leftArmFinal.x) leftArm.rotation.x = d.x;
-            if (leftArmFinal.y) leftArm.rotation.y = d.y;
-            if (leftArmFinal.z) leftArm.rotation.z = d.z;
+            if (ARM_FINAL.x) leftArm.rotation.x = d.x;
+            if (ARM_FINAL.y) leftArm.rotation.y = d.y;
+            if (ARM_FINAL.z) leftArm.rotation.z = d.z;
         })
         .repeat(1)
         .yoyo(true);
 
     let rightArm = skeleton.bones[0].children[0].children[0].children[0].children[2].children[0];
-    let rightArmInit = { x: rightArm.rotation.x=-Math.PI/4, y: rightArm.rotation.y, z: rightArm.rotation.z };
+    let rightArmInit = { x: rightArm.rotation.x = -Math.PI / 4, y: rightArm.rotation.y, z: rightArm.rotation.z };
 
-    let tweenRightArm = new TWEEN.Tween(rightArmInit)
-        .to(rightArmFinal, RUNNING_SPEED)
+    runTween.rightArm = new TWEEN.Tween(rightArmInit)
+        .to(ARM_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (rightArmFinal.x) rightArm.rotation.x = d.x;
-            if (rightArmFinal.y) rightArm.rotation.y = d.y;
-            if (rightArmFinal.z) rightArm.rotation.z = d.z;
+            if (ARM_FINAL.x) rightArm.rotation.x = d.x;
+            if (ARM_FINAL.y) rightArm.rotation.y = d.y;
+            if (ARM_FINAL.z) rightArm.rotation.z = d.z;
         })
         .repeat(1)
         .yoyo(true)
         .onComplete(() => {
-            tweenLeftArm.to(leftArmFinal, RUNNING_SPEED).repeat(1);
-            tweenLeftArm.start();
+            runTween.leftArm.to(ARM_FINAL, RUNNING_SPEED).repeat(1);
+            runTween.leftArm.start();
         });
 
 
-    tweenLeftArm.onComplete(() => {
-        tweenRightArm.to(rightArmFinal, RUNNING_SPEED).repeat(1);
-        tweenRightArm.start();
+    runTween.leftArm.onComplete(() => {
+        runTween.rightArm.to(ARM_FINAL, RUNNING_SPEED).repeat(1);
+        runTween.rightArm.start();
     })
 
     let rightHand = skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].children[0];
     let rightHandInit = { x: rightHand.rotation.x7/*=Math.PI/4*/, y: rightHand.rotation.y, z: rightHand.rotation.z };
-    
-    let tweenRightHand = new TWEEN.Tween(rightHandInit)
-        .to(rightHandFinal, RUNNING_SPEED)
+
+    runTween.rightHand = new TWEEN.Tween(rightHandInit)
+        .to(RIGHT_HAND_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (rightHandFinal.x) rightHand.rotation.x = d.x;
-            if (rightHandFinal.y) rightHand.rotation.y = d.y;
-            if (rightHandFinal.z) rightHand.rotation.z = d.z;
+            if (RIGHT_HAND_FINAL.x) rightHand.rotation.x = d.x;
+            if (RIGHT_HAND_FINAL.y) rightHand.rotation.y = d.y;
+            if (RIGHT_HAND_FINAL.z) rightHand.rotation.z = d.z;
         });
 
 
     let leftHand = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0];
     let leftHandInit = { x: leftHand.rotation.x, y: leftHand.rotation.y, z: leftHand.rotation.z };
 
-    let tweenLeftHand = new TWEEN.Tween(leftHandInit)
-        .to(leftHandFinal, RUNNING_SPEED)
+    runTween.leftHand = new TWEEN.Tween(leftHandInit)
+        .to(LEFT_HAND_FINAL, RUNNING_SPEED)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (leftHandFinal.x) leftHand.rotation.x = d.x;
-            if (leftHandFinal.y) leftHand.rotation.y = d.y;
-            if (leftHandFinal.z) leftHand.rotation.z = d.z;
+            if (LEFT_HAND_FINAL.x) leftHand.rotation.x = d.x;
+            if (LEFT_HAND_FINAL.y) leftHand.rotation.y = d.y;
+            if (LEFT_HAND_FINAL.z) leftHand.rotation.z = d.z;
         });
 
-    tweenLeftHand.start();
-    tweenRightArm.start();
-    tweenRightHand.start();
+    runTween.leftHand.start();
+    runTween.rightArm.start();
+    runTween.rightHand.start();
 }
 
 
 
-function moveTorso() {
-    
-    let Torso = skeleton.bones[0].children[0].children[0].children[0].children[1];
-    let TorsoInit = { x: Torso.rotation.x, y: Torso.rotation.y, z: Torso.rotation.z };
-    
+function moveShoulders() {
 
-    let tweenTorso = new TWEEN.Tween(TorsoInit)
-        .to(TorsoFinal, MOVING_TORSO)
+    let leftShoulder = skeleton.bones[0].children[0].children[0].children[0].children[1];
+    let leftShoulderInit = { x: leftShoulder.rotation.x, y: leftShoulder.rotation.y, z: leftShoulder.rotation.z };
+
+    runTween.leftShoulder = new TWEEN.Tween(leftShoulderInit)
+        .to(SHOULDER_FINAL, MOVING_TORSO)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (TorsoFinal.x) Torso.rotation.x = d.x;
-            if (TorsoFinal.y) Torso.rotation.y = d.y;
-            if (TorsoFinal.z) Torso.rotation.z = d.z;
+            if (SHOULDER_FINAL.x) leftShoulder.rotation.x = d.x;
+            if (SHOULDER_FINAL.y) leftShoulder.rotation.y = d.y;
+            if (SHOULDER_FINAL.z) leftShoulder.rotation.z = d.z;
         })
         .onComplete(() => {
-            tweenTorso.to(TorsoFinal, MOVING_TORSO);
-            tweenTorso.start();
+            tweenShoulder.to(SHOULDER_FINAL, MOVING_TORSO);
+            tweenShoulder.start();
         })
         .repeat(Infinity)
         .yoyo(true);
 
-       
-        let Torso2 = skeleton.bones[0].children[0].children[0].children[0].children[2];
-        let TorsoInit2 = { x: Torso2.rotation.x, y: Torso2.rotation.y, z: Torso2.rotation.z };
-        
-    
-        let tweenTorso2 = new TWEEN.Tween(TorsoInit2)
-            .to(TorsoFinal2, MOVING_TORSO)
-            .easing(TWEEN.Easing.Sinusoidal.In)
-            .onUpdate((d) => {
-                if (TorsoFinal2.x) Torso2.rotation.x = d.x;
-                if (TorsoFinal2.y) Torso2.rotation.y = d.y;
-                if (TorsoFinal2.z) Torso2.rotation.z = d.z;
-            })
-            .onComplete(() => {
-                tweenTorso.to(TorsoFinal, MOVING_TORSO);
-                tweenTorso.start();
-            })
-            .repeat(Infinity)
-            .yoyo(true);
 
-      
+    let rightShoulder = skeleton.bones[0].children[0].children[0].children[0].children[2];
+    let rightShoulderInit = { x: rightShoulder.rotation.x, y: rightShoulder.rotation.y, z: rightShoulder.rotation.z };
 
-        tweenTorso.start();
-        tweenTorso2.start();
-        
-        
-}
+    runTween.rightShoulder = new TWEEN.Tween(rightShoulderInit)
+        .to(SHOULDER_FINAL, MOVING_TORSO)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (SHOULDER_FINAL.x) rightShoulder.rotation.x = d.x;
+            if (SHOULDER_FINAL.y) rightShoulder.rotation.y = d.y;
+            if (SHOULDER_FINAL.z) rightShoulder.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            runTween.leftShoulder.to(SHOULDER_FINAL, MOVING_TORSO);
+            runTween.leftShoulder.start();
+        })
+        .repeat(Infinity)
+        .yoyo(true);
 
-function moveCharacter() {
 
-    document.addEventListener(
-        'keydown',
-        function (ev) {
-            switch (ev.keyCode) {
-                case 37:
-                    // Left
-                    if (skeleton.bones[0].position.x < 340) {
-                        //console.log("left", skeleton.bones[0].position.x);
-                        skeleton.bones[0].position.x += MOVING_SPEED;
-                        playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), 0, 0);
-                        camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 2, -4);
-                        playerBox.__dirtyPosition = true;
-                    }
-                    break;
-                case 39:
-                    // Right
-                    if (skeleton.bones[0].position.x > -340) {
-                        //console.log("right", skeleton.bones[0].position.x);
-                        playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), 0, 0);
-                        playerBox.__dirtyPosition = true;
-                        camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 2, -4);
-                        skeleton.bones[0].position.x -= MOVING_SPEED;
-                    }
-                    break;
-            }
-        }
-    );
+
+    runTween.leftShoulder.start();
+    runTween.rightShoulder.start();
 
 }
 
-function Move(){
-    
+function move() {
 
     //left Upper Leg
     let leftUpperLeg = skeleton.bones[0].children[1];
-    let leftUpperLegInit = { x:leftUpperLeg.rotation.x, y: leftUpperLeg.rotation.y, z: leftUpperLeg.rotation.z };
+    let leftUpperLegInit = { x: leftUpperLeg.rotation.x, y: leftUpperLeg.rotation.y, z: leftUpperLeg.rotation.z };
 
 
     let tweenleftUpperLeg = new TWEEN.Tween(leftUpperLegInit)
-    .to(LeftUpperLegFinalFall1, MOVING_FALL)
-    .easing(TWEEN.Easing.Sinusoidal.In)
-    .onUpdate((d) => {
-        if (LeftUpperLegFinalFall1.x) leftUpperLeg.rotation.x = d.x;
-        if (LeftUpperLegFinalFall1.y) leftUpperLeg.rotation.y = d.y;
-        if (LeftUpperLegFinalFall1.z) leftUpperLeg.rotation.z = d.z;
-    })
-    .onComplete(() => {
-     tweenleftUpperLeg.to(LeftUpperLegFinalFall1,MOVING_FALL);
-     tweenleftUpperLeg.start();
-    })
-    .repeat(1)
-    .yoyo(true)
-    
-        
+        .to(LeftUpperLegFinalFall1, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (LeftUpperLegFinalFall1.x) leftUpperLeg.rotation.x = d.x;
+            if (LeftUpperLegFinalFall1.y) leftUpperLeg.rotation.y = d.y;
+            if (LeftUpperLegFinalFall1.z) leftUpperLeg.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenleftUpperLeg.to(LeftUpperLegFinalFall1, MOVING_FALL);
+            tweenleftUpperLeg.start();
+        })
+        .repeat(1)
+        .yoyo(true)
+
     tweenleftUpperLeg.start();
 
     //right Upper Leg
@@ -358,219 +325,205 @@ function Move(){
 
 
     let tweenrightUpperLeg = new TWEEN.Tween(rightUpperLegInit)
-    .to(RightUpperLegFinalFall1, MOVING_FALL)
-    .easing(TWEEN.Easing.Sinusoidal.In)
-    .onUpdate((d) => {
-        if (RightUpperLegFinalFall1.x) rightUpperLeg.rotation.x = d.x;
-        if (RightUpperLegFinalFall1.y) rightUpperLeg.rotation.y = d.y;
-        if (RightUpperLegFinalFall1.z) rightUpperLeg.rotation.z = d.z;
-    })
-    .onComplete(() => {
-     tweenrightUpperLeg.to(RightUpperLegFinalFall1,MOVING_FALL);
-     tweenrightUpperLeg.start();
-    })
-    .repeat(1)
-    .yoyo(true)
-    
-        
+        .to(RightUpperLegFinalFall1, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (RightUpperLegFinalFall1.x) rightUpperLeg.rotation.x = d.x;
+            if (RightUpperLegFinalFall1.y) rightUpperLeg.rotation.y = d.y;
+            if (RightUpperLegFinalFall1.z) rightUpperLeg.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenrightUpperLeg.to(RightUpperLegFinalFall1, MOVING_FALL);
+            tweenrightUpperLeg.start();
+        })
+        .repeat(1)
+        .yoyo(true)
+
+
     tweenrightUpperLeg.start();
 
     //BONES
     let bones = skeleton.bones[0];
     let BonesInit = { x: bones.rotation.x, y: bones.rotation.y, z: bones.rotation.z };
-    
 
-    let tweenBones= new TWEEN.Tween(BonesInit)
-        .to(BonesFinal,  MOVING_FALL)
+
+    let tweenBones = new TWEEN.Tween(BonesInit)
+        .to(BonesFinal, MOVING_FALL)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-           
+
             if (BonesFinal.x) bones.rotation.x = d.x;
             if (BonesFinal.y) bones.rotation.y = d.y;
             if (BonesFinal.z) bones.rotation.z = d.z;
         })
         .onComplete(() => {
-            tweenBones.to(BonesFinal,MOVING_FALL);
+            tweenBones.to(BonesFinal, MOVING_FALL);
             tweenBones.start();
         })
-        
-        tweenBones.start();
+
+    tweenBones.start();
 
     let bonesPos = skeleton.bones[0];
     let BonesPosInit = { x: bonesPos.position.x, y: bonesPos.position.y, z: bonesPos.position.z };
-    
 
-    let tweenBonesPos= new TWEEN.Tween(BonesPosInit)
-        .to(BonesFinalPos,  MOVING_FALL+1000)
+    let tweenBonesPos = new TWEEN.Tween(BonesPosInit)
+        .to(BonesFinalPos, MOVING_FALL + 1000)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            
-            if (BonesFinalPos.x)  bonesPos.position.x = d.x;
-            if (BonesFinalPos.y)  bonesPos.position.y = d.y;
-            if (BonesFinalPos.z)  bonesPos.position.z = d.z;
+
+            if (BonesFinalPos.x) bonesPos.position.x = d.x;
+            if (BonesFinalPos.y) bonesPos.position.y = d.y;
+            if (BonesFinalPos.z) bonesPos.position.z = d.z;
         })
         .onComplete(() => {
             tweenBonesPos.to(BonesFinalPos, MOVING_FALL);
             tweenBonesPos.start();
         })
-        
-        tweenBonesPos.start();
 
-        //Torso
-       let Torso = skeleton.bones[0].children[0];
-        let TorsoInit = { x: Torso.rotation.x, y: Torso.rotation.y, z: Torso.rotation.z };
-    
+    tweenBonesPos.start();
 
-        let tweenTorso = new TWEEN.Tween(TorsoInit)
-        .to(TorsoFinalFall, 4500)
+    //shoulder
+    let shoulder = skeleton.bones[0].children[0];
+    let ShoulderInit = { x: shoulder.rotation.x, y: shoulder.rotation.y, z: shoulder.rotation.z };
+
+    let tweenShoulder = new TWEEN.Tween(ShoulderInit)
+        .to(ShoulderFinalFall, 4500)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            if (TorsoFinalFall.x) Torso.rotation.x = d.x;
-            if (TorsoFinalFall.y) Torso.rotation.y = d.y;
-            if (TorsoFinalFall.z) Torso.rotation.z = d.z;
+            if (ShoulderFinalFall.x) shoulder.rotation.x = d.x;
+            if (ShoulderFinalFall.y) shoulder.rotation.y = d.y;
+            if (ShoulderFinalFall.z) shoulder.rotation.z = d.z;
         })
         .onComplete(() => {
-            tweenTorso.to(TorsoFinal, MOVING_FALL);
-            tweenTorso.start();
+            tweenShoulder.to(SHOULDER_FINAL, MOVING_FALL);
+            tweenShoulder.start();
         }).delay(5700)
-        
-            
-        tweenTorso.start();
-        
 
 
-         //left upper arm
-         let LeftUpperArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0];
-         let LeftUpperArmInit = { x: LeftUpperArm.rotation.x, y: LeftUpperArm.rotation.y, z: LeftUpperArm.rotation.z };
-     
- 
-         let tweenLeftUpperArm = new TWEEN.Tween(LeftUpperArmInit)
-         .to(LeftUpperArmFinalFall, MOVING_FALL)
-         .easing(TWEEN.Easing.Sinusoidal.In)
-         .onUpdate((d) => {
-             if (LeftUpperArmFinalFall.x) LeftUpperArm.rotation.x = d.x;
-             if (LeftUpperArmFinalFall.y) LeftUpperArm.rotation.y = d.y;
-             if (LeftUpperArmFinalFall.z) LeftUpperArm.rotation.z = d.z;
-         })
-         .onComplete(() => {
-             tweenLeftUpperArm.to(TorsoFinalFall,MOVING_FALL);
-             tweenLeftUpperArm.start();
-         }).delay(5700)
-         
-             
-         tweenLeftUpperArm.start();
+    tweenShoulder.start();
 
-         //left lower arm
-         let LeftLowerArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0];
-         let LeftLowerArmInit = { x: LeftLowerArm.rotation.x, y: LeftLowerArm.rotation.y, z: LeftLowerArm.rotation.z };
-     
- 
-         let tweenLeftLowerArm = new TWEEN.Tween(LeftLowerArmInit)
-         .to(LeftLowerArmFinalFall, MOVING_FALL)
-         .easing(TWEEN.Easing.Sinusoidal.In)
-         .onUpdate((d) => {
-             if (LeftLowerArmFinalFall.x) LeftLowerArm.rotation.x = d.x;
-             if (LeftLowerArmFinalFall.y) LeftLowerArm.rotation.y = d.y;
-             if (LeftLowerArmFinalFall.z) LeftLowerArm.rotation.z = d.z;
-         })
-         .onComplete(() => {
-            tweenLeftLowerArm.to(LeftLowerArmFinalFall,MOVING_FALL);
+    //left upper arm
+    let LeftUpperArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0];
+    let LeftUpperArmInit = { x: LeftUpperArm.rotation.x, y: LeftUpperArm.rotation.y, z: LeftUpperArm.rotation.z };
+
+    let tweenLeftUpperArm = new TWEEN.Tween(LeftUpperArmInit)
+        .to(LeftUpperArmFinalFall, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (LeftUpperArmFinalFall.x) LeftUpperArm.rotation.x = d.x;
+            if (LeftUpperArmFinalFall.y) LeftUpperArm.rotation.y = d.y;
+            if (LeftUpperArmFinalFall.z) LeftUpperArm.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenLeftUpperArm.to(ShoulderFinalFall, MOVING_FALL);
+            tweenLeftUpperArm.start();
+        }).delay(5700)
+
+
+    tweenLeftUpperArm.start();
+
+    //left lower arm
+    let LeftLowerArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0];
+    let LeftLowerArmInit = { x: LeftLowerArm.rotation.x, y: LeftLowerArm.rotation.y, z: LeftLowerArm.rotation.z };
+
+    let tweenLeftLowerArm = new TWEEN.Tween(LeftLowerArmInit)
+        .to(LeftLowerArmFinalFall, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (LeftLowerArmFinalFall.x) LeftLowerArm.rotation.x = d.x;
+            if (LeftLowerArmFinalFall.y) LeftLowerArm.rotation.y = d.y;
+            if (LeftLowerArmFinalFall.z) LeftLowerArm.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenLeftLowerArm.to(LeftLowerArmFinalFall, MOVING_FALL);
             tweenLeftLowerArm.start();
-         }).delay(5700)
-         
-             
-         tweenLeftLowerArm.start();
+        }).delay(5700)
 
-           //leftUpperleg
-           let tweenleftUpperLeg2 = new TWEEN.Tween(leftUpperLegInit)
-           .to(LeftUpperLegFinalFall, MOVING_FALL)
-           .easing(TWEEN.Easing.Sinusoidal.In)
-           .onUpdate((d) => {
-               if (LeftUpperLegFinalFall.x) leftUpperLeg.rotation.x = d.x;
-               if (LeftUpperLegFinalFall.y) leftUpperLeg.rotation.y = d.y;
-               if (LeftUpperLegFinalFall.z) leftUpperLeg.rotation.z = d.z;
-           })
-           .onComplete(() => {
-            tweenleftUpperLeg2.to(LeftUpperLegFinalFall,MOVING_FALL);
+
+    tweenLeftLowerArm.start();
+
+    //leftUpperleg
+    let tweenleftUpperLeg2 = new TWEEN.Tween(leftUpperLegInit)
+        .to(LeftUpperLegFinalFall, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (LeftUpperLegFinalFall.x) leftUpperLeg.rotation.x = d.x;
+            if (LeftUpperLegFinalFall.y) leftUpperLeg.rotation.y = d.y;
+            if (LeftUpperLegFinalFall.z) leftUpperLeg.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenleftUpperLeg2.to(LeftUpperLegFinalFall, MOVING_FALL);
             tweenleftUpperLeg2.start();
-           }).delay(4500)
-           
-               
-           tweenleftUpperLeg2.start();
+        }).delay(4500)
 
-           
 
-           //left Lower Leg
-           let leftLowerLeg = skeleton.bones[0].children[1].children[0];
-           let leftLowerLegInit = { x: leftLowerLeg.rotation.x, y: leftLowerLeg.rotation.y, z: leftLowerLeg.rotation.z };
-       
-   
-           let tweenleftLowerLeg = new TWEEN.Tween(leftLowerLegInit)
-           .to(LowerLegFinalFall, MOVING_FALL)
-           .easing(TWEEN.Easing.Sinusoidal.In)
-           .onUpdate((d) => {
-               if (LowerLegFinalFall.x) leftLowerLeg.rotation.x = d.x;
-               if (LowerLegFinalFall.y) leftLowerLeg.rotation.y = d.y;
-               if (LowerLegFinalFall.z) leftLowerLeg.rotation.z = d.z;
-           })
-           .onComplete(() => {
-            tweenleftLowerLeg.to(LowerLegFinalFall,MOVING_FALL);
+    tweenleftUpperLeg2.start();
+
+    //left Lower Leg
+    let leftLowerLeg = skeleton.bones[0].children[1].children[0];
+    let leftLowerLegInit = { x: leftLowerLeg.rotation.x, y: leftLowerLeg.rotation.y, z: leftLowerLeg.rotation.z };
+
+
+    let tweenleftLowerLeg = new TWEEN.Tween(leftLowerLegInit)
+        .to(LowerLegFinalFall, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (LowerLegFinalFall.x) leftLowerLeg.rotation.x = d.x;
+            if (LowerLegFinalFall.y) leftLowerLeg.rotation.y = d.y;
+            if (LowerLegFinalFall.z) leftLowerLeg.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenleftLowerLeg.to(LowerLegFinalFall, MOVING_FALL);
             tweenleftLowerLeg.start();
-           }).delay(4500)
-           
-               
-           tweenleftLowerLeg.start();
-            
-           //leftFoot
-           let leftFoot = skeleton.bones[0].children[1].children[0].children[0];
-           let leftFootInit = { x: leftFoot.rotation.x, y: leftFoot.rotation.y, z: leftFoot.rotation.z };
-       
-   
-           let tweenleftFoot = new TWEEN.Tween(leftFootInit)
-           .to(leftFootFall, MOVING_FALL)
-           .easing(TWEEN.Easing.Sinusoidal.In)
-           .onUpdate((d) => {
-               if (leftFootFall.x) leftFoot.rotation.x = d.x;
-               if (leftFootFall.y) leftFoot.rotation.y = d.y;
-               if (leftFootFall.z) leftFoot.rotation.z = d.z;
-           })
-           .onComplete(() => {
-            tweenleftFoot.to(leftFootFall,MOVING_FALL);
+        }).delay(4500)
+
+    tweenleftLowerLeg.start();
+
+    //leftFoot
+    let leftFoot = skeleton.bones[0].children[1].children[0].children[0];
+    let leftFootInit = { x: leftFoot.rotation.x, y: leftFoot.rotation.y, z: leftFoot.rotation.z };
+
+    let tweenleftFoot = new TWEEN.Tween(leftFootInit)
+        .to(leftFootFall, MOVING_FALL)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (leftFootFall.x) leftFoot.rotation.x = d.x;
+            if (leftFootFall.y) leftFoot.rotation.y = d.y;
+            if (leftFootFall.z) leftFoot.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenleftFoot.to(leftFootFall, MOVING_FALL);
             tweenleftFoot.start();
-           }).delay(4500)
-           
-               
-           tweenleftFoot.start();
+        }).delay(4500)
 
-         
+    tweenleftFoot.start();
+
 }
 
-function collision(){
-
-    setTimeout(() => Move(), 5000);
-    setTimeout(() => MoveHead(), 15000);
+function collision() {
+    move();
+    moveHead();
 }
 
-function MoveHead(){
+function moveHead() {
 
-    let Head = skeleton.bones[0].children[0].children[0].children[0].children[0];
-    let HeadInit = { x: Head.rotation.x, y: Head.rotation.y, z: Head.rotation.z };
-       
-   
-           let tweenHead = new TWEEN.Tween(HeadInit)
-           .to(HeadFinalFall, 180)
-           .easing(TWEEN.Easing.Sinusoidal.In)
-           .onUpdate((d) => {
-               if (HeadFinalFall.x) Head.rotation.x = d.x;
-               if (HeadFinalFall.y) Head.rotation.y = d.y;
-               if (HeadFinalFall.z) Head.rotation.z = d.z;
-           })
-           .onComplete(() => {
-            tweenHead.to(HeadFinalFall,180)
+    let head = skeleton.bones[0].children[0].children[0].children[0].children[0];
+    let headInit = { x: head.rotation.x, y: head.rotation.y, z: head.rotation.z };
+
+    let tweenHead = new TWEEN.Tween(headInit)
+        .to(HeadFinalFall, 180)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (HeadFinalFall.x) head.rotation.x = d.x;
+            if (HeadFinalFall.y) head.rotation.y = d.y;
+            if (HeadFinalFall.z) head.rotation.z = d.z;
+        })
+        .onComplete(() => {
+            tweenHead.to(HeadFinalFall, 180)
             tweenHead.start();
-           }).repeat(4).yoyo(true);
-           
-         tweenHead.start();
- 
+        }).repeat(4).yoyo(true);
+
+    tweenHead.start();
+
 }
 

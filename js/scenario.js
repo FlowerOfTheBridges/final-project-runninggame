@@ -58,16 +58,14 @@ function createSimpleScenario(scene, anisotropy) {
     }, BUILDING_INTERVAL);
 
     groundInterval = setInterval(() => {
-        rightBarrierTexture.offset.x += 0.99;
-        leftBarrierTexture.offset.x -= 0.99;
-        groundTexture.offset.y -= 0.2;
+        rightBarrierTexture.offset.x += 0.2;
+        leftBarrierTexture.offset.x -= 0.2;
+        groundTexture.offset.y -= 0.4;
     }, WALLS_INTERVAL)
 
-    isScenarioLoaded = true;
 }
 
 function spawnObjects(scene){
-    
     addBuilding(scene, false);
     addBuilding(scene, true);
     let carOffset = randomNumber(-1.2, 1.2);

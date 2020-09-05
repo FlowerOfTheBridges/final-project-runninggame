@@ -4,24 +4,6 @@ const dracoLoader = new THREE.DRACOLoader();
 dracoLoader.setDecoderPath('js/libs/draco/gltf/');
 gltfLoader.setDRACOLoader(dracoLoader);
 
-
-const bodyMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xff0000, metalness: 0.6, roughness: 0.4, clearcoat: 0.05, clearcoatRoughness: 0.05
-});
-const detailsMaterial = new THREE.MeshStandardMaterial({
-    color: 0xffffff, metalness: 1.0, roughness: 0.5
-});
-
-const glassMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff, metalness: 0, roughness: 0.1, transmission: 0.9, transparent: true
-});
-
-const coinMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0xd4af37,
-    metalness: 0.7,
-    roughness: 0.3,
-});
-
 THREE.ImageUtils.crossOrigin = '';
 
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
@@ -36,7 +18,7 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     return lines;
 }
 
-function loadModel(scene, callback) {
+function loadCharacter(scene, runningCallback, collisionCallback) {
 
     gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
@@ -49,11 +31,9 @@ function loadModel(scene, callback) {
 
             if (node.name == 'Armature') {
                 skeleton = new THREE.Skeleton([node.children[0]]);
-                console.log(skeleton, skeleton.bones);
             }
             else if (node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm') {
                 // set character model arms in standard position
-                console.log("shoulder: %o", node);
                 node.rotation.z = node.name == 'mixamorigRightArm' ? 1 : -1;
             }
         });
@@ -73,6 +53,9 @@ function loadModel(scene, callback) {
             if (!other_object.name.includes("coin")) {
                 clearInterval(objectInterval);
                 clearInterval(groundInterval);
+                stopAnimation(runTween);
+                collisionCallback!=null && collisionCallback();
+
                 gameOver = true;
             }
             else {
@@ -90,9 +73,8 @@ function loadModel(scene, callback) {
 
         scene.add(playerBox);
 
-        if (callback != null) {
-            callback();
-        }
+        runningCallback!=null && runningCallback();
+
     }, (gltf) => {
         // called when loading is in progresses
         console.log((gltf.loaded / gltf.total * 100) + '% loaded');
@@ -105,20 +87,20 @@ function loadModel(scene, callback) {
 }
 
 function createCar() {
-    shadow = textureLoader.load('resources/textures/car_shadow.png');
-    gltfLoader.load('resources/models/car.glb', function (gltf) {
+    shadow = textureLoader.load(CAR_SHADOW_URL);
+    gltfLoader.load(CAR_URL, function (gltf) {
 
         defaultCarModel = gltf.scene.children[0];
 
-        defaultCarModel.getObjectByName('body').material = bodyMaterial;
+        defaultCarModel.getObjectByName('body').material = CAR_BODY_MATERIAL;
 
-        defaultCarModel.getObjectByName('rim_fl').material = detailsMaterial;
-        defaultCarModel.getObjectByName('rim_fr').material = detailsMaterial;
-        defaultCarModel.getObjectByName('rim_rr').material = detailsMaterial;
-        defaultCarModel.getObjectByName('rim_rl').material = detailsMaterial;
-        defaultCarModel.getObjectByName('trim').material = detailsMaterial;
+        defaultCarModel.getObjectByName('rim_fl').material = CAR_DETAILS_MATERIAL;
+        defaultCarModel.getObjectByName('rim_fr').material = CAR_DETAILS_MATERIAL;
+        defaultCarModel.getObjectByName('rim_rr').material = CAR_DETAILS_MATERIAL;
+        defaultCarModel.getObjectByName('rim_rl').material = CAR_DETAILS_MATERIAL;
+        defaultCarModel.getObjectByName('trim').material = CAR_DETAILS_MATERIAL;
 
-        defaultCarModel.getObjectByName('glass').material = glassMaterial;
+        defaultCarModel.getObjectByName('glass').material = CAR_GLASS_MATERIAL;
 
 
     }.bind(this));
@@ -144,7 +126,7 @@ function addCar(scene, offset) {
     mesh.renderOrder = 2;
 
     carModel.add(mesh);
-    // add box to card (check collision)
+    // add box to car (collision  check)
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 3, 4.5),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -190,7 +172,7 @@ function createCoin() {
 function addCoin(scene, offset) {
     let coin = new Physijs.BoxMesh(
         cylinderGeometry.clone(),
-        coinMaterial,
+        COIN_MATERIAL,
         OBJ_MASS
     );
 

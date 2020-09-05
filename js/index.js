@@ -34,10 +34,10 @@ function init() {
 
     createCar();
     createCoin();
-    loadModel(scene, run);
-    
+    loadCharacter(scene, run, collision);
+
     scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
-    camera.position.set(0, 2, -4);
+    camera.position.set(0, 2, -6);
 
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -61,7 +61,12 @@ function init() {
     createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
         { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, IS_DEBUG);
 
-
+    document.addEventListener(
+        'keydown',
+        function (ev) {
+            !gameOver && moveCharacter(ev.keyCode);
+        }
+    );
     document.body.appendChild(stats.dom);
 }
 
@@ -79,13 +84,14 @@ function animate() {
         updateCars(time);
         updateCoins(time);
         updateBuildings();
-        TWEEN.update();
     }
+
 
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 
     stats.update();
+    TWEEN.update();
 }
 
 function updateCars(wheelRotation) {
@@ -124,11 +130,32 @@ function updateBuildings() {
             cars.splice(index, 1);
             console.log("building removed! buildings are ", buildings);
         }
-
-        car.wheels.forEach(wheel => {
-            wheel.rotation.x = wheelRotation * Math.PI;
-        });
     })
+}
+
+function moveCharacter(keyCode) {
+    switch (keyCode) {
+        case 37:
+            // Left
+            if (skeleton.bones[0].position.x < GAME_BORDER) {
+
+                skeleton.bones[0].position.x += MOVING_SPEED;
+                playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), 0, 0);
+                camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 2, -6);
+                playerBox.__dirtyPosition = true;
+            }
+            break;
+        case 39:
+            // Right
+            if (skeleton.bones[0].position.x > -GAME_BORDER) {
+
+                playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), 0, 0);
+                playerBox.__dirtyPosition = true;
+                camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 2, -6);
+                skeleton.bones[0].position.x -= MOVING_SPEED;
+            }
+            break;
+    }
 }
 
 init();
