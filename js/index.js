@@ -17,7 +17,7 @@ var isJump = false;
 var round = 0;
 
 const scene = new Physijs.Scene;
-const stats = new Stats();
+const stats = IS_DEBUG ? new Stats() : null;
 const sound = createjs.Sound;
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -83,7 +83,8 @@ function init() {
             !gameOver && moveCharacter(ev.keyCode);
         }
     );
-    document.body.appendChild(stats.dom);
+
+    IS_DEBUG && document.body.appendChild(stats.dom);
 }
 
 function startSoundtrack(event) {
@@ -112,7 +113,7 @@ function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 
-    stats.update();
+    IS_DEBUG && stats.update();
     TWEEN.update();
 }
 
