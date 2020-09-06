@@ -16,8 +16,99 @@
 			background: url(resources/textures/skyline.jpg) no-repeat center center;
 			background-size: cover;
 		}
+
+		.sect-services {
+			background-color: #efefef;
+		}
+
+		.sect-services .col-md-3 {
+			padding: 0;
+		}
+
+		.services-item {
+			position: relative;
+			padding-bottom: 32px;
+			border: 5px #2f1a55 solid;
+			-webkit-transition: -webkit-transform .5s ease;
+			transition: -webkit-transform .5s ease;
+			transition: transform .5s ease;
+			transition: transform .5s ease, -webkit-transform .5s ease;
+			text-align: center;
+			background-color: #FFF;
+		}
+
+		.services-item a.services-item-image {
+			display: block;
+		}
+
+		.services-item:hover {
+			-webkit-box-shadow: rgba(0, 0, 0, 0.35) 0 0 32px;
+			box-shadow: rgba(0, 0, 0, 0.35) 0 0 32px;
+			z-index: 4;
+			-webkit-transform: scale(1.05);
+			-ms-transform: scale(1.05);
+			transform: scale(1.05);
+			border-color: #ffcc00;
+		}
+
+		.services-item:hover a.services-item-image {
+			display: block;
+		}
+
+		.services-item:hover a.services-item-image .fa {
+			opacity: 4;
+		}
+
+		.services-item:hover a.services-item-image::before {
+			opacity: .7;
+		}
+
+		.services-item:hover .services-item-stars {
+			color: #ffcc00;
+		}
+
+		.services-item:hover .services-item-stars .fa {
+			margin: 0 5px;
+		}
+
+		.services-item h4 {
+			font-size: 1.25em;
+			margin-bottom: 10px;
+		}
+
+		.services-item-image {
+			min-height: 190px;
+			background-size: cover;
+			position: relative;
+		}
+
+		.services-item-image .fa {
+			font-size: 30px;
+			color: #fff;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -10px;
+			margin-top: -10px;
+			opacity: 0;
+			-webkit-transition: all .5s ease;
+			transition: all .5s ease;
+		}
+
+		.services-item-image::before {
+			position: absolute;
+			content: ' ';
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background-color: #22133e;
+			opacity: 0;
+			-webkit-transition: all .5s ease;
+			transition: all .5s ease;
+		}
 	</style>
-	<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -27,7 +118,7 @@
 		crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
 		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-		crossorigin="anonymous"></script> -->
+		crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -45,6 +136,75 @@
 	<script src="js/model.js"></script>
 	<script src="js/light.js"></script>
 	<script src="js/index.js"></script>
+	<section class="sect-services" id="menu">
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div class="it-hero-text-wrapper">
+						<span class="it-category"></span>
+						<h1 class="no_toc">DIAG-MAN</h1>
+						<p class="d-none d-lg-block">Make your way through trees, rocks, buildings, cars...and parrotts!
+							Pick a level and start running!</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="row">
+
+				<div class="col-md-6 col-sm-6">
+
+					<div class="services-item">
+						<a href="#" class="services-item-image"
+							style="background-image: url(resources/textures/forest.jpg); ">
+							<i class="fa fa-eye" aria-hidden="true" onclick="start('forest')"></i>
+						</a>
+						<h4>Forest</h4>
+						<a href="#" class="button" onclick="start('forest')">Play!</a>
+					</div>
+
+
+				</div>
+				<div class="col-md-6 col-sm-6">
+					<div class="services-item">
+						<a href="#" class="services-item-image"
+							style="background-image: url(resources/textures/skyline.jpg); ">
+							<i class="fa fa-eye" aria-hidden="true" onclick="start('city')"></i>
+						</a>
+						<h4>City</h4>
+						<a href="#" class="button" onclick="start('city')">Play!</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="it-hero-wrapper it-hero-small-size">
+			<div class="row">
+				<div class="col-6">
+					<div class="it-hero-text-wrapper">
+						<h1 class="no_toc">COMMANDS:</h1>
+						<ul>
+							<li><b>LEFT ARROW:</b> left movement</li>
+							<li><b>RIGHT ARROW:</b> right movement</li>
+							<li><b>UP ARROW:</b> jump</li>
+						</ul>
+
+					</div>
+				</div>
+				<div class="col-6">
+
+					<div class="img-responsive-wrapper">
+						<div class="img-responsive">
+							<div class="img-wrapper"><img src="resources/textures/commands.JPG" title="commands"
+									alt="commands"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card-footer text-muted">
+			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
+		</div>
+	</section>
 </body>
 
 </html>

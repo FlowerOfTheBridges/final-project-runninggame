@@ -3,22 +3,16 @@ Physijs.scripts.ammo = 'ammo.js';
 
 var controls, soundtrack = null;
 var gameOver = false;
-var objectInterval, groundInterval = null;
-var cars = [];
-var coins = [];
-var buildings = [];
-var lamps = [];
-var trees = [];
-var rocks = [];
-var parrotts = [];
-
 var isJump = false;
 
 var round = 0;
+var update = null;
 
 const scene = new Physijs.Scene;
 const stats = IS_DEBUG ? new Stats() : null;
 const sound = createjs.Sound;
+const textureLoader = new THREE.TextureLoader();
+
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 
@@ -48,10 +42,16 @@ function init() {
     createTree();
     createRock();
     createParrott();
+    createTruck();
+
     loadCharacter(scene, run, collision);
 
+}
+
+function start(scenario) {
+    document.getElementById("menu").hidden = true;
     scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
-    camera.position.set(0, 2, -6);
+    camera.position.set(0, CAMERA_Y, CAMERA_Z);
 
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -68,8 +68,28 @@ function init() {
 
     window.addEventListener('resize', onWindowResize, false);
 
-    createCityScenario(scene, renderer.capabilities.getMaxAnisotropy());
-    //createForestScenario(scene, renderer.capabilities.getMaxAnisotropy());
+    
+    switch (scenario) {
+        case 'city':
+            createCityScenario(scene, renderer.capabilities.getMaxAnisotropy());
+            update = function (time) {
+                updateCars(time);
+                updateCoins(time);
+                updateBuildings();
+                updateLamps();
+                updateTrucks();
+            };
+            break;
+        case 'forest':
+            createForestScenario(scene, renderer.capabilities.getMaxAnisotropy());
+            update = function (time) {
+                updateTrees();
+                updateRocks(time);
+                updateParrotts();
+                updateCoins(time);
+            };
+            break;
+    }
 
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
     createPointLigth(0xff4422, 1, [-2, 1, 3], IS_DEBUG);
@@ -85,10 +105,12 @@ function init() {
     );
 
     IS_DEBUG && document.body.appendChild(stats.dom);
+
+    animate();
 }
 
 function startSoundtrack(event) {
-    if(!IS_DEBUG && event.id == "soundtrack"){
+    if (!IS_DEBUG && event.id == "soundtrack") {
         soundtrack = sound.play(event.src);
     }
 }
@@ -100,13 +122,7 @@ function animate() {
 
     if (!gameOver) {
         scene.simulate(); // run physics
-        updateCars(time);
-        updateCoins(time);
-        updateBuildings();
-        updateTrees();
-        updateLamps();
-        updateRocks(time);
-        updateParrotts();
+        update(time);
     }
 
 
@@ -117,103 +133,6 @@ function animate() {
     TWEEN.update();
 }
 
-function updateCars(wheelRotation) {
-    cars.forEach((car, index) => {
-        if (playerBox.position.z - 15 <= car.box.position.z) {
-            car.model.position.z = car.box.position.z;
-            car.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            car.box.getLinearVelocity().x!=0 && car.box.setLinearVelocity(new THREE.Vector3(0, 0, car.box.getLinearVelocity().z));
-        }
-        else {
-            scene.remove(car.model);
-            scene.remove(car.box);
-            cars.splice(index, 1);
-            console.log("car avoided! cars are ", cars);
-        }
-
-        car.wheels.forEach(wheel => {
-            wheel.rotation.x = wheelRotation * Math.PI;
-        });
-    })
-}
-
-function updateCoins(rotationTime) {
-    coins.forEach((coin, index) => {
-        coin.rotation.y = rotationTime * Math.PI;
-        if (playerBox.position.z - 5 >= coin.position.z) {
-            scene.remove(coin);
-            coins.splice(index, 1);
-            console.log("coin missed! coins are ", coins);
-        }
-    })
-}
-
-function updateBuildings() {
-    buildings.forEach((building, index) => {
-        if (playerBox.position.z - 10 >= building.position.z) {
-            scene.remove(building);
-            cars.splice(index, 1);
-            console.log("building removed! buildings are ", buildings);
-        }
-    })
-}
-
-function updateLamps() {
-    lamps.forEach((lamp, index) => {
-        if (playerBox.position.z - 10 >= lamp.model.position.z) {
-            scene.remove(lamp.model);
-            lamps.splice(index, 1);
-            console.log("lamp removed! lamps are ", lamps);
-        }
-        else{
-            lamp.model.position.z = lamp.box.position.z - 0.47;
-        }
-    })
-}
-
-function updateTrees() {
-    trees.forEach((tree, index) => {
-        if (playerBox.position.z - 10 >= tree.model.position.z) {
-            scene.remove(tree.model);
-            trees.splice(index, 1);
-            console.log("tree removed! trees are ", trees);
-        }
-        else{
-            tree.model.position.z = tree.box.position.z - 0.47;
-        }
-    })
-}
-
-function updateRocks(rotation) {
-    rocks.forEach((rock, index) => {
-        if (playerBox.position.z - 15 > rock.position.z) {
-            scene.remove(rock);
-            rocks.splice(index, 1);
-            console.log("rock avoided! rocks are ", rocks);
-        }
-
-        rock.rotation.x = rotation * Math.PI;
-        rock.rotation.y = rotation * Math.PI;
-        
-    })
-}
-
-function updateParrotts() {
-    parrotts.forEach((parrott, index) => {
-        if (playerBox.position.z - 15 <= parrott.box.position.z) {
-            parrott.model.position.z = parrott.box.position.z;
-            parrott.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            parrott.box.getLinearVelocity().x!=0 && parrott.box.setLinearVelocity(new THREE.Vector3(0, 0, parrott.box.getLinearVelocity().z));
-        }
-        else {
-            scene.remove(parrott.model);
-            scene.remove(parrott.box);
-            parrotts.splice(index, 1);
-            console.log("parrott avoided! parrotts are ", parrotts);
-        }
-    })
-}
-
 function moveCharacter(keyCode) {
     switch (keyCode) {
         case 37:
@@ -222,7 +141,7 @@ function moveCharacter(keyCode) {
                 skeleton.bones[0].position.x += MOVING_SPEED;
                 playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), playerBox.position.y, 0);
                 playerBox.__dirtyPosition = true;
-                camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), 2, -6);
+                camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), CAMERA_Y, CAMERA_Z);
             }
             break;
         case 39:
@@ -231,16 +150,15 @@ function moveCharacter(keyCode) {
 
                 playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), playerBox.position.y, 0);
                 playerBox.__dirtyPosition = true;
-                camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), 2, -6);
+                camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), CAMERA_Y, CAMERA_Z);
                 skeleton.bones[0].position.x -= MOVING_SPEED;
             }
             break;
         case 38:
             //up 
-            !isJump && jump();
+            !isJump && jump(camera);
             break;
     }
 }
 
 init();
-animate();

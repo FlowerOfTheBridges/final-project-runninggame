@@ -93,7 +93,7 @@ function moveLegs() {
         .onComplete(() => {
             runTween.leftUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
             runTween.leftUpperLeg.start();
-            
+
             sound.play('footstep');
         })
         .repeat(1)
@@ -531,8 +531,8 @@ function moveHead() {
 
 function jump() {
     isJump = true;
-
     let model = skeleton.bones[0];
+    let initialRotation = camera.rotation.x;
     let playerPosition = { x: model.position.x, y: model.position.y, z: model.position.z };
     let modelWorldPosition = model.getWorldPosition().clone();
     let tweenJump = new TWEEN.Tween(playerPosition)
@@ -540,12 +540,21 @@ function jump() {
         .easing(TWEEN.Easing.Elastic.Out)
         .onUpdate((d) => {
             model.position.set(d.x, d.y, d.z);
-            let boxPosition = model.localToWorld(new THREE.Vector3(d.x, d.y, d.z)).y - modelWorldPosition.y;
+            let worlCoordinates = model.localToWorld(new THREE.Vector3(d.x, d.y, d.z)).y;
+            let boxPosition = worlCoordinates - modelWorldPosition.y;
             playerBox.position.setY(boxPosition);
             playerBox.__dirtyPosition = true;
+            camera.rotation.x = initialRotation - (worlCoordinates / 150);
         })
         .onComplete(() => {
             isJump = false;
+            new TWEEN.Tween(camera.rotation)
+                .to({ x: initialRotation })
+                .easing(TWEEN.Easing.Exponential.Out)
+                .onUpdate((d) => {
+                    camera.rotation.x = d.x;
+                }).start();
+
         }).repeat(1).yoyo(true);
 
     let leftUpperLeg = skeleton.bones[0].children[1];

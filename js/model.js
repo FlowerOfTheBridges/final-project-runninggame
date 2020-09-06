@@ -1,4 +1,4 @@
-var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultParrott = null;
+var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultParrott, defaultTruck = null;
 
 const gltfLoader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
@@ -30,6 +30,11 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
+                console.log(node.material);
+                if (node.material.name != 'Beta_Joints_MAT') {
+                    node.material.color = new THREE.Color('white');
+                    node.material.map = textureLoader.load('resources/textures/diag.jpg');
+                }
             }
 
             if (node.name == 'Armature') {
@@ -226,9 +231,9 @@ function createTree() {
     }.bind(this));
 }
 
-function addTree(scene, isRight) {
+function addTree(scene, isRight, isBorder) {
     let treeModel = defaultTree.clone();
-    treeModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
+    treeModel.position.set((isRight ? -1 : 1) * (isBorder ? 6 : 3), 1, OBJ_DISTANCE);
 
     let treeBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(0.5, 15, 2),
@@ -295,4 +300,64 @@ function addParrott(scene, offset) {
 
     scene.add(parrottBox);
     scene.add(parrottModel);
+}
+
+function createLamp() {
+    gltfLoader.load('resources/models/lamp.gltf', function (gltf) {
+
+        defaultLamp = gltf.scene;
+        defaultLamp.scale.set(1.5, 1.5, 1);
+        defaultLamp.castShadow = true;
+
+    }.bind(this));
+}
+
+function addLamp(scene, isRight) {
+    let lampModel = defaultLamp.clone();
+    lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
+
+    let lampBox = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(0.1, 5, 1),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        OBJ_MASS
+    );
+
+    lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
+    lamps.push({ box: lampBox, model: lampModel });
+
+    scene.add(lampModel);
+    scene.add(lampBox);
+}
+
+function createTruck() {
+    gltfLoader.load('resources/models/CesiumMilkTruck.gltf', function (gltf) {
+
+        defaultTruck = gltf.scene;
+        defaultTruck.castShadow = true;
+
+    }.bind(this));
+}
+
+function addTruck(scene) {
+    let truckModel = defaultTruck.clone();
+    truckModel.scale.set(0.8, 0.7, 0.7);
+    truckModel.position.set(2, 0, OBJ_DISTANCE);
+
+    let truckModel2 = defaultTruck.clone();
+    truckModel2.scale.set(0.8, 0.7, 0.7);
+    truckModel2.position.set(-2, 0, OBJ_DISTANCE);
+    truckModel2.rotation.y = Math.PI;
+
+    let truckBox = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(7, 3.7, 1),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        OBJ_MASS
+    );
+
+    truckBox.position.set(0, 0, OBJ_DISTANCE);
+    trucks.push({ box: truckBox, model: truckModel, model2: truckModel2 });
+
+    scene.add(truckModel);
+    scene.add(truckModel2);
+    scene.add(truckBox);
 }
