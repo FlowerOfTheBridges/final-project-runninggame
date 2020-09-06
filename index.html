@@ -159,7 +159,8 @@
 							style="background-image: url(resources/textures/forest.jpg); ">
 							<i class="fa fa-eye" aria-hidden="true" onclick="start('forest')"></i>
 						</a>
-						<h4>Forest</h4>
+						<h3>Forest</h3>
+						<h4><b>High Score:</b><p id="forestHighScore">0</p></h4>
 						<a href="#" class="button" onclick="start('forest')">Play!</a>
 					</div>
 
@@ -171,7 +172,8 @@
 							style="background-image: url(resources/textures/skyline.jpg); ">
 							<i class="fa fa-eye" aria-hidden="true" onclick="start('city')"></i>
 						</a>
-						<h4>City</h4>
+						<h3>City</h3>
+						<h4><b>High Score:</b><p id="cityHighScore">0</p></h4>
 						<a href="#" class="button" onclick="start('city')">Play!</a>
 					</div>
 				</div>
@@ -205,6 +207,33 @@
 			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
 		</div>
 	</section>
+	
+  <!--Modal: modalConfirmDelete-->
+  <div class="modal fade" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
+	<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+	  <!--Content-->
+	  <div class="modal-content text-center">
+		<!--Header-->
+		<div class="modal-header d-flex justify-content-center">
+		  <p class="heading">GAME OVER</p>
+		</div>
+  
+		<!--Body-->
+		<div class="modal-body">
+  
+		  <p>You have collected <b id="gameOverCoins"></b> coins. <b id="newRecord"></b></p> 
+  
+		  <p>Do you want to try again?</p>
+		</div>
+  
+		<!--Footer-->
+		<div class="modal-footer flex-center">
+		  <a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">OK</a>
+		</div>
+	  </div>
+	  <!--/.Content-->
+	</div>
+  </div>
 </body>
 
 </html>

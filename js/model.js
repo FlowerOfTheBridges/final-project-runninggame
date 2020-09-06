@@ -56,31 +56,8 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
             0
         );
         playerBox.position.set(0, 0.9, 0);
-        playerBox.addEventListener('collision', function (other_object, relative_velocity, relative_rotation, contact_normal) {
-
-            console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, other_object, relative_velocity, relative_rotation, contact_normal);
-            if (!other_object.name.includes("coin")) {
-                sound.play('hit');
-                clearInterval(objectInterval);
-                clearInterval(groundInterval);
-                stopAnimation(runTween);
-                collisionCallback != null && collisionCallback();
-                sound.play('scream');
-                gameOver = true;
-                soundtrack.stop();
-            }
-            else {
-                sound.play('money');
-                coins.some((coin, index) => {
-                    if (coin.name == other_object.name) {
-                        scene.remove(coin);
-                        coins.splice(index, 1);
-                        console.log("coin missed! coins are ", coins);
-                        return true;
-                    }
-                });
-                console.log("coin removed. coins now are: ", coins);
-            }
+        playerBox.addEventListener('collision', function (otherObject, relativeVelocity, relativeRotation, contactNormal) {
+            collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal);
         });
 
         scene.add(playerBox);
@@ -142,7 +119,7 @@ function addCar(scene, offset) {
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 2, 4.5),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
-        OBJ_MASS
+        OBJ_MASS / 10
     );
 
     carBox.position.set(offset, 0, OBJ_DISTANCE);
