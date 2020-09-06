@@ -93,6 +93,8 @@ function moveLegs() {
         .onComplete(() => {
             runTween.leftUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
             runTween.leftUpperLeg.start();
+            
+            sound.play('footstep');
         })
         .repeat(1)
         .yoyo(true);
@@ -118,6 +120,7 @@ function moveLegs() {
     runTween.leftUpperLeg.onComplete(() => {
         runTween.rightUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
         runTween.rightUpperLeg.start();
+        sound.play('footstep');
     })
 
     runTween.leftLeg.onComplete(() => {
@@ -506,7 +509,6 @@ function collision() {
 }
 
 function moveHead() {
-
     let head = skeleton.bones[0].children[0].children[0].children[0].children[0];
     let headInit = { x: head.rotation.x, y: head.rotation.y, z: head.rotation.z };
 
@@ -527,3 +529,59 @@ function moveHead() {
 
 }
 
+function jump() {
+    isJump = true;
+
+    let model = skeleton.bones[0];
+    let playerPosition = { x: model.position.x, y: model.position.y, z: model.position.z };
+    let modelWorldPosition = model.getWorldPosition().clone();
+    let tweenJump = new TWEEN.Tween(playerPosition)
+        .to({ y: playerPosition.y + 180 }, 800)
+        .easing(TWEEN.Easing.Elastic.Out)
+        .onUpdate((d) => {
+            model.position.set(d.x, d.y, d.z);
+            let boxPosition = model.localToWorld(new THREE.Vector3(d.x, d.y, d.z)).y - modelWorldPosition.y;
+            playerBox.position.setY(boxPosition);
+            playerBox.__dirtyPosition = true;
+        })
+        .onComplete(() => {
+            isJump = false;
+        }).repeat(1).yoyo(true);
+
+    let leftUpperLeg = skeleton.bones[0].children[1];
+    let leftUpperLegInit = { x: leftUpperLeg.rotation.x, y: leftUpperLeg.rotation.y, z: leftUpperLeg.rotation.z };
+
+    let leftLegTween = new TWEEN.Tween(leftUpperLegInit)
+        .to({ x: -1.5 }, 500)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (UPPER_LEG_FINAL.x) leftUpperLeg.rotation.x = d.x;
+            if (UPPER_LEG_FINAL.y) leftUpperLeg.rotation.y = d.y;
+            if (UPPER_LEG_FINAL.z) leftUpperLeg.rotation.z = d.z;
+        })
+        .repeat(1)
+        .yoyo(true);
+
+    let rightUpperLeg = skeleton.bones[0].children[2];
+    let rightUpperLegInit = { x: rightUpperLeg.rotation.x, y: rightUpperLeg.rotation.y, z: rightUpperLeg.rotation.z };
+
+    let rightLegTween = new TWEEN.Tween(rightUpperLegInit)
+        .to({ x: 1.0 }, 500)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            if (UPPER_LEG_FINAL.x) rightUpperLeg.rotation.x = d.x;
+            if (UPPER_LEG_FINAL.y) rightUpperLeg.rotation.y = d.y;
+            if (UPPER_LEG_FINAL.z) rightUpperLeg.rotation.z = d.z;
+        })
+        .repeat(1)
+        .yoyo(true);
+
+
+    runTween.leftLeg.stop();
+    runTween.rightLeg.stop();
+    sound.play('jump');
+    tweenJump.start();
+    leftLegTween.start();
+    rightLegTween.start();
+
+}

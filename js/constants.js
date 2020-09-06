@@ -53,13 +53,13 @@ const COIN_MATERIAL = new THREE.MeshPhysicalMaterial({
 const BOX_OPACITY = 0.01;
 const OBJ_DISTANCE = 55;
 /** GAME SETTINGS */
-const Z_SPEED = -6;
+const Z_SPEED = -4;
 const OBJ_MASS = 500000;
-const GAME_BORDER = 340;
+const GAME_BORDER = 300;
 
-const BUILDING_INTERVAL = 5000;
-const CAR_INTERVAL = 2500;
-const COINS_INTERVALS = [1000, 2500, 4000];
+const BUILDING_INTERVAL = 7000;
+const CAR_INTERVAL = 2400;
+const COINS_INTERVALS = [1000, 3600, 4800];
 const WALLS_INTERVAL = 60;
 
 const IS_DEBUG = false; // set to true to enable helpers and collision boxes

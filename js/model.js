@@ -1,3 +1,5 @@
+var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultParrott = null;
+
 const gltfLoader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
 
@@ -17,6 +19,7 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     });
     return lines;
 }
+
 
 function loadCharacter(scene, runningCallback, collisionCallback) {
 
@@ -43,22 +46,26 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         scene.add(model);
 
         playerBox = new Physijs.BoxMesh(
-            new THREE.CubeGeometry(0.5, 3, 0.5),
+            new THREE.CubeGeometry(0.5, 1.5, 0.5),
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
             0
         );
+        playerBox.position.set(0, 0.9, 0);
         playerBox.addEventListener('collision', function (other_object, relative_velocity, relative_rotation, contact_normal) {
-            
+
             console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, other_object, relative_velocity, relative_rotation, contact_normal);
             if (!other_object.name.includes("coin")) {
+                sound.play('hit');
                 clearInterval(objectInterval);
                 clearInterval(groundInterval);
                 stopAnimation(runTween);
-                collisionCallback!=null && collisionCallback();
-
+                collisionCallback != null && collisionCallback();
+                sound.play('scream');
                 gameOver = true;
+                soundtrack.stop();
             }
             else {
+                sound.play('money');
                 coins.some((coin, index) => {
                     if (coin.name == other_object.name) {
                         scene.remove(coin);
@@ -73,7 +80,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
         scene.add(playerBox);
 
-        runningCallback!=null && runningCallback();
+        runningCallback != null && runningCallback();
 
     }, (gltf) => {
         // called when loading is in progresses
@@ -128,7 +135,7 @@ function addCar(scene, offset) {
     carModel.add(mesh);
     // add box to car (collision  check)
     let carBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(1, 3, 4.5),
+        new THREE.CubeGeometry(1, 2, 4.5),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
@@ -177,9 +184,115 @@ function addCoin(scene, offset) {
     );
 
     coin.castShadow = true;
-    let distance = OBJ_DISTANCE;
-    coin.position.set(offset, 1, distance);
+    coin.position.set(offset, 1, OBJ_DISTANCE);
     coin.name = "coin_" + Date.now();
     coins.push(coin);
     scene.add(coin);
+}
+
+function createLamp() {
+    gltfLoader.load('resources/models/lamp.gltf', function (gltf) {
+
+        defaultLamp = gltf.scene;
+        defaultLamp.scale.set(1.5, 1.5, 1);
+        defaultLamp.castShadow = true;
+
+    }.bind(this));
+}
+
+function addLamp(scene, isRight) {
+    let lampModel = defaultLamp.clone();
+    lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
+
+    let lampBox = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(0.1, 5, 1),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        OBJ_MASS
+    );
+
+    lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
+    lamps.push({ box: lampBox, model: lampModel });
+
+    scene.add(lampModel);
+    scene.add(lampBox);
+}
+
+function createTree() {
+    gltfLoader.load('resources/models/tree.glb', function (gltf) {
+
+        defaultTree = gltf.scene;
+        defaultTree.castShadow = true;
+
+    }.bind(this));
+}
+
+function addTree(scene, isRight) {
+    let treeModel = defaultTree.clone();
+    treeModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
+
+    let treeBox = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(0.5, 15, 2),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        OBJ_MASS
+    );
+
+    treeBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
+    trees.push({ box: treeBox, model: treeModel });
+
+    scene.add(treeModel);
+    scene.add(treeBox);
+}
+
+function createRock() {
+
+    rockGeometry = new THREE.IcosahedronBufferGeometry(1, 1);
+
+    rockGeometry.rotateX(Math.PI / 2);
+
+}
+
+function addRock(scene, isRight) {
+    let rockMesh = new THREE.MeshPhysicalMaterial({
+        map: textureLoader.load('resources/textures/rock.jpg'),
+        roughness: 1.0,
+        reflectivity: 0
+    });
+    let rock = new Physijs.BoxMesh(
+        rockGeometry.clone(),
+        rockMesh,
+        OBJ_MASS
+    );
+    rock.castShadow = true;
+    rock.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
+
+    rocks.push(rock);
+    scene.add(rock);
+}
+
+function createParrott() {
+    gltfLoader.load('resources/models/parrott.glb', function (gltf) {
+        defaultParrott = gltf.scene;
+        defaultParrott.castShadow = true;
+    }.bind(this));
+}
+
+function addParrott(scene, offset) {
+    let parrottModel = defaultParrott.clone();
+    parrottModel.scale.set(0.03, 0.03, 0.03);
+    parrottModel.rotation.y = Math.PI;
+    parrottModel.position.set(offset, 0.5, OBJ_DISTANCE);
+
+    // add box to car (collision  check)
+    let parrottBox = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(2, 2, 4.5),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        OBJ_MASS
+    );
+
+    parrottBox.position.set(offset, 0, OBJ_DISTANCE);
+
+    parrotts.push({ box: parrottBox, model: parrottModel });
+
+    scene.add(parrottBox);
+    scene.add(parrottModel);
 }

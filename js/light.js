@@ -52,12 +52,11 @@ function createHemiLight(color, intensity, position, scene) {
     scene.add(hemiLight);
 }
 
-function createSpotLight(scene, position, helperOn) {
+function createSpotLight(scene, position) {
 
     let spotLight = new THREE.SpotLight('yellow');
     spotLight.position.set(position.x, position.y, position.z);
-    spotLight.shadowCameraVisible = true;
-	spotLight.shadowDarkness = 0.95;
+
 	spotLight.intensity = 2;
 	// must enable shadow casting ability for the light
     spotLight.castShadow = true;
@@ -71,9 +70,5 @@ function createSpotLight(scene, position, helperOn) {
 
     scene.add(spotLight);
 
-    if (helperOn) {
-        let helper = new THREE.SpotLightHelper(spotLight);
-        scene.add(helper);
-    }
     return spotLight;
 }
