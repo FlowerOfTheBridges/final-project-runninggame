@@ -1,4 +1,4 @@
-var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultParrott, defaultTruck = null;
+var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultTruck = null;
 
 const gltfLoader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
@@ -30,7 +30,6 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
-                console.log(node.material);
                 if (node.material.name != 'Beta_Joints_MAT') {
                     node.material.color = new THREE.Color('white');
                     node.material.map = textureLoader.load('resources/textures/diag.jpg');
@@ -46,7 +45,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
             }
         });
 
-        IS_DEBUG && console.log(dumpObject(model).join('\n'));
+        IS_DEBUG && console.log("CHARACTER:\n" + dumpObject(model).join('\n'));
 
         scene.add(model);
 
@@ -66,7 +65,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
     }, (gltf) => {
         // called when loading is in progresses
-        console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
 
     }, (error) => {
         // called when loading has errors
@@ -91,13 +90,15 @@ function createCar() {
 
         defaultCarModel.getObjectByName('glass').material = CAR_GLASS_MATERIAL;
 
-
+        IS_DEBUG && console.log("CAR:\n" + dumpObject(defaultCarModel).join('\n'));
     }.bind(this));
 
 }
 
 function addCar(scene, offset) {
+    let id = Date.now();
     let carModel = defaultCarModel.clone();
+    carModel.name = 'car_' + id + "_model";
     carModel.scale.set(0.6, 1, 1);
 
     carModel.position.x = offset;
@@ -122,6 +123,7 @@ function addCar(scene, offset) {
         OBJ_MASS / 10
     );
 
+    carBox.name = "car_" + id;
     carBox.position.set(offset, 0, OBJ_DISTANCE);
 
     let wheels = [];
@@ -172,38 +174,13 @@ function addCoin(scene, offset) {
     scene.add(coin);
 }
 
-function createLamp() {
-    gltfLoader.load('resources/models/lamp.gltf', function (gltf) {
-
-        defaultLamp = gltf.scene;
-        defaultLamp.scale.set(1.5, 1.5, 1);
-        defaultLamp.castShadow = true;
-
-    }.bind(this));
-}
-
-function addLamp(scene, isRight) {
-    let lampModel = defaultLamp.clone();
-    lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
-
-    let lampBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(0.1, 5, 1),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
-        OBJ_MASS
-    );
-
-    lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
-    lamps.push({ box: lampBox, model: lampModel });
-
-    scene.add(lampModel);
-    scene.add(lampBox);
-}
-
 function createTree() {
     gltfLoader.load('resources/models/tree.glb', function (gltf) {
 
         defaultTree = gltf.scene;
         defaultTree.castShadow = true;
+
+        IS_DEBUG && console.log("TREE:\n" + dumpObject(defaultTree).join('\n'));
 
     }.bind(this));
 }
@@ -251,32 +228,31 @@ function addRock(scene, isRight) {
     scene.add(rock);
 }
 
-function createParrott() {
-    gltfLoader.load('resources/models/parrott.glb', function (gltf) {
-        defaultParrott = gltf.scene;
-        defaultParrott.castShadow = true;
+function addGazelle(scene, offset) {
+
+    gltfLoader.load('resources/models/gazelle.glb', function (gltf) {
+        let gazelleModel = gltf.scene;
+        gazelleModel.scale.set(3, 1, 2);
+        gazelleModel.castShadow = true;
+        gazelleModel.rotation.y = Math.PI / 2;
+        gazelleModel.position.set(offset, 0, OBJ_DISTANCE);
+        IS_DEBUG && console.log("GAZELLE:\n" + dumpObject(gazelleModel).join('\n'));
+        // add box to gazelle (collision  check)
+        let gazelleBox = new Physijs.BoxMesh(
+            new THREE.CubeGeometry(0.8, 2.4, 4),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+            OBJ_MASS
+        );
+
+        gazelleBox.position.set(offset, 0, OBJ_DISTANCE);
+
+        let gazelleTweens = moveGazelle(gazelleModel);
+        gazelles.push({ box: gazelleBox, model: gazelleModel, tweens: gazelleTweens });
+
+        scene.add(gazelleBox);
+        scene.add(gazelleModel);
     }.bind(this));
-}
 
-function addParrott(scene, offset) {
-    let parrottModel = defaultParrott.clone();
-    parrottModel.scale.set(0.03, 0.03, 0.03);
-    parrottModel.rotation.y = Math.PI;
-    parrottModel.position.set(offset, 0.5, OBJ_DISTANCE);
-
-    // add box to car (collision  check)
-    let parrottBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(2, 2, 4.5),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
-        OBJ_MASS
-    );
-
-    parrottBox.position.set(offset, 0, OBJ_DISTANCE);
-
-    parrotts.push({ box: parrottBox, model: parrottModel });
-
-    scene.add(parrottBox);
-    scene.add(parrottModel);
 }
 
 function createLamp() {
@@ -285,12 +261,15 @@ function createLamp() {
         defaultLamp = gltf.scene;
         defaultLamp.scale.set(1.5, 1.5, 1);
         defaultLamp.castShadow = true;
-
+        IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultLamp).join('\n'));
     }.bind(this));
 }
 
 function addLamp(scene, isRight) {
+    let id = Date.now();
+
     let lampModel = defaultLamp.clone();
+    lampModel.name = "lamp_" + id + "_model";
     lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
     let lampBox = new Physijs.BoxMesh(
@@ -298,7 +277,7 @@ function addLamp(scene, isRight) {
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
-
+    lampBox.name = "lamp_" + id;
     lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
     lamps.push({ box: lampBox, model: lampModel });
 
@@ -311,7 +290,7 @@ function createTruck() {
 
         defaultTruck = gltf.scene;
         defaultTruck.castShadow = true;
-
+        IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultTruck).join('\n'));
     }.bind(this));
 }
 

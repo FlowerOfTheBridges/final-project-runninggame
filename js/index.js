@@ -47,7 +47,6 @@ function init() {
     createLamp();
     createTree();
     createRock();
-    createParrott();
     createTruck();
 }
 
@@ -60,7 +59,6 @@ function getHighScores() {
         }
 
         if (highScores['city'] != null) {
-            console.log(document.getElementById("cityHighScore"), highScores);
             document.getElementById("cityHighScore").innerHTML = highScores['city'];
         }
     }
@@ -127,7 +125,7 @@ function start(scenario) {
             update = function (time) {
                 updateTrees();
                 updateRocks(time);
-                updateParrotts();
+                updateGazelles();
                 updateCoins(time);
             };
             break;
@@ -173,7 +171,6 @@ function animate() {
         update(time);
     }
 
-
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
 
@@ -196,7 +193,7 @@ function showGameOver() {
         highScores[currentScenario] = score;
         sessionStorage.setItem('highScores', JSON.stringify(highScores));
     }
-    $("#gameOverModal").modal();
+    //$("#gameOverModal").modal();
 }
 function moveCharacter(keyCode) {
     switch (keyCode) {
@@ -236,6 +233,12 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
         stopAnimation(runTween);
         collision();
         sound.play('scream');
+        if(otherObject.name.includes("car")){
+            carCollision(scene.getObjectByName(otherObject.name+"_model"));
+        }
+        if(otherObject.name.includes("lamp")){
+            lampCollision(scene.getObjectByName(otherObject.name+"_model"));
+        }
         gameOver = true;
         soundtrack.stop();
         !IS_DEBUG && showGameOver();

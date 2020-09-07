@@ -5,7 +5,7 @@ var buildings = [];
 var lamps = [];
 var trees = [];
 var rocks = [];
-var parrotts = [];
+var gazelles = [];
 var trucks = [];
 
 function createCityScenario(scene, anisotropy) {
@@ -153,14 +153,14 @@ function spawnCityObjects(scene) {
 function spawnForestObjects(scene) {
     addTree(scene, round % 2 == 0, false);
     addRock(scene, round % 2 != 0);
-    setTimeout(() => addParrott(scene, 0), 6400);
+    setTimeout(() => addGazelle(scene, 0), 6400);
     setTimeout(() => addRock(scene, round % 2 == 0), 3000);
-    let parrottOffset = randomNumber(-1.2, 1.2);
-    setTimeout(() => addParrott(scene, parrottOffset), CAR_INTERVAL);
+    let gazelleOffset = randomNumber(-1.2, 1.2);
+    setTimeout(() => addGazelle(scene, gazelleOffset), CAR_INTERVAL);
     round >= 4 && setTimeout(() => addCoin(scene, round % 2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
-    let coinOffset = parrottOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
+    let coinOffset = gazelleOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => addCoin(scene, coinOffset), COINS_INTERVALS[0]);
-    setTimeout(() => { addCoin(scene, round % 2 != 0 ? 3 : -3); addParrott(scene, coinOffset); }, COINS_INTERVALS[2]);
+    setTimeout(() => { addCoin(scene, round % 2 != 0 ? 3 : -3); addGazelle(scene, coinOffset); }, COINS_INTERVALS[2]);
 }
 
 function updateCars(wheelRotation) {
@@ -256,18 +256,18 @@ function updateRocks(rotation) {
     })
 }
 
-function updateParrotts() {
-    parrotts.forEach((parrott, index) => {
-        if (playerBox.position.z - 15 <= parrott.box.position.z) {
-            parrott.model.position.z = parrott.box.position.z;
-            parrott.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            parrott.box.getLinearVelocity().x!=0 && parrott.box.setLinearVelocity(new THREE.Vector3(0, 0, parrott.box.getLinearVelocity().z));
+function updateGazelles() {
+    gazelles.forEach((gazelle, index) => {
+        if (playerBox.position.z - 15 <= gazelle.box.position.z) {
+            gazelle.model.position.z = gazelle.box.position.z;
+            gazelle.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+            gazelle.box.getLinearVelocity().x!=0 && gazelle.box.setLinearVelocity(new THREE.Vector3(0, 0, gazelle.box.getLinearVelocity().z));
         }
         else {
-            scene.remove(parrott.model);
-            scene.remove(parrott.box);
-            parrotts.splice(index, 1);
-            console.log("parrott avoided! parrotts are ", parrotts);
+            scene.remove(gazelle.model);
+            scene.remove(gazelle.box);
+            gazelles.splice(index, 1);
+            console.log("gazelle avoided! gazelles are ", gazelles);
         }
     })
 }
