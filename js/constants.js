@@ -15,7 +15,7 @@ const SHOULDER_FINAL = { y: -0.3, x: -0.3 };
 const FOOT_FINAL = { x: 1.5 };
 //fall 
 const BONES_FINISH_FALL = -1.57;
-const SHOULDER_FINISH_FALL = 2.00;
+const SHOULDER_FINISH_FALL = 1.00;
 const LEFTUPPERARM_FINISH_FALL = -1.50;
 const LEFTLOWERARM_FINISH_FALL = -2.3;
 const LEFTUPPERLEG_FINISH_FALLX = -0.9;
@@ -27,6 +27,8 @@ const BONES_POS_FALLY = 20;
 const BONES_POS_FALLZ = -130;
 const LEFTFOOT_FINISH_FALL = 1.0;
 const HEAD_FINISH_FALL = 0.5;
+const RIGHTLOWERARM_FINISH_FALL = 1.57;
+const RIGHTUPPERARM_FINISH_FALL =  1.00;
 /** MODELS */
 // model file 
 const CHARACTER_URL = 'resources/models/character.glb';
