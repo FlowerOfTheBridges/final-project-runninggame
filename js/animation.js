@@ -30,6 +30,8 @@ var runTween = {
     rightShoulder: null
 }
 
+var  gazelleTweens = [];
+
 function stopAnimation(animationTween) {
     if (Array.isArray(animationTween)) {
         animationTween.forEach(tween => {
@@ -749,7 +751,7 @@ function lampCollision(lamp) {
 }
 
 function moveGazelle(gazelle) {
-    let gazelleTweens = [];
+    
     console.log("gazelle %o", gazelle);
     //this array contains legs of the gazelle, the animation is done within the moveGazelleLegs function
     let legs = [];

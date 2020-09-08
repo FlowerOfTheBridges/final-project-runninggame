@@ -231,6 +231,8 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
         clearInterval(objectInterval);
         clearInterval(groundInterval);
         stopAnimation(runTween);
+        stopAnimation(gazelleTweens);
+
         collision();
         sound.play('scream');
         if(otherObject.name.includes("car")){
