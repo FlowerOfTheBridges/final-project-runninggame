@@ -4,7 +4,8 @@
 const RUNNING_SPEED = 180;
 const MOVING_SPEED = 20;
 const MOVING_TORSO = 180;
-const MOVING_FALL = 2000;
+const MOVING_FALL = 1000;
+const MOVING_GAZELLE = 500;
 //run
 const UPPER_LEG_FINAL = { x: -1.0 };
 const LEG_FINAL = { x: 1.0 };

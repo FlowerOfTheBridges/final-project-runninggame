@@ -379,7 +379,7 @@ function move() {
     let BonesPosInit = { x: bonesPos.position.x, y: bonesPos.position.y, z: bonesPos.position.z };
 
     let tweenBonesPos = new TWEEN.Tween(BonesPosInit)
-        .to(BonesFinalPos, MOVING_FALL + 1000)
+        .to(BonesFinalPos, MOVING_FALL)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
 
@@ -399,7 +399,7 @@ function move() {
     let ShoulderInit = { x: shoulder.rotation.x, y: shoulder.rotation.y, z: shoulder.rotation.z };
 
     let tweenShoulder = new TWEEN.Tween(ShoulderInit)
-        .to(ShoulderFinalFall, 4500)
+        .to(ShoulderFinalFall, MOVING_FALL)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
             if (ShoulderFinalFall.x) shoulder.rotation.x = d.x;
@@ -409,7 +409,7 @@ function move() {
         .onComplete(() => {
             tweenShoulder.to(SHOULDER_FINAL, MOVING_FALL);
             tweenShoulder.start();
-        }).delay(5700)
+        }).delay(2500)
 
 
     tweenShoulder.start();
@@ -429,7 +429,7 @@ function move() {
         .onComplete(() => {
             tweenLeftUpperArm.to(ShoulderFinalFall, MOVING_FALL);
             tweenLeftUpperArm.start();
-        }).delay(5700)
+        }).delay(2700)
 
 
     tweenLeftUpperArm.start();
@@ -449,7 +449,7 @@ function move() {
         .onComplete(() => {
             tweenLeftLowerArm.to(LeftLowerArmFinalFall, MOVING_FALL);
             tweenLeftLowerArm.start();
-        }).delay(5700)
+        }).delay(2700)
 
 
     tweenLeftLowerArm.start();
@@ -469,7 +469,7 @@ function move() {
         .onComplete(() => {
             tweenRightUpperArm.to(RightUpperArmFinalFall, MOVING_FALL);
             tweenRightUpperArm.start();
-        }).delay(7700)
+        }).delay(2700)
 
 
     tweenRightUpperArm.start();
@@ -489,7 +489,7 @@ function move() {
         .onComplete(() => {
             tweenRightLowerArm.to(RightLowerArmFinalFall, MOVING_FALL);
             tweenRightLowerArm.start();
-        }).delay(7700)
+        }).delay(2700)
 
 
     tweenRightLowerArm.start();
@@ -506,7 +506,7 @@ function move() {
         .onComplete(() => {
             tweenleftUpperLeg2.to(LeftUpperLegFinalFall, MOVING_FALL);
             tweenleftUpperLeg2.start();
-        }).delay(4500)
+        }).delay(2500)
 
 
     tweenleftUpperLeg2.start();
@@ -527,7 +527,7 @@ function move() {
         .onComplete(() => {
             tweenleftLowerLeg.to(LowerLegFinalFall, MOVING_FALL);
             tweenleftLowerLeg.start();
-        }).delay(4500)
+        }).delay(2500)
 
     tweenleftLowerLeg.start();
 
@@ -546,7 +546,7 @@ function move() {
         .onComplete(() => {
             tweenleftFoot.to(leftFootFall, MOVING_FALL);
             tweenleftFoot.start();
-        }).delay(4500)
+        }).delay(2500)
 
     tweenleftFoot.start();
 
@@ -557,7 +557,7 @@ function collision() {
 
     PositionSetCollision();
     move();
-    setTimeout(() => moveHead(), 10000);
+    setTimeout(() => moveHead(), 4000);
 }
 
 function moveHead() {
@@ -753,6 +753,7 @@ function moveGazelle(gazelle) {
     console.log("gazelle %o", gazelle);
     //this array contains legs of the gazelle, the animation is done within the moveGazelleLegs function
     let legs = [];
+    
     // each leg has two children
     legs.push(gazelle.getObjectByName('Bone015')); // back left leg
     legs.push(gazelle.getObjectByName('Bone021')); // back right leg
@@ -767,7 +768,7 @@ function moveGazelle(gazelle) {
         .repeat(Infinity)
         .yoyo(true)
         .start();
-
+       
 
     gazelleTweens.push(oscillationTween);
     moveGazelleLegs(legs, gazelleTweens);
@@ -776,8 +777,102 @@ function moveGazelle(gazelle) {
 
 function moveGazelleLegs(legs, gazelleTweens) {
     legs.forEach((leg, index) => {
-        let legTween = null;
-        //leg tween goes here
-        gazelleTweens.push(legTween);
+       
+       switch (index){
+           
+        case 0:
+                legsUpperLeftBackInit = {y: 0.7}
+                let legUpperLeftBackTween=new TWEEN.Tween(legsUpperLeftBackInit)
+                .to({ y: leg.rotation.y }, MOVING_GAZELLE)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate((d) => {
+                    leg.rotation.y = d.y;
+                })
+                 .repeat(Infinity)
+                 .yoyo(true)
+                 .start();
+            
+            gazelleTweens.push(legUpperLeftBackTween)    
+            break;
+            
+            //Back Right Leg
+            case 1:
+                legsUpperBackInit={y:leg.rotation.y}
+                let legUpperBackTween=new TWEEN.Tween(legsUpperBackInit)
+                .to({ y: 0.7 }, MOVING_GAZELLE)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate((d) => {
+                    leg.rotation.y = d.y;
+                })
+                 .repeat(Infinity)
+                 .yoyo(true)
+                 .start();
+            
+            gazelleTweens.push(legUpperBackTween)    
+            break;
+
+            case 2:
+                legUpperFrontLeftInit = { y: leg.rotation.y };
+                legLowerFrontLeftInit = { x: -0.6}
+                
+                let legUpperFrontLeftTween = new TWEEN.Tween( legUpperFrontLeftInit)
+                    .to({ y: -0.7 }, MOVING_GAZELLE)
+                    .easing(TWEEN.Easing.Sinusoidal.In)
+                    .onUpdate((d) => {
+                        leg.rotation.y = d.y;
+                    })
+                     .repeat(Infinity)
+                     .yoyo(true)
+                     .start();
+    
+                let legLowerFrontLeftTween=new TWEEN.Tween(legLowerFrontLeftInit)
+                    .to({ x: 0.0 }, MOVING_GAZELLE)
+                    .easing(TWEEN.Easing.Sinusoidal.In)
+                    .onUpdate((d) => {
+                        leg.children[0].rotation.x = d.x;
+                    })
+                     .repeat(Infinity)
+                     .yoyo(true)
+                     .start();
+
+                gazelleTweens.push(legUpperFrontLeftTween)
+                gazelleTweens.push(legLowerFrontLeftTween)    
+            break;
+            
+            
+            case 3:
+
+                legUpperFrontRightInit={y:-0.7};
+                legLowerFrontRightInit={x:leg.children[0].rotation.x}
+
+            let legUpperFrontRightTween=new TWEEN.Tween(legUpperFrontRightInit)
+                .to({ y: 0.0 }, MOVING_GAZELLE)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate((d) => {
+                    leg.rotation.y = d.y;
+                })
+                 .repeat(Infinity)
+                 .yoyo(true)
+                 .start();
+
+                 let  legLowerFrontRightTween=new TWEEN.Tween(legLowerFrontRightInit)
+                .to({ x: -0.6 }, MOVING_GAZELLE)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate((d) => {
+                    leg.children[0].rotation.x = d.x;
+                })
+                 .repeat(Infinity)
+                 .yoyo(true)
+                 .start();
+
+             gazelleTweens.push(legUpperFrontRightTween)
+             gazelleTweens.push(legLowerFrontRightTween)    
+            break;
+             
+        }
+       
+       
+       
+       
     });
 }
