@@ -128,7 +128,6 @@
 	<script src="js/libs/OrbitControls.js"></script>
 	<script src="js/libs/Tween.js"></script>
 	<script src="js/libs/physi.js"></script>
-	<script src="js/libs/SPE.min.js"></script>
 	<script src="js/libs/soundjs.min.js"></script>
 	<script src="js/libs/stats.min.js"></script>
 	<script src="js/constants.js"></script>
@@ -161,21 +160,47 @@
 							<i class="fa fa-eye" aria-hidden="true" onclick="start('forest')"></i>
 						</a>
 						<h3>Forest</h3>
-						<h4><b>High Score:</b><p id="forestHighScore">0</p></h4>
-						<a href="#" class="button" onclick="start('forest')">Play!</a>
+						<h4><b>High Score:</b>
+							<p id="forestHighScore"></p>
+						</h4>
+						<div>
+							<div class="form-check form-check-inline">
+								<input type="radio" name="forestRadio" id="forestDay" value="morning" checked="true"/>
+								<label for="forestDay">Morning</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input type="radio" name="forestRadio" id="forestSunset" value="sunset" />
+								<label for="forestSunset">Sunset</label>
+								</label>
+							</div>
+						</div>
+						<br />
+						<a href="#" class="button" onclick="start('forest')"><b>Play!</b></a>
+
 					</div>
-
-
 				</div>
 				<div class="col-md-6 col-sm-6">
 					<div class="services-item">
-						<a href="#" class="services-item-image"
+						<a href="#" class="services-item-image" id="cityImage"
 							style="background-image: url(resources/textures/skyline.jpg); ">
 							<i class="fa fa-eye" aria-hidden="true" onclick="start('city')"></i>
 						</a>
 						<h3>City</h3>
-						<h4><b>High Score:</b><p id="cityHighScore">0</p></h4>
-						<a href="#" class="button" onclick="start('city')">Play!</a>
+						<h4><b>High Score:</b>
+							<p id="cityHighScore"></p>
+						</h4>
+						<div>
+							<div class="form-check form-check-inline">
+								<input type="radio" name="cityRadio" id="cityDay" value="morning" checked/>
+								<label for="cityDay">Morning</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input type="radio" name="cityRadio" id="citySunset" value="sunset" />
+								<label for="citySunset">Sunset</label>
+							</div>
+						</div>
+						<br />
+						<a href="#" class="button" onclick="start('city')"><b>Play!</b></a>
 					</div>
 				</div>
 			</div>
@@ -208,33 +233,31 @@
 			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
 		</div>
 	</section>
-	
-  <!--Modal: modalConfirmDelete-->
-  <div class="modal fade" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
-	<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
-	  <!--Content-->
-	  <div class="modal-content text-center">
-		<!--Header-->
-		<div class="modal-header d-flex justify-content-center">
-		  <p class="heading">GAME OVER</p>
+
+	<!-- GAME OVER MODAL -->
+	<div class="modal fade" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
+		<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+			<!--Content-->
+			<div class="modal-content text-center">
+				<!--Header-->
+				<div class="modal-header d-flex justify-content-center">
+					<p class="heading">GAME OVER</p>
+				</div>
+
+				<!--Body-->
+				<div class="modal-body">
+					<p>You have collected <b id="gameOverCoins"></b> coins. </p>
+					<b id="newRecord"></b>
+				</div>
+
+				<!--Footer-->
+				<div class="modal-footer flex-center">
+					<a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">OK</a>
+				</div>
+			</div>
+			<!--/.Content-->
 		</div>
-  
-		<!--Body-->
-		<div class="modal-body">
-  
-		  <p>You have collected <b id="gameOverCoins"></b> coins. <b id="newRecord"></b></p> 
-  
-		  <p>Do you want to try again?</p>
-		</div>
-  
-		<!--Footer-->
-		<div class="modal-footer flex-center">
-		  <a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">OK</a>
-		</div>
-	  </div>
-	  <!--/.Content-->
 	</div>
-  </div>
 </body>
 
 </html>

@@ -32,7 +32,14 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
                 node.castShadow = true;
                 if (node.material.name != 'Beta_Joints_MAT') {
                     node.material.color = new THREE.Color('white');
-                    node.material.map = textureLoader.load('resources/textures/diag.jpg');
+                    let texture = textureLoader.load('resources/textures/diag.jpg');
+                    texture.wrapS = THREE.RepeatWrapping;
+                    texture.wrapT = THREE.ClampToEdgeWrapping;
+                    texture.repeat.set(3, 3);
+                    node.material.map = texture;
+                    node.material.map.encoding = THREE.sRGBEncoding;
+                    node.material.map.flipY = false;
+                    node.material.needsUpdate = true;
                 }
             }
 
@@ -69,7 +76,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
     }, (error) => {
         // called when loading has errors
-        console.log('An error happened: %o', error);
+        IS_DEBUG && console.log('An error happened: %o', error);
 
     });
 }
@@ -91,6 +98,12 @@ function createCar() {
         defaultCarModel.getObjectByName('glass').material = CAR_GLASS_MATERIAL;
 
         IS_DEBUG && console.log("CAR:\n" + dumpObject(defaultCarModel).join('\n'));
+
+        defaultCarModel.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+            }
+        });
     }.bind(this));
 
 }
@@ -104,18 +117,18 @@ function addCar(scene, offset) {
     carModel.position.x = offset;
     carModel.position.z = OBJ_DISTANCE;
 
-
     // shadow
-    let mesh = new Physijs.Mesh(
-        new THREE.PlaneBufferGeometry(0.655 * 4, 1.3 * 4),
-        new THREE.MeshBasicMaterial({
-            map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
-        })
-    );
-    mesh.rotation.x = - Math.PI / 2;
-    mesh.renderOrder = 2;
-
-    carModel.add(mesh);
+    // let mesh = new Physijs.Mesh(
+    //     new THREE.PlaneBufferGeometry(0.655 * 4, 1.3 * 4),
+    //     new THREE.MeshBasicMaterial({
+    //         map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
+    //     })
+    // );
+    // mesh.rotation.x = - Math.PI / 2;
+    // mesh.position.z-=0.8;
+    // mesh.position.y=0.3;
+    // mesh.renderOrder = 2;
+    // carModel.add(mesh);
     // add box to car (collision  check)
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 2, 4.5),
@@ -179,22 +192,29 @@ function createTree() {
 
         defaultTree = gltf.scene;
         defaultTree.castShadow = true;
+        defaultTree.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+            }
+        });
 
         IS_DEBUG && console.log("TREE:\n" + dumpObject(defaultTree).join('\n'));
 
     }.bind(this));
 }
 
-function addTree(scene, isRight, isBorder) {
+function addTree(scene, isRight) {
+    let id = Date.now()
     let treeModel = defaultTree.clone();
-    treeModel.position.set((isRight ? -1 : 1) * (isBorder ? 6 : 3), 1, OBJ_DISTANCE);
+    treeModel.name = "tree_" + id + "_model";
+    treeModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
     let treeBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(0.5, 15, 2),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
-
+    treeBox.name = "tree_" + id;
     treeBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
     trees.push({ box: treeBox, model: treeModel });
 
@@ -203,11 +223,8 @@ function addTree(scene, isRight, isBorder) {
 }
 
 function createRock() {
-
     rockGeometry = new THREE.IcosahedronBufferGeometry(1, 1);
-
     rockGeometry.rotateX(Math.PI / 2);
-
 }
 
 function addRock(scene, isRight) {
@@ -219,8 +236,9 @@ function addRock(scene, isRight) {
     let rock = new Physijs.BoxMesh(
         rockGeometry.clone(),
         rockMesh,
-        OBJ_MASS
+        OBJ_MASS / 10
     );
+
     rock.castShadow = true;
     rock.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
@@ -231,19 +249,27 @@ function addRock(scene, isRight) {
 function addGazelle(scene, offset) {
 
     gltfLoader.load('resources/models/gazelle.glb', function (gltf) {
+        let id = Date.now();
+
         let gazelleModel = gltf.scene;
+        gazelleModel.name = "gazelle_"+id+"_model";
         gazelleModel.scale.set(3, 1, 2);
         gazelleModel.castShadow = true;
         gazelleModel.rotation.y = Math.PI / 2;
         gazelleModel.position.set(offset, 0, OBJ_DISTANCE);
         IS_DEBUG && console.log("GAZELLE:\n" + dumpObject(gazelleModel).join('\n'));
         // add box to gazelle (collision  check)
+        gazelleModel.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+            }
+        });
         let gazelleBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.8, 2.4, 4),
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
-            OBJ_MASS
+            OBJ_MASS / 10
         );
-
+        gazelleBox.name = "gazelle_"+id;
         gazelleBox.position.set(offset, 0, OBJ_DISTANCE);
 
         let gazelleTweens = moveGazelle(gazelleModel);
@@ -259,8 +285,14 @@ function createLamp() {
     gltfLoader.load('resources/models/lamp.gltf', function (gltf) {
 
         defaultLamp = gltf.scene;
-        defaultLamp.scale.set(1.5, 1.5, 1);
+        defaultLamp.scale.set(1.5, 1.8, 1);
         defaultLamp.castShadow = true;
+
+        defaultLamp.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+            }
+        });
         IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultLamp).join('\n'));
     }.bind(this));
 }
@@ -273,8 +305,8 @@ function addLamp(scene, isRight) {
     lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
     let lampBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(0.1, 5, 1),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        new THREE.CubeGeometry(0.2, 15, 1),
+        new THREE.MeshBasicMaterial({ color: 'white', transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
     lampBox.name = "lamp_" + id;
@@ -290,7 +322,12 @@ function createTruck() {
 
         defaultTruck = gltf.scene;
         defaultTruck.castShadow = true;
-        IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultTruck).join('\n'));
+        defaultTruck.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+            }
+        });
+        IS_DEBUG && console.log("TRUCK:\n" + dumpObject(defaultTruck).join('\n'));
     }.bind(this));
 }
 
@@ -316,4 +353,19 @@ function addTruck(scene) {
     scene.add(truckModel);
     scene.add(truckModel2);
     scene.add(truckBox);
+}
+
+function addRockWall(scene) {
+    let rockWall = new Physijs.BoxMesh(
+        new THREE.CubeGeometry(10, 3.7, 1),
+        new THREE.MeshBasicMaterial({
+            map: textureLoader.load('resources/textures/rock.jpg')
+        }),
+        OBJ_MASS
+    );
+    rockWalls.castShadow = true;
+    rockWall.position.set(0, 0, OBJ_DISTANCE);
+    rockWalls.push(rockWall);
+
+    scene.add(rockWall);
 }

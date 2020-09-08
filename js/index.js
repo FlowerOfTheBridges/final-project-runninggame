@@ -33,7 +33,7 @@ function onWindowResize() {
 
 }
 
-function init() {
+function loadSounds(){
     sound.addEventListener("fileload", startSoundtrack);
     sound.registerSound("resources/audio/soundtrack.ogg", 'soundtrack');
     sound.registerSound("resources/audio/money.ogg", 'money');
@@ -41,6 +41,15 @@ function init() {
     sound.registerSound("resources/audio/scream.ogg", 'scream');
     sound.registerSound("resources/audio/footstep.ogg", 'footstep');
     sound.registerSound("resources/audio/jump.ogg", 'jump');
+    sound.registerSound("resources/audio/tree.ogg", 'tree');
+    sound.registerSound("resources/audio/car_crash.ogg", 'car_crash');
+    sound.registerSound("resources/audio/lamp.ogg", 'lamp');
+    sound.registerSound("resources/audio/gazelle.ogg", 'gazelle');
+
+}
+
+function init() {
+    loadSounds();
 
     createCar();
     createCoin();
@@ -54,13 +63,12 @@ function getHighScores() {
     let highScores = JSON.parse(sessionStorage.getItem("highScores"));
 
     if (highScores != null) {
-        if (highScores['forest'] != null) {
-            document.getElementById("forestHighScore").innerHTML = highScores['forest'];
-        }
-
-        if (highScores['city'] != null) {
-            document.getElementById("cityHighScore").innerHTML = highScores['city'];
-        }
+        document.getElementById("forestHighScore").innerHTML = highScores['forest'] != null ? highScores['forest'] : 0;
+        document.getElementById("cityHighScore").innerHTML = highScores['city'] != null ? highScores['city'] : 0;
+    }
+    else{
+        document.getElementById("forestHighScore").innerHTML = 0;
+        document.getElementById("cityHighScore").innerHTML = 0;
     }
 }
 
@@ -69,6 +77,13 @@ function start(scenario) {
     gameOver = false;
     document.getElementById("menu").hidden = true;
 
+    let dayTime = null;
+    let dayTimesRadio = document.getElementsByName(scenario+'Radio');
+    for(radio in dayTimesRadio){
+        if(dayTimesRadio[radio].checked){
+            dayTime = dayTimesRadio[radio].value;
+        }
+    }
 
     loadCharacter(scene, run, collisionCallback);
 
@@ -111,7 +126,7 @@ function start(scenario) {
 
     switch (scenario) {
         case 'city':
-            createCityScenario(scene, renderer.capabilities.getMaxAnisotropy());
+            createCityScenario(scene, dayTime, renderer.capabilities.getMaxAnisotropy());
             update = function (time) {
                 updateCars(time);
                 updateCoins(time);
@@ -121,8 +136,9 @@ function start(scenario) {
             };
             break;
         case 'forest':
-            createForestScenario(scene, renderer.capabilities.getMaxAnisotropy());
+            createForestScenario(scene, dayTime, renderer.capabilities.getMaxAnisotropy());
             update = function (time) {
+                updateRockWalls();
                 updateTrees();
                 updateRocks(time);
                 updateGazelles();
@@ -134,10 +150,10 @@ function start(scenario) {
     currentScenario = scenario;
 
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
-    createPointLigth(0xff4422, 1, [-2, 1, 3], IS_DEBUG);
-    createPointLigth(0xff4422, 1, [2, 1, 3], IS_DEBUG);
-    createDirectionalLigth(0xFFFFFF, 1, [0, 10, 10],
-        { cast: true, top: 2, bottom: -2, left: -2, right: 2, near: 0.1, far: 40 }, scene, IS_DEBUG);
+    createPointLigth(0xff4422, 0.5, [-2, 1, 3], IS_DEBUG);
+    createPointLigth(0xff4422, 0.5, [2, 1, 3], IS_DEBUG);
+    createDirectionalLigth(0xFFFFFF, dayTime == 'morning' ? 0.85 : 2, new THREE.Vector3(0, 5, dayTime == 'morning' ? -10 : 40),
+        { cast: true, top: 30, bottom: -30, left: -10, right: 10, near: 1, far: 1000, fov: 100 }, scene, IS_DEBUG);
 
     document.addEventListener(
         'keydown',
@@ -156,7 +172,7 @@ function restart() {
 }
 
 function startSoundtrack(event) {
-    if (!IS_DEBUG && event.id == "soundtrack") {
+    if (event.id == "soundtrack") {
         soundtrack = sound.play(event.src);
     }
 }
@@ -165,7 +181,7 @@ function startSoundtrack(event) {
 function animate() {
 
     let time = - performance.now() / 1000;
-
+    
     if (!gameOver) {
         scene.simulate(); // run physics
         update(time);
@@ -179,13 +195,16 @@ function animate() {
 }
 
 function showGameOver() {
-    document.getElementById('gameOverCoins').innerHTML = score;
-
+    let isHighScore = false;
     let highScores = JSON.parse(sessionStorage.getItem("highScores"));
     if (highScores != null) {
-        if (highScores[currentScenario] != null && score > highScores[currentScenario]) {
+        if(highScores[currentScenario] == null){
+            highScores[currentScenario] = 0;
+        }
+        if (score > highScores[currentScenario]) {
             highScores[currentScenario] = score;
             sessionStorage.setItem('highScores', JSON.stringify(highScores));
+            isHighScore = true;
         }
     }
     else {
@@ -193,7 +212,13 @@ function showGameOver() {
         highScores[currentScenario] = score;
         sessionStorage.setItem('highScores', JSON.stringify(highScores));
     }
-    //$("#gameOverModal").modal();
+    setTimeout(() => {
+        $("#gameOverModal").modal(); 
+        document.getElementById('gameOverCoins').innerHTML = score;
+        if(isHighScore){
+            document.getElementById("newRecord").innerHTML = "New Record!";
+        }
+    }, 5000);
 }
 function moveCharacter(keyCode) {
     switch (keyCode) {
@@ -225,21 +250,34 @@ function moveCharacter(keyCode) {
 
 function collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal) {
 
-    console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, otherObject, relativeVelocity, relativeRotation, contactNormal);
+    IS_DEBUG && console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, otherObject, relativeVelocity, relativeRotation, contactNormal);
     if (!otherObject.name.includes("coin")) {
         sound.play('hit');
         clearInterval(objectInterval);
         clearInterval(groundInterval);
         stopAnimation(runTween);
-        stopAnimation(gazelleTweens);
-
         collision();
         sound.play('scream');
+        if(currentScenario == 'forest'){
+            gazelles.forEach(gazelle => {
+                stopAnimation(gazelle.tweens);
+            })
+        }
         if(otherObject.name.includes("car")){
             carCollision(scene.getObjectByName(otherObject.name+"_model"));
+            sound.play('car_crash');
         }
-        if(otherObject.name.includes("lamp")){
+        else if(otherObject.name.includes("lamp")){
             lampCollision(scene.getObjectByName(otherObject.name+"_model"));
+            sound.play('lamp');
+        }
+        else if(otherObject.name.includes("tree")){
+            treeCollision(scene.getObjectByName(otherObject.name+"_model"));
+            sound.play('tree');
+        }
+        else if(otherObject.name.includes("gazelle")){
+            gazelleCollision(scene.getObjectByName(otherObject.name+"_model"));
+            sound.play('gazelle');
         }
         gameOver = true;
         soundtrack.stop();

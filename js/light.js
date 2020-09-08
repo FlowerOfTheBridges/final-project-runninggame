@@ -1,16 +1,8 @@
-function positionCheck(position) {
-    if (!Array.isArray(position) && position.length != 3) {
-        throw 'position must be an array with three numerical values';
-    }
-}
-
 function createDirectionalLigth(color, intensity, position, shadow, scene, helperOn) {
-
-    positionCheck(position);
 
     let dirLight = new THREE.DirectionalLight(color, intensity);
 
-    dirLight.position.set(position[0], position[1], position[2]);
+    dirLight.position.set(position.x, position.y, position.z);
     if (shadow.cast) {
         dirLight.castShadow = true;
         dirLight.shadow.camera.top = shadow.top || 0;
@@ -18,7 +10,8 @@ function createDirectionalLigth(color, intensity, position, shadow, scene, helpe
         dirLight.shadow.camera.left = shadow.left || 0;
         dirLight.shadow.camera.right = shadow.right || 0;
         dirLight.shadow.camera.near = shadow.near || 0;
-        dirLight.shadow.camera.far = shadow.far;
+        dirLight.shadow.camera.far = shadow.far || 0;
+        dirLight.shadow.camera.fov = shadow.fov || 0;
     }
     scene.add(dirLight);
 
@@ -30,8 +23,6 @@ function createDirectionalLigth(color, intensity, position, shadow, scene, helpe
 }
 
 function createPointLigth(color, intensity, position, helperOn) {
-
-    positionCheck(position);
 
     let pointLight = new THREE.PointLight(color, intensity);
     pointLight.position.set(position[0], position[1], position[2])
@@ -45,7 +36,6 @@ function createPointLigth(color, intensity, position, helperOn) {
 }
 
 function createHemiLight(color, intensity, position, scene) {
-    positionCheck(position);
 
     let hemiLight = new THREE.HemisphereLight(color, intensity); // 0xffffff, 0x444444
     hemiLight.position.set(position[0], position[1], position[2]); // [0, 20, 0]

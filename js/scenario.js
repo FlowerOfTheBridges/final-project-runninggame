@@ -7,10 +7,11 @@ var trees = [];
 var rocks = [];
 var gazelles = [];
 var trucks = [];
+var rockWalls = [];
 
-function createCityScenario(scene, anisotropy) {
+function createCityScenario(scene, dayTime, anisotropy) {
 
-    scene.background = textureLoader.load('resources/textures/skyline.jpg')//new THREE.Color(0xa0a0a0);
+    scene.background = textureLoader.load('resources/textures/skyline'+(dayTime == 'morning' ? '_day.jpg' : '.jpg'))//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
 
     let groundTexture = textureLoader.load('resources/textures/street.jpg');
@@ -30,7 +31,8 @@ function createCityScenario(scene, anisotropy) {
         0
     );
     leftBarrier.position.set(5, 1, 0);
-    leftBarrier.castShadow = false;
+    leftBarrier.castShadow = true;
+    leftBarrier.receiveShadow = true;
 
     let rightBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     rightBarrierTexture.anisotropy = anisotropy;
@@ -43,7 +45,8 @@ function createCityScenario(scene, anisotropy) {
         0
     );
     rightBarrier.position.set(-5, 1, 0);
-    rightBarrier.castShadow = false;
+    rightBarrier.castShadow = true;
+    rightBarrier.receiveShadow = true;
 
     scene.add(leftBarrier);
     scene.add(rightBarrier);
@@ -62,8 +65,8 @@ function createCityScenario(scene, anisotropy) {
     objectInterval = setInterval(() => {
         spawnCityObjects(scene);
         round++;
-        console.log("round is ", round);
-    }, BUILDING_INTERVAL);
+        IS_DEBUG && console.log("round ", round);
+    }, OUTER_OBSTACLES_INTERVAL);
 
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += WALLS_SPEED;
@@ -73,8 +76,8 @@ function createCityScenario(scene, anisotropy) {
 
 }
 
-function createForestScenario(scene, anisotropy) {
-    scene.background = textureLoader.load('resources/textures/forest.jpg')//new THREE.Color(0xa0a0a0);
+function createForestScenario(scene, dayTime, anisotropy) {
+    scene.background = textureLoader.load('resources/textures/forest'+(dayTime == 'morning' ? '_day.jpg' : '.jpg'));//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
 
     let groundTexture = textureLoader.load('resources/textures/rocks.jpg');
@@ -94,7 +97,8 @@ function createForestScenario(scene, anisotropy) {
         0
     );
     leftBarrier.position.set(10, 1, 0);
-    leftBarrier.castShadow = false;
+    leftBarrier.castShadow = true;
+    leftBarrier.receiveShadow = true;
 
     let rightBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
     rightBarrierTexture.anisotropy = anisotropy;
@@ -107,7 +111,8 @@ function createForestScenario(scene, anisotropy) {
         0
     );
     rightBarrier.position.set(-10, 1, 0);
-    rightBarrier.castShadow = false;
+    rightBarrier.castShadow = true;
+    rightBarrier.receiveShadow = true;
 
     scene.add(leftBarrier);
     scene.add(rightBarrier);
@@ -126,12 +131,12 @@ function createForestScenario(scene, anisotropy) {
     objectInterval = setInterval(() => {
         spawnForestObjects(scene);
         round++;
-        console.log("round is ", round);
-    }, BUILDING_INTERVAL);
+        IS_DEBUG && console.log("round is ", round);
+    }, OUTER_OBSTACLES_INTERVAL);
 
     groundInterval = setInterval(() => {
-        rightBarrierTexture.offset.x -= WALLS_SPEED;
-        leftBarrierTexture.offset.x += WALLS_SPEED;
+        rightBarrierTexture.offset.x -= WALLS_SPEED / 2;
+        leftBarrierTexture.offset.x += WALLS_SPEED / 2;
         groundTexture.offset.y -= GROUND_SPEED;
     }, WALLS_INTERVAL)
 }
@@ -140,27 +145,29 @@ function createForestScenario(scene, anisotropy) {
 function spawnCityObjects(scene) {
     addBuilding(scene, round % 2 == 0);
     addLamp(scene, round % 2 != 0);
-    setTimeout(() => {/**addCar(scene, 0);*/ addBuilding(scene, round % 2 != 0);}, 6000);
+    setTimeout(() => {/**addCar(scene, 0);*/ addBuilding(scene, round % 2 != 0); }, OUTER_OBSTACLES_INTERVAL - 1000);
     let carOffset = randomNumber(-1.2, 1.2);
-    setTimeout(() => addCar(scene, carOffset), CAR_INTERVAL);
+    setTimeout(() => addCar(scene, carOffset), INNER_OBSTACLES_INTERVAL);
     round >= 4 && setTimeout(() => addCoin(scene, round % 2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
     let coinOffset = carOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => addCoin(scene, coinOffset), COINS_INTERVALS[0]);;
-    setTimeout(() => {addTruck(scene)}, 4000);
+    setTimeout(() => { addTruck(scene) }, WALL_OBASTACLES_INTERVAL);
+    coinOffset = coinOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => { addCoin(scene, round % 2 == 0 ? 3 : -3); addLamp(scene, round % 2 == 0); addCar(scene, coinOffset); }, COINS_INTERVALS[2]);
 }
 
 function spawnForestObjects(scene) {
-    addTree(scene, round % 2 == 0, false);
+    addTree(scene, round % 2 == 0);
     addRock(scene, round % 2 != 0);
-    setTimeout(() => addGazelle(scene, 0), 6400);
-    setTimeout(() => addRock(scene, round % 2 == 0), 3000);
+    setTimeout(() => addTree(scene, round % 2 != 0), OUTER_OBSTACLES_INTERVAL - 1000);
     let gazelleOffset = randomNumber(-1.2, 1.2);
-    setTimeout(() => addGazelle(scene, gazelleOffset), CAR_INTERVAL);
+    setTimeout(() => addGazelle(scene, gazelleOffset), INNER_OBSTACLES_INTERVAL);
     round >= 4 && setTimeout(() => addCoin(scene, round % 2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
     let coinOffset = gazelleOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => addCoin(scene, coinOffset), COINS_INTERVALS[0]);
-    setTimeout(() => { addCoin(scene, round % 2 != 0 ? 3 : -3); addGazelle(scene, coinOffset); }, COINS_INTERVALS[2]);
+    setTimeout(() => addRockWall(scene), WALL_OBASTACLES_INTERVAL);
+    coinOffset = coinOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
+    setTimeout(() => { addCoin(scene, round % 2 != 0 ? 3 : -3); addRock(scene, round % 2 == 0); addGazelle(scene, coinOffset); }, COINS_INTERVALS[2]);
 }
 
 function updateCars(wheelRotation) {
@@ -168,10 +175,11 @@ function updateCars(wheelRotation) {
         if (playerBox.position.z - 15 <= car.box.position.z) {
             car.model.position.z = car.box.position.z;
             car.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            car.box.getLinearVelocity().x!=0 && car.box.setLinearVelocity(new THREE.Vector3(0, 0, car.box.getLinearVelocity().z));
+            car.box.getLinearVelocity().x != 0 && car.box.setLinearVelocity(new THREE.Vector3(0, 0, car.box.getLinearVelocity().z));
         }
         else {
             scene.remove(car.model);
+            car.box.geometry.dispose();
             scene.remove(car.box);
             cars.splice(index, 1);
             console.log("car avoided! cars are ", cars);
@@ -187,13 +195,14 @@ function updateCoins(rotationTime) {
     coins.forEach((coin, index) => {
         coin.rotation.y = rotationTime * Math.PI;
         if (playerBox.position.z - 5 >= coin.position.z) {
+            coin.geometry.dispose();
             scene.remove(coin);
             coins.splice(index, 1);
-            console.log("coin missed! coins are ", coins);
+            IS_DEBUG && console.log("coin missed! coins are ", coins);
         }
-        else{
+        else {
             coin.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            (coin.getLinearVelocity().x!=0 || coin.getLinearVelocity().y!=0) && coin.setLinearVelocity(new THREE.Vector3(0, 0, coin.getLinearVelocity().z));
+            (coin.getLinearVelocity().x != 0 || coin.getLinearVelocity().y != 0) && coin.setLinearVelocity(new THREE.Vector3(0, 0, coin.getLinearVelocity().z));
         }
     })
 }
@@ -204,11 +213,11 @@ function updateBuildings() {
             building.dispose();
             scene.remove(building);
             cars.splice(index, 1);
-            console.log("building removed! buildings are ", buildings);
+            IS_DEBUG && console.log("building removed! buildings are ", buildings);
         }
-        else{
+        else {
             building.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            building.getLinearVelocity().x!=0 && building.setLinearVelocity(new THREE.Vector3(0, 0, building.getLinearVelocity().z));
+            building.getLinearVelocity().x != 0 && building.setLinearVelocity(new THREE.Vector3(0, 0, building.getLinearVelocity().z));
         }
     })
 }
@@ -218,11 +227,12 @@ function updateLamps() {
         if (playerBox.position.z - 10 >= lamp.model.position.z) {
             lamp.model.dispose();
             scene.remove(lamp.model);
+            lamp.box.geometry.dispose();
             scene.remove(lamp.box);
             lamps.splice(index, 1);
-            console.log("lamp removed! lamps are ", lamps);
+            IS_DEBUG && console.log("lamp removed! lamps are ", lamps);
         }
-        else{
+        else {
             lamp.model.position.z = lamp.box.position.z - 0.47;
         }
     })
@@ -231,12 +241,14 @@ function updateLamps() {
 function updateTrees() {
     trees.forEach((tree, index) => {
         if (playerBox.position.z - 10 >= tree.model.position.z) {
+            tree.model.dispose();
             scene.remove(tree.model);
+            tree.box.geometry.dispose();
             scene.remove(tree.box);
             trees.splice(index, 1);
-            console.log("tree removed! trees are ", trees);
+            IS_DEBUG && console.log("tree removed! trees are ", trees);
         }
-        else{
+        else {
             tree.model.position.z = tree.box.position.z - 0.47;
         }
     })
@@ -245,14 +257,17 @@ function updateTrees() {
 function updateRocks(rotation) {
     rocks.forEach((rock, index) => {
         if (playerBox.position.z - 15 > rock.position.z) {
+            rock.geometry.dispose();
             scene.remove(rock);
             rocks.splice(index, 1);
-            console.log("rock avoided! rocks are ", rocks);
+            IS_DEBUG && console.log("rock avoided! rocks are ", rocks);
         }
-
-        rock.rotation.x = rotation * Math.PI;
-        rock.rotation.y = rotation * Math.PI;
-        
+        else {
+            rock.rotation.x = rotation * Math.PI;
+            rock.rotation.y = rotation * Math.PI;
+            rock.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+            (rock.getLinearVelocity().x != 0 || rock.getLinearVelocity().z != 0)  && rock.setLinearVelocity(new THREE.Vector3(0, 0, rock.getLinearVelocity().z));
+        }
     })
 }
 
@@ -261,33 +276,52 @@ function updateGazelles() {
         if (playerBox.position.z - 15 <= gazelle.box.position.z) {
             gazelle.model.position.z = gazelle.box.position.z;
             gazelle.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            gazelle.box.getLinearVelocity().x!=0 && gazelle.box.setLinearVelocity(new THREE.Vector3(0, 0, gazelle.box.getLinearVelocity().z));
+            gazelle.box.getLinearVelocity().x != 0 && gazelle.box.setLinearVelocity(new THREE.Vector3(0, 0, gazelle.box.getLinearVelocity().z));
         }
         else {
+            stopAnimation(gazelle.tweens);
+            gazelle.model.dispose();
             scene.remove(gazelle.model);
+            gazelle.box.geometry.dispose();
             scene.remove(gazelle.box);
             gazelles.splice(index, 1);
-            console.log("gazelle avoided! gazelles are ", gazelles);
+            IS_DEBUG && console.log("gazelle avoided! gazelles are ", gazelles);
         }
     })
 }
 
-function updateTrucks(){
+function updateTrucks() {
     trucks.forEach((truck, index) => {
         if (playerBox.position.z - 15 <= truck.box.position.z) {
             truck.model.position.z = truck.box.position.z;
             truck.model2.position.z = truck.box.position.z;
             truck.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            truck.box.getLinearVelocity().x!=0 && truck.box.setLinearVelocity(new THREE.Vector3(0, 0, truck.box.getLinearVelocity().z));
+            truck.box.getLinearVelocity().x != 0 && truck.box.setLinearVelocity(new THREE.Vector3(0, 0, truck.box.getLinearVelocity().z));
         }
         else {
             truck.model.dispose();
             scene.remove(truck.model);
             truck.model2.dispose();
             scene.remove(truck.model2);
+            truck.box.geometry.dispose();
             scene.remove(truck.box);
             trucks.splice(index, 1);
-            console.log("truck avoided! trucks are ", trucks);
+            IS_DEBUG && console.log("truck avoided! trucks are ", trucks);
+        }
+    })
+}
+
+function updateRockWalls() {
+    rockWalls.forEach((rockWall, index) => {
+        if (playerBox.position.z - 15 <= rockWall.position.z) {
+            rockWall.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+            rockWall.getLinearVelocity().x != 0 && rockWall.setLinearVelocity(new THREE.Vector3(0, 0, rockWall.getLinearVelocity().z));
+        }
+        else {
+            rockWall.geometry.dispose();
+            scene.remove(rockWall);
+            rockWalls.splice(index, 1);
+            IS_DEBUG && console.log("rock wall avoided! rock walls are ", rockWalls);
         }
     })
 }
