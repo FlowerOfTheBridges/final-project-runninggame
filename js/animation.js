@@ -752,7 +752,6 @@ function moveGazelle(gazelle) {
     let gazelleTweens = [];
     //this array contains legs of the gazelle, the animation is done within the moveGazelleLegs function
     let legs = [];
-
     // each leg has two children
     legs.push(gazelle.getObjectByName('Bone015')); // back left leg
     legs.push(gazelle.getObjectByName('Bone021')); // back right leg
@@ -868,7 +867,19 @@ function moveGazelleLegs(legs, gazelleTweens) {
 }
 
 function treeCollision(tree) {
-    new TWEEN.Tween(tree.rotation)
+
+    TreeInit = { x: tree.children[0].children[1].rotation.x=0.1 }
+    new TWEEN.Tween(TreeInit)
+        .to({ x: 0.15}, 300)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            tree.children[0].children[1].rotation.x = d.x;
+        })
+        .repeat(4)
+        .yoyo(true)
+        .start()
+    //console.log("tree is %o", tree);
+    /*new TWEEN.Tween(tree.rotation)
         .to({ x: Math.PI / 2 }, 1500)
         .easing(TWEEN.Easing.Bounce.Out)
         .onUpdate((d) => {
@@ -882,17 +893,105 @@ function treeCollision(tree) {
         .onUpdate((d) => {
             tree.position.z = d.z;
         })
-        .start();
+        .start();*/
 }
 
 function gazelleCollision(gazelle) {
 
-    new TWEEN.Tween(gazelle.rotation)
-        .to({ x: Math.PI / 2, y: 0 }, 1500)
+    gazelle.position.y=2;
+    
+
+    //Bones
+    GazelleBonesInit = { x: gazelle.rotation.x }
+    new TWEEN.Tween(GazelleBonesInit)
+        .to({ x: Math.PI/2}, 600)
         .easing(TWEEN.Easing.Sinusoidal.In)
         .onUpdate((d) => {
-            gazelle.rotation.y = d.y;
             gazelle.rotation.x = d.x;
         })
-        .start();
+        .start()
+    
+    //Left Front Leg
+    GazelleLeftLegInit = { y:  gazelle.children[0].children[0].children[1].rotation.y = 0.3 }
+    new TWEEN.Tween( GazelleLeftLegInit)
+        .to({ y: -0.3}, 600)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            gazelle.children[0].children[0].children[1].rotation.y = d.y;
+        })
+        .onComplete(() => {
+            gazelle.children[0].children[0].children[1].rotation.y=0;
+                })
+        .repeat(4)
+        .yoyo(true)
+        .start()
+
+    //Left Lower Leg
+    GazelleLeftLegInit = { x:  gazelle.children[0].children[0].children[1].children[0].rotation.x }
+    new TWEEN.Tween( GazelleLeftLegInit)
+        .to({ x: -1.3}, 600)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            gazelle.children[0].children[0].children[1].children[0].rotation.x  = d.x;
+        })
+        .onComplete(() => {
+            gazelle.children[0].children[0].children[1].children[0].rotation.x = 0;
+                })
+        
+        .repeat(4)
+        .yoyo(true)
+        .start()
+
+      
+     //Right Front Leg
+      GazelleRightLegInit = { y:  gazelle.children[0].children[0].children[2].rotation.y = -0.3 }
+      new TWEEN.Tween(  GazelleRightLegInit)
+          .to({ y: 0.3}, 600)
+          .easing(TWEEN.Easing.Sinusoidal.In)
+          .onUpdate((d) => {
+              gazelle.children[0].children[0].children[2].rotation.y = d.y;
+          })
+          .onComplete(() => {
+            gazelle.children[0].children[0].children[2].rotation.y=0;
+                })
+          
+          .repeat(4)
+          .yoyo(true)
+          .start()
+
+    //Right Lower Leg
+    GazelleRightLegInit = { x:  gazelle.children[0].children[0].children[2].children[0].rotation.x }
+    new TWEEN.Tween( GazelleRightLegInit)
+        .to({ x: -1.3}, 600)
+        .easing(TWEEN.Easing.Sinusoidal.In)
+        .onUpdate((d) => {
+            gazelle.children[0].children[0].children[2].children[0].rotation.x  = d.x;
+        })
+        .onComplete(() => {
+            gazelle.children[0].children[0].children[2].children[0].rotation.x=0;
+                })
+        .repeat(4)
+        .yoyo(true)
+        .start()
+       
+        //Bones Final Position
+        GazelleBonesFinalPosInit = { y: gazelle.position.y }
+        new TWEEN.Tween(GazelleBonesFinalPosInit)
+            .to({ y: 0}, 600)
+            .easing(TWEEN.Easing.Sinusoidal.In)
+            .onUpdate((d) => {
+                gazelle.position.y = d.y;
+            }).delay(2900)
+            .start()
+
+        //Bones Second Rotation
+        GazelleBonesFinalInit = { x: gazelle.rotation.x=Math.PI/2 }
+        new TWEEN.Tween(GazelleBonesFinalInit)
+            .to({ x: 0}, 600)
+            .easing(TWEEN.Easing.Sinusoidal.In)
+            .onUpdate((d) => {
+                gazelle.rotation.x = d.x;
+            }).delay(2900)
+            .start()
+        
 }
