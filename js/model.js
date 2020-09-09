@@ -1,5 +1,5 @@
-var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultTruck = null;
-
+var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultTruck, bag = null;
+var player = new THREE.Group(); //hierarchical model
 const gltfLoader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
 
@@ -20,27 +20,41 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     return lines;
 }
 
+function addBag() {
+    gltfLoader.load('resources/models/bag.gltf', (gltf) => {
+        bag = gltf.scene;
+        bag.scale.set(0.1, 0.1, 0.2);
+        bag.position.set(0, 1.1, -0.2);
+        bag.traverse((node) => {
+            if (node.isMesh) {
+                node.castShadow = true;
+                
+            }
+
+        });
+    });
+}
 
 function loadCharacter(scene, runningCallback, collisionCallback) {
+
 
     gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
         let model = gltf.scene;
-        //scene.add(model);
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
-                if (node.material.name != 'Beta_Joints_MAT') {
-                    node.material.color = new THREE.Color('white');
-                    let texture = textureLoader.load('resources/textures/diag.jpg');
-                    texture.wrapS = THREE.RepeatWrapping;
-                    texture.wrapT = THREE.ClampToEdgeWrapping;
-                    texture.repeat.set(3, 3);
-                    node.material.map = texture;
-                    node.material.map.encoding = THREE.sRGBEncoding;
-                    node.material.map.flipY = false;
-                    node.material.needsUpdate = true;
-                }
+                // if (node.material.name != 'Beta_Joints_MAT') {
+                //     node.material.color = new THREE.Color('white');
+                //     let texture = textureLoader.load('resources/textures/diag.jpg');
+                //     texture.wrapS = THREE.RepeatWrapping;
+                //     texture.wrapT = THREE.ClampToEdgeWrapping;
+                //     texture.repeat.set(3, 3);
+                //     node.material.map = texture;
+                //     node.material.map.encoding = THREE.sRGBEncoding;
+                //     node.material.map.flipY = false;
+                //     node.material.needsUpdate = true;
+                // }
             }
 
             if (node.name == 'Armature') {
@@ -54,8 +68,6 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
         IS_DEBUG && console.log("CHARACTER:\n" + dumpObject(model).join('\n'));
 
-        scene.add(model);
-
         playerBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.5, 1.5, 0.5),
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -65,7 +77,9 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         playerBox.addEventListener('collision', function (otherObject, relativeVelocity, relativeRotation, contactNormal) {
             collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal);
         });
-
+        player.add(model);
+        player.add(bag);
+        scene.add(player);
         scene.add(playerBox);
 
         runningCallback != null && runningCallback();
@@ -117,19 +131,6 @@ function addCar(scene, offset) {
     carModel.position.x = offset;
     carModel.position.z = OBJ_DISTANCE;
 
-    // shadow
-    // let mesh = new Physijs.Mesh(
-    //     new THREE.PlaneBufferGeometry(0.655 * 4, 1.3 * 4),
-    //     new THREE.MeshBasicMaterial({
-    //         map: shadow, blending: THREE.MultiplyBlending, toneMapped: false, transparent: true
-    //     })
-    // );
-    // mesh.rotation.x = - Math.PI / 2;
-    // mesh.position.z-=0.8;
-    // mesh.position.y=0.3;
-    // mesh.renderOrder = 2;
-    // carModel.add(mesh);
-    // add box to car (collision  check)
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 2, 4.5),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -252,7 +253,7 @@ function addGazelle(scene, offset) {
         let id = Date.now();
 
         let gazelleModel = gltf.scene;
-        gazelleModel.name = "gazelle_"+id+"_model";
+        gazelleModel.name = "gazelle_" + id + "_model";
         gazelleModel.scale.set(3, 1, 2);
         gazelleModel.castShadow = true;
         gazelleModel.rotation.y = Math.PI / 2;
@@ -269,7 +270,7 @@ function addGazelle(scene, offset) {
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
             OBJ_MASS / 10
         );
-        gazelleBox.name = "gazelle_"+id;
+        gazelleBox.name = "gazelle_" + id;
         gazelleBox.position.set(offset, 0, OBJ_DISTANCE);
 
         let gazelleTweens = moveGazelle(gazelleModel);
@@ -305,12 +306,12 @@ function addLamp(scene, isRight) {
     lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
     let lampBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(0.2, 15, 1),
+        new THREE.CubeGeometry(0.2, 8, 1),
         new THREE.MeshBasicMaterial({ color: 'white', transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
     lampBox.name = "lamp_" + id;
-    lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE + 0.47);
+    lampBox.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE);
     lamps.push({ box: lampBox, model: lampModel });
 
     scene.add(lampModel);
@@ -357,7 +358,7 @@ function addTruck(scene) {
 
 function addRockWall(scene) {
     let rockWall = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(10, 3.7, 1),
+        new THREE.CubeGeometry(9, 3.7, 1),
         new THREE.MeshBasicMaterial({
             map: textureLoader.load('resources/textures/rock.jpg')
         }),
@@ -368,4 +369,9 @@ function addRockWall(scene) {
     rockWalls.push(rockWall);
 
     scene.add(rockWall);
+}
+
+function boxConstraints(box) {
+    box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
+    (box.getLinearVelocity().x != 0 || box.getLinearVelocity().y != 0) && box.setLinearVelocity(new THREE.Vector3(0, 0, box.getLinearVelocity().z));
 }

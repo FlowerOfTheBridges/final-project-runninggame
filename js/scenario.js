@@ -174,8 +174,7 @@ function updateCars(wheelRotation) {
     cars.forEach((car, index) => {
         if (playerBox.position.z - 15 <= car.box.position.z) {
             car.model.position.z = car.box.position.z;
-            car.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            car.box.getLinearVelocity().x != 0 && car.box.setLinearVelocity(new THREE.Vector3(0, 0, car.box.getLinearVelocity().z));
+            boxConstraints(car.box);
         }
         else {
             scene.remove(car.model);
@@ -201,8 +200,7 @@ function updateCoins(rotationTime) {
             IS_DEBUG && console.log("coin missed! coins are ", coins);
         }
         else {
-            coin.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            (coin.getLinearVelocity().x != 0 || coin.getLinearVelocity().y != 0) && coin.setLinearVelocity(new THREE.Vector3(0, 0, coin.getLinearVelocity().z));
+            boxConstraints(coin);
         }
     })
 }
@@ -216,8 +214,7 @@ function updateBuildings() {
             IS_DEBUG && console.log("building removed! buildings are ", buildings);
         }
         else {
-            building.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            building.getLinearVelocity().x != 0 && building.setLinearVelocity(new THREE.Vector3(0, 0, building.getLinearVelocity().z));
+            boxConstraints(building);
         }
     })
 }
@@ -233,7 +230,8 @@ function updateLamps() {
             IS_DEBUG && console.log("lamp removed! lamps are ", lamps);
         }
         else {
-            lamp.model.position.z = lamp.box.position.z - 0.47;
+            lamp.model.position.set(lamp.box.position.x, lamp.model.position.y, lamp.box.position.z);
+            boxConstraints(lamp.box);
         }
     })
 }
@@ -250,6 +248,7 @@ function updateTrees() {
         }
         else {
             tree.model.position.z = tree.box.position.z - 0.47;
+            boxConstraints(tree.box);
         }
     })
 }
@@ -265,8 +264,7 @@ function updateRocks(rotation) {
         else {
             rock.rotation.x = rotation * Math.PI;
             rock.rotation.y = rotation * Math.PI;
-            rock.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            (rock.getLinearVelocity().x != 0 || rock.getLinearVelocity().z != 0)  && rock.setLinearVelocity(new THREE.Vector3(0, 0, rock.getLinearVelocity().z));
+            boxConstraints(rock);
         }
     })
 }
@@ -275,8 +273,7 @@ function updateGazelles() {
     gazelles.forEach((gazelle, index) => {
         if (playerBox.position.z - 15 <= gazelle.box.position.z) {
             gazelle.model.position.z = gazelle.box.position.z;
-            gazelle.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            gazelle.box.getLinearVelocity().x != 0 && gazelle.box.setLinearVelocity(new THREE.Vector3(0, 0, gazelle.box.getLinearVelocity().z));
+            boxConstraints(gazelle.box);
         }
         else {
             stopAnimation(gazelle.tweens);
@@ -295,8 +292,7 @@ function updateTrucks() {
         if (playerBox.position.z - 15 <= truck.box.position.z) {
             truck.model.position.z = truck.box.position.z;
             truck.model2.position.z = truck.box.position.z;
-            truck.box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            truck.box.getLinearVelocity().x != 0 && truck.box.setLinearVelocity(new THREE.Vector3(0, 0, truck.box.getLinearVelocity().z));
+            boxConstraints(truck.box);
         }
         else {
             truck.model.dispose();
@@ -314,8 +310,7 @@ function updateTrucks() {
 function updateRockWalls() {
     rockWalls.forEach((rockWall, index) => {
         if (playerBox.position.z - 15 <= rockWall.position.z) {
-            rockWall.setAngularVelocity(new THREE.Vector3(0, 0, 0));
-            rockWall.getLinearVelocity().x != 0 && rockWall.setLinearVelocity(new THREE.Vector3(0, 0, rockWall.getLinearVelocity().z));
+            boxConstraints(rockWall);
         }
         else {
             rockWall.geometry.dispose();

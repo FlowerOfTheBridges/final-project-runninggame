@@ -7,7 +7,8 @@ var isJump = false;
 
 var round = 0;
 var score = 0;
-var update, currentScenario = null;
+var lifeCount = 3;
+var update, currentScenario, lastHit = null;
 
 const scene = new Physijs.Scene;
 const stats = IS_DEBUG ? new Stats() : null;
@@ -33,7 +34,7 @@ function onWindowResize() {
 
 }
 
-function loadSounds(){
+function loadSounds() {
     sound.addEventListener("fileload", startSoundtrack);
     sound.registerSound("resources/audio/soundtrack.ogg", 'soundtrack');
     sound.registerSound("resources/audio/money.ogg", 'money');
@@ -57,34 +58,14 @@ function init() {
     createTree();
     createRock();
     createTruck();
+    addBag();
 }
 
-function getHighScores() {
-    let highScores = JSON.parse(sessionStorage.getItem("highScores"));
-
-    if (highScores != null) {
-        document.getElementById("forestHighScore").innerHTML = highScores['forest'] != null ? highScores['forest'] : 0;
-        document.getElementById("cityHighScore").innerHTML = highScores['city'] != null ? highScores['city'] : 0;
-    }
-    else{
-        document.getElementById("forestHighScore").innerHTML = 0;
-        document.getElementById("cityHighScore").innerHTML = 0;
-    }
-}
 
 function start(scenario) {
 
     gameOver = false;
-    document.getElementById("menu").hidden = true;
-
-    let dayTime = null;
-    let dayTimesRadio = document.getElementsByName(scenario+'Radio');
-    for(radio in dayTimesRadio){
-        if(dayTimesRadio[radio].checked){
-            dayTime = dayTimesRadio[radio].value;
-        }
-    }
-
+    let dayTime = getDayTime(scenario);
     loadCharacter(scene, run, collisionCallback);
 
     scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
@@ -95,24 +76,7 @@ function start(scenario) {
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
-
-    let scoreDom = document.createElement('div');
-    scoreDom.style.position = 'absolute';
-    scoreDom.style.top = 10 + 'px';
-    scoreDom.style.right = 10 + 'px';
-    let coinImage = document.createElement('img');
-    coinImage.src = 'resources/textures/coin.png';
-    coinImage.setAttribute("width", 50);
-    coinImage.setAttribute("height", 50);
-    scoreDom.appendChild(coinImage);
-    let coinCount = document.createElement('p');
-    coinCount.style.font = "italic bold 40px arial,serif";
-    coinCount.style.fontSize = 'xx-large';
-    coinCount.style.color = 'white';
-    coinCount.id = "coinCount";
-    coinCount.innerText = "0";
-    scoreDom.appendChild(coinCount)
-    document.body.appendChild(scoreDom);
+    createUI();
 
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
@@ -181,7 +145,7 @@ function startSoundtrack(event) {
 function animate() {
 
     let time = - performance.now() / 1000;
-    
+
     if (!gameOver) {
         scene.simulate(); // run physics
         update(time);
@@ -194,51 +158,32 @@ function animate() {
     TWEEN.update();
 }
 
-function showGameOver() {
-    let isHighScore = false;
-    let highScores = JSON.parse(sessionStorage.getItem("highScores"));
-    if (highScores != null) {
-        if(highScores[currentScenario] == null){
-            highScores[currentScenario] = 0;
-        }
-        if (score > highScores[currentScenario]) {
-            highScores[currentScenario] = score;
-            sessionStorage.setItem('highScores', JSON.stringify(highScores));
-            isHighScore = true;
-        }
-    }
-    else {
-        highScores = {};
-        highScores[currentScenario] = score;
-        sessionStorage.setItem('highScores', JSON.stringify(highScores));
-    }
-    setTimeout(() => {
-        $("#gameOverModal").modal(); 
-        document.getElementById('gameOverCoins').innerHTML = score;
-        if(isHighScore){
-            document.getElementById("newRecord").innerHTML = "New Record!";
-        }
-    }, 5000);
+function updateBag() {
+    console.log("player", player);
+    let bag = player.children[1];
+    let newBag = bag.clone();
+    dropBag(bag);
+    lifeCount != 0 && setTimeout(() => { player.add(newBag) }, 300);
 }
+
 function moveCharacter(keyCode) {
     switch (keyCode) {
         case 37:
             // Left
-            if (skeleton.bones[0].position.x < GAME_BORDER && !isJump) {
-                skeleton.bones[0].position.x += MOVING_SPEED;
-                playerBox.position.set(playerBox.position.x + (0.010 * MOVING_SPEED), playerBox.position.y, 0);
+            if (player.position.x < GAME_BORDER && !isJump) {
+                player.position.x += MOVING_SPEED;
+                playerBox.position.set(playerBox.position.x + MOVING_SPEED, playerBox.position.y, 0);
                 playerBox.__dirtyPosition = true;
-                camera.position.set(camera.position.x + (0.010 * MOVING_SPEED), CAMERA_Y, CAMERA_Z);
+                camera.position.set(camera.position.x + MOVING_SPEED, CAMERA_Y, CAMERA_Z);
             }
             break;
         case 39:
             // Right
-            if (skeleton.bones[0].position.x > -GAME_BORDER && !isJump) {
-
-                playerBox.position.set(playerBox.position.x - (0.010 * MOVING_SPEED), playerBox.position.y, 0);
+            if (player.position.x > -GAME_BORDER && !isJump) {
+                player.position.x -= MOVING_SPEED;
+                playerBox.position.set(playerBox.position.x - MOVING_SPEED, playerBox.position.y, 0);
                 playerBox.__dirtyPosition = true;
-                camera.position.set(camera.position.x - (0.010 * MOVING_SPEED), CAMERA_Y, CAMERA_Z);
-                skeleton.bones[0].position.x -= MOVING_SPEED;
+                camera.position.set(camera.position.x - MOVING_SPEED, CAMERA_Y, CAMERA_Z);
             }
             break;
         case 38:
@@ -249,43 +194,59 @@ function moveCharacter(keyCode) {
 }
 
 function collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal) {
-
     IS_DEBUG && console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, otherObject, relativeVelocity, relativeRotation, contactNormal);
     if (!otherObject.name.includes("coin")) {
         sound.play('hit');
-        clearInterval(objectInterval);
-        clearInterval(groundInterval);
-        stopAnimation(runTween);
-        collision();
-        sound.play('scream');
-        if(currentScenario == 'forest'){
-            gazelles.forEach(gazelle => {
-                stopAnimation(gazelle.tweens);
-            })
+        if ((lastHit != null && otherObject.uuid != lastHit) || !lastHit) {
+            if (lifeCount == 0) {
+                clearInterval(objectInterval);
+                clearInterval(groundInterval);
+                stopAnimation(runTween);
+                collision();
+                soundtrack.stop();
+                !IS_DEBUG && showGameOver();
+                gameOver = true;
+            }
+            else {
+                otherObject.position.z -= 5;
+                otherObject.__dirtyPosition = true;
+                removeBag();
+                lifeCount--;
+                console.log("you have been hit. %d life remainings", lifeCount);
+                updateBag();
+            }
+            sound.play('scream');
+            if (currentScenario == 'forest') {
+                gazelles.forEach(gazelle => {
+                    stopAnimation(gazelle.tweens);
+                })
+            }
+            if (otherObject.name.includes("car")) {
+                carCollision(scene.getObjectByName(otherObject.name + "_model"));
+                sound.play('car_crash');
+            }
+            else if (otherObject.name.includes("lamp")) {
+                lampCollision(scene.getObjectByName(otherObject.name + "_model"));
+                sound.play('lamp');
+            }
+            else if (otherObject.name.includes("tree")) {
+                treeCollision(scene.getObjectByName(otherObject.name + "_model"));
+                sound.play('tree');
+            }
+            else if (otherObject.name.includes("gazelle")) {
+                gazelleCollision(scene.getObjectByName(otherObject.name + "_model"));
+                sound.play('gazelle');
+            }
         }
-        if(otherObject.name.includes("car")){
-            carCollision(scene.getObjectByName(otherObject.name+"_model"));
-            sound.play('car_crash');
+        else {
+            console.log("same object has before...ignore")
         }
-        else if(otherObject.name.includes("lamp")){
-            lampCollision(scene.getObjectByName(otherObject.name+"_model"));
-            sound.play('lamp');
-        }
-        else if(otherObject.name.includes("tree")){
-            treeCollision(scene.getObjectByName(otherObject.name+"_model"));
-            sound.play('tree');
-        }
-        else if(otherObject.name.includes("gazelle")){
-            gazelleCollision(scene.getObjectByName(otherObject.name+"_model"));
-            sound.play('gazelle');
-        }
-        gameOver = true;
-        soundtrack.stop();
-        !IS_DEBUG && showGameOver();
+        lastHit = otherObject.uuid;
+
     }
     else {
         score++;
-        document.getElementById("coinCount").innerHTML = score;
+        updateScore(score);
         sound.play('money');
         coins.some((coin, index) => {
             if (coin.name == otherObject.name) {
