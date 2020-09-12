@@ -3,18 +3,22 @@
 // speed
 const RUNNING_SPEED = 180;
 const MOVING_SPEED = 0.2;
-const MOVING_TORSO = 180;
+const MOVING_TORSO = 280;
+const MOVING_BONES = 300;
 const MOVING_FALL = 1000;
 const MOVING_GAZELLE = 500;
+const MOVING_JUMP = 350;
 //run
 const UPPER_LEG_FINAL = { x: -1.0 };
 const LEG_FINAL = { x: 1.0 };
-const ARM_FINAL = { x: 1.0 };
+const ARM_FINAL = { x: 0.3 };
 const LEFT_HAND_FINAL = { y: -1.4 };
 const RIGHT_HAND_FINAL = { y:  1.4 };
-const SHOULDER_FINAL = { y: -0.3, x: -0.3 };
+const SHOULDER_FINAL = {  y: 0.025 };
+const TORSO_FINAL = { y: 0.025 };
 const FOOT_FINAL = { x: 1.5 };
-//fall 
+const BONES_FINAL_RUN = { x:0.025, y: 0.1, z: 0.025 }
+//fall
 const BONES_FINISH_FALL = -1.57;
 const SHOULDER_FINISH_FALL = 1.00;
 const LEFTUPPERARM_FINISH_FALL = -1.50;
