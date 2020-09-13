@@ -11,14 +11,14 @@ var rockWalls = [];
 
 function createCityScenario(scene, dayTime, anisotropy) {
 
-    scene.background = textureLoader.load('resources/textures/skyline'+(dayTime == 'morning' ? '_day.jpg' : '.jpg'))//new THREE.Color(0xa0a0a0);
+    scene.background = textureLoader.load('resources/textures/skyline' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'))//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
 
     let groundTexture = textureLoader.load('resources/textures/street.jpg');
     groundTexture.anisotropy = anisotropy;
-    groundTexture.repeat.set(5, 10000);
+    groundTexture.repeat.set(50, 10000);
     groundTexture.wrapS = THREE.RepeatWrapping;
-    groundTexture.wrapT = THREE.RepeatWrappi
+    groundTexture.wrapT = THREE.RepeatWrapping;
 
     let leftBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     leftBarrierTexture.anisotropy = anisotropy;
@@ -57,16 +57,10 @@ function createCityScenario(scene, dayTime, anisotropy) {
         .4 // low restitution
     );
 
-    let mesh = new Physijs.PlaneMesh(new THREE.PlaneGeometry(8, 10000), groundMaterial, 5);
+    let mesh = new Physijs.PlaneMesh(new THREE.PlaneGeometry(50, 10000), groundMaterial, 5);
     mesh.rotation.x = - Math.PI / 2;
     mesh.receiveShadow = true;
     scene.add(mesh);
-
-    objectInterval = setInterval(() => {
-        spawnCityObjects(scene);
-        round++;
-        IS_DEBUG && console.log("round ", round);
-    }, OUTER_OBSTACLES_INTERVAL);
 
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += WALLS_SPEED;
@@ -74,17 +68,25 @@ function createCityScenario(scene, dayTime, anisotropy) {
         groundTexture.offset.y -= GROUND_SPEED;
     }, WALLS_INTERVAL);
 
+    objectInterval = setInterval(() => {
+        if (isGameReady) {
+            spawnCityObjects(scene);
+            round++;
+            IS_DEBUG && console.log("round ", round);
+        }
+    }, OUTER_OBSTACLES_INTERVAL);
+
 }
 
 function createForestScenario(scene, dayTime, anisotropy) {
-    scene.background = textureLoader.load('resources/textures/forest'+(dayTime == 'morning' ? '_day.jpg' : '.jpg'));//new THREE.Color(0xa0a0a0);
+    scene.background = textureLoader.load('resources/textures/forest' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'));//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
 
     let groundTexture = textureLoader.load('resources/textures/rocks.jpg');
     groundTexture.anisotropy = anisotropy;
     groundTexture.repeat.set(80, 1000);
     groundTexture.wrapS = THREE.RepeatWrapping;
-    groundTexture.wrapT = THREE.RepeatWrappi
+    groundTexture.wrapT = THREE.RepeatWrapping;
 
     let leftBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
     leftBarrierTexture.anisotropy = anisotropy;
@@ -129,9 +131,11 @@ function createForestScenario(scene, dayTime, anisotropy) {
     scene.add(mesh);
 
     objectInterval = setInterval(() => {
-        spawnForestObjects(scene);
-        round++;
-        IS_DEBUG && console.log("round is ", round);
+        if (isGameReady) {
+            spawnForestObjects(scene);
+            round++;
+            IS_DEBUG && console.log("round ", round);
+        }
     }, OUTER_OBSTACLES_INTERVAL);
 
     groundInterval = setInterval(() => {

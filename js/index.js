@@ -4,6 +4,9 @@ Physijs.scripts.ammo = 'ammo.js';
 var controls, soundtrack = null;
 var gameOver = false;
 var isJump = false;
+var isGameReady = false;
+var assetsLoaded = 0;
+var gameCheckInterval = null;
 
 var round = 0;
 var score = 0;
@@ -51,18 +54,53 @@ function loadSounds() {
 
 function init() {
     loadSounds();
-
-    createCar();
-    createCoin();
-    createLamp();
-    createTree();
-    createRock();
-    createTruck();
-    addBag();
 }
 
+function checkAssets(numberOfAssets, condition) {
+    if (assetsLoaded != numberOfAssets) {
+        updateLoading(assetsLoaded, numberOfAssets);
+    }
+    else if (condition) {
+        addBagToPlayer();
+        removeLoading();
+        document.addEventListener(
+            'keydown',
+            function (ev) {
+                !gameOver && moveCharacter(ev.keyCode);
+            }
+        );
+        isGameReady = true;
+        clearInterval(gameCheckInterval);
+    }
+    else {
+        updateLoading();
+    }
+}
 
 function start(scenario) {
+    createCoin();
+    createBag();
+    switch (scenario) {
+        case 'city':
+            createCar();
+            createLamp();
+            createTruck();
+            gameCheckInterval = setInterval(() => {
+                let startCondition = defaultCarModel != null && coinGeometry != null && defaultLamp != null && defaultTruck != null && bag != null && player != null && playerBox != null;
+                checkAssets(6, startCondition);
+            }, 1000);
+            break;
+        case 'forest':
+            createTree();
+            createRock();
+            gameCheckInterval = setInterval(() => {
+                let startCondition = defaultTree != null && rockGeometry != null && coinGeometry!=null && bag != null && player != null && playerBox != null;
+                checkAssets(5, startCondition);
+            }, 1000);
+            break;
+    }
+
+    
 
     gameOver = false;
     let dayTime = getDayTime(scenario);
@@ -119,13 +157,6 @@ function start(scenario) {
     createDirectionalLigth(0xFFFFFF, dayTime == 'morning' ? 0.85 : 2, new THREE.Vector3(0, 5, dayTime == 'morning' ? -10 : 40),
         { cast: true, top: 30, bottom: -30, left: -10, right: 10, near: 1, far: 1000, fov: 100 }, scene, IS_DEBUG);
 
-    document.addEventListener(
-        'keydown',
-        function (ev) {
-            !gameOver && moveCharacter(ev.keyCode);
-        }
-    );
-
     IS_DEBUG && document.body.appendChild(stats.dom);
 
     animate();
@@ -144,6 +175,7 @@ function startSoundtrack(event) {
 
 function animate() {
 
+    requestAnimationFrame(animate);
     let time = - performance.now() / 1000;
 
     if (!gameOver) {
@@ -151,7 +183,6 @@ function animate() {
         update(time);
     }
 
-    requestAnimationFrame(animate);
     renderer.render(scene, camera);
 
     IS_DEBUG && stats.update();
@@ -159,7 +190,6 @@ function animate() {
 }
 
 function updateBag() {
-    console.log("player", player);
     let bag = player.children[1];
     let newBag = bag.clone();
     dropBag(bag);
@@ -208,7 +238,7 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                 gameOver = true;
             }
             else {
-                otherObject.position.z -= 5;
+                otherObject.position.z -= (otherObject.name.includes("building") || otherObject.name.includes("tree")) ? 20 : 5;
                 otherObject.__dirtyPosition = true;
                 removeBag();
                 lifeCount--;

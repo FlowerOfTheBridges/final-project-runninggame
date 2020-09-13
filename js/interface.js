@@ -24,6 +24,7 @@ function getDayTime(scenario) {
 
 function createUI() {
     document.getElementById("menu").hidden = true;
+    // score
     let scoreDom = document.createElement('div');
     scoreDom.style.position = 'absolute';
     scoreDom.style.top = 10 + 'px';
@@ -41,10 +42,10 @@ function createUI() {
     coinCount.innerText = "0";
     scoreDom.appendChild(coinCount)
     document.body.appendChild(scoreDom);
-
+    // bags (life count)
     for (let i = lifeCount; i > 0; i--) {
         let lifeDom = document.createElement('div');
-        lifeDom.id = "life_"+i;
+        lifeDom.id = "life_" + i;
         lifeDom.style.position = 'absolute';
         lifeDom.style.top = 10 + 'px';
         lifeDom.style.left = (65 * i) + 'px';
@@ -55,10 +56,23 @@ function createUI() {
         lifeDom.appendChild(bagImage);
         document.body.appendChild(lifeDom);
     }
+    //loading info
+    let loading = document.createElement('div');
+    loading.id = "loading";
+    loading.style.position = 'absolute';
+    loading.style.bottom = 10 + 'px';
+    loading.style.right = 10 + 'px';
+    let loadingInfo = document.createElement('p');
+    loadingInfo.style.font = "italic bold 40px arial,serif";
+    loadingInfo.style.fontSize = 'xx-large';
+    loadingInfo.style.color = 'white';
+    loadingInfo.id = "loadingInfo";
+    loading.appendChild(loadingInfo)
+    document.body.appendChild(loading);
 }
 
-function removeBag(){
-    let div = document.getElementById("life_"+lifeCount);
+function removeBag() {
+    let div = document.getElementById("life_" + lifeCount);
     div.remove();
 }
 
@@ -91,4 +105,19 @@ function showGameOver() {
 
 function updateScore(score) {
     document.getElementById("coinCount").innerHTML = score;
+}
+
+function updateLoading(assets, total) {
+    let loading = document.getElementById("loading").childNodes[0];
+    if (assets != null && total != null) {
+        loading.innerHTML = "Loading assets... (" + assets + "/" + total + ")";
+    }
+    else{
+        loading.innerHTML = "Assets loaded. Waiting..."
+    }
+}
+
+function removeLoading(){
+    let loading = document.getElementById("loading");
+    loading.remove();
 }

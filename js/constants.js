@@ -38,7 +38,6 @@ const RIGHTUPPERARM_FINISH_FALL =  1.00;
 // model file 
 const CHARACTER_URL = 'resources/models/character.glb';
 const CAR_URL = 'resources/models/car.glb';
-const CAR_SHADOW_URL = 'resources/textures/car_shadow.png';
 // materials
 const CAR_BODY_MATERIAL = new THREE.MeshPhysicalMaterial({
     color: 0xff0000, metalness: 0.6, roughness: 0.4, clearcoat: 0.05, clearcoatRoughness: 0.05
@@ -75,12 +74,6 @@ const OUTER_OBSTACLES_INTERVAL = 7000;
 const INNER_OBSTACLES_INTERVAL = 2400;
 const WALL_OBASTACLES_INTERVAL = 4000;
 const COINS_INTERVALS = [1000, 3600, 5000];
-
-const OUTER_OBSTACLES_INTERVAL_HARD = 6000;
-const INNER_OBSTACLES_INTERVAL_HARD = 1400;
-const WALL_OBASTACLES_INTERVAL_HARD = 2000;
-const COINS_INTERVALS_HARD = [500, 2600, 4000];
-
 
 const IS_DEBUG = false; // set to true to enable helpers and collision boxes
 

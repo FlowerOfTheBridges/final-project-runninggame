@@ -20,7 +20,7 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     return lines;
 }
 
-function addBag() {
+function createBag() {
     gltfLoader.load('resources/models/bag.gltf', (gltf) => {
         bag = gltf.scene;
         bag.scale.set(0.1, 0.1, 0.2);
@@ -28,10 +28,15 @@ function addBag() {
         bag.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
-                
+
             }
 
         });
+    },
+    (gltf) => {
+        // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
     });
 }
 
@@ -41,6 +46,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
     gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
         let model = gltf.scene;
+        console.log(model.position);
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
@@ -78,7 +84,6 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
             collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal);
         });
         player.add(model);
-        player.add(bag);
         scene.add(player);
         scene.add(playerBox);
 
@@ -86,6 +91,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
     }, (gltf) => {
         // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
 
     }, (error) => {
@@ -95,8 +101,11 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
     });
 }
 
+function addBagToPlayer(){
+    player.add(bag);
+}
+
 function createCar() {
-    shadow = textureLoader.load(CAR_SHADOW_URL);
     gltfLoader.load(CAR_URL, function (gltf) {
 
         defaultCarModel = gltf.scene.children[0];
@@ -117,9 +126,14 @@ function createCar() {
             if (node.isMesh) {
                 node.castShadow = true;
             }
-        });
-    }.bind(this));
-
+        },
+        );
+    }.bind(this),
+    (gltf) => {
+        // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+    });
 }
 
 function addCar(scene, offset) {
@@ -156,31 +170,30 @@ function addCar(scene, offset) {
 
 function addBuilding(scene, isRight) {
     let box = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(2, 10, 2),
+        new THREE.CubeGeometry(2, 8, 2),
         new THREE.MeshBasicMaterial({ map: textureLoader.load('resources/textures/building.jpg') }),
         OBJ_MASS
     );
-    box.position.set((isRight ? -1 : 1) * 3, 0, OBJ_DISTANCE);
+    box.name = "building_" + Date.now();
+    box.position.set((isRight ? -1 : 1) * 3, 3, OBJ_DISTANCE);
     box.castShadow = true;
     scene.add(box);
 }
 
 function createCoin() {
-
-    cylinderGeometry = new THREE.CylinderGeometry(
+    coinGeometry = new THREE.CylinderGeometry(
         0.25, 0.25, 0.06, 16
     );
-    cylinderGeometry.rotateX(Math.PI / 2);
-
+    coinGeometry.rotateX(Math.PI / 2);
+    assetsLoaded++;
 }
 
 function addCoin(scene, offset) {
     let coin = new Physijs.BoxMesh(
-        cylinderGeometry.clone(),
+        coinGeometry.clone(),
         COIN_MATERIAL,
         OBJ_MASS
     );
-
     coin.castShadow = true;
     coin.position.set(offset, 1, OBJ_DISTANCE);
     coin.name = "coin_" + Date.now();
@@ -201,7 +214,12 @@ function createTree() {
 
         IS_DEBUG && console.log("TREE:\n" + dumpObject(defaultTree).join('\n'));
 
-    }.bind(this));
+    }.bind(this),
+    (gltf) => {
+        // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+    });
 }
 
 function addTree(scene, isRight) {
@@ -211,7 +229,7 @@ function addTree(scene, isRight) {
     treeModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
 
     let treeBox = new Physijs.BoxMesh(
-        new THREE.CubeGeometry(0.5, 15, 2),
+        new THREE.CubeGeometry(0.7, 15, 3),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
         OBJ_MASS
     );
@@ -226,6 +244,7 @@ function addTree(scene, isRight) {
 function createRock() {
     rockGeometry = new THREE.IcosahedronBufferGeometry(1, 1);
     rockGeometry.rotateX(Math.PI / 2);
+    assetsLoaded++;
 }
 
 function addRock(scene, isRight) {
@@ -295,7 +314,12 @@ function createLamp() {
             }
         });
         IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultLamp).join('\n'));
-    }.bind(this));
+    }.bind(this),
+    (gltf) => {
+        // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+    });
 }
 
 function addLamp(scene, isRight) {
@@ -329,7 +353,12 @@ function createTruck() {
             }
         });
         IS_DEBUG && console.log("TRUCK:\n" + dumpObject(defaultTruck).join('\n'));
-    }.bind(this));
+    }.bind(this),
+    (gltf) => {
+        // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++;
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+    });
 }
 
 function addTruck(scene) {
