@@ -57,7 +57,7 @@ function init() {
 }
 
 function checkAssets(numberOfAssets, condition) {
-    if (assetsLoaded != numberOfAssets) {
+    if (assetsLoaded < numberOfAssets) {
         updateLoading(assetsLoaded, numberOfAssets);
     }
     else if (condition) {
