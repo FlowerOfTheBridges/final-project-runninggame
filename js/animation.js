@@ -627,17 +627,17 @@ function resetCharacter() {
     skeleton.bones[0].children[1].children[0].rotation.x = 0;
     skeleton.bones[0].children[2].children[0].rotation.x = 0;
     //Arms
-    //skeleton.bones[0].children[0].children[0].children[0].children[1].rotation.y = 0;
-    //skeleton.bones[0].children[0].children[0].children[0].children[2].rotation.y = 0;
-    //skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].rotation.x = 0;
-    //skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].rotation.x = 0;
-    //skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0].rotation.y = 0;
-    //skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].children[0].rotation.y = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[1].rotation.y = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[2].rotation.y = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].rotation.x = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].rotation.x = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[1].children[0].children[0].rotation.y = 0;
+    skeleton.bones[0].children[0].children[0].children[0].children[2].children[0].children[0].rotation.y = 0;
 }
 
 
 function jumpMovement() {
-    //skeleton.bones[0].children[0].rotation.x = 0;
+   
     jumpSetLeftHand();
 
     let leftUpperArm = skeleton.bones[0].children[0].children[0].children[0].children[1].children[0];
@@ -713,7 +713,7 @@ function jumpMovement() {
 
         })
         .onComplete(() => {
-            //tweenleftUpperLeg.to({ x: 0 }, MOVING_JUMP).start()
+            tweenleftUpperLeg.to({ x: 0 }, MOVING_JUMP).start()
         }).repeat(1).yoyo(true)
 
 
@@ -803,6 +803,9 @@ function jump() {
     resetCharacter();
     jumpMovement();
 
+   setTimeout(() => { 
+    
+    jumpMovement();
     let tweenJump = new TWEEN.Tween(model.position)
         .to({ y: model.position.y + 2 }, 400)
         .easing(TWEEN.Easing.Elastic.Out)
@@ -846,10 +849,11 @@ function jump() {
 
     runTween.leftLeg.stop();
     runTween.rightLeg.stop();
-    sound.play('jump');
     tweenJump.start();
     leftLegTween.start();
-    rightLegTween.start();
+    rightLegTween.start();}, 230)
+   
+    sound.play('jump');
 }
 
 function carCollision(car) {

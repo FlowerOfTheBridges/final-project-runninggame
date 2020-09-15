@@ -35,9 +35,9 @@ function createUI() {
     coinImage.setAttribute("height", 50);
     scoreDom.appendChild(coinImage);
     let coinCount = document.createElement('p');
-    coinCount.style.font = "italic bold 40px arial,serif";
+    coinCount.style.font = "Press Start 2P";
     coinCount.style.fontSize = 'xx-large';
-    coinCount.style.color = 'white';
+    coinCount.style.color = 'black';
     coinCount.id = "coinCount";
     coinCount.innerText = "0";
     scoreDom.appendChild(coinCount)
@@ -63,9 +63,9 @@ function createUI() {
     loading.style.bottom = 10 + 'px';
     loading.style.right = 10 + 'px';
     let loadingInfo = document.createElement('p');
-    loadingInfo.style.font = "italic bold 40px arial,serif";
+    loadingInfo.style.font = "Press Start 2P";
     loadingInfo.style.fontSize = 'xx-large';
-    loadingInfo.style.color = 'white';
+    loadingInfo.style.color = 'black';
     loadingInfo.id = "loadingInfo";
     loading.appendChild(loadingInfo)
     document.body.appendChild(loading);
@@ -97,6 +97,7 @@ function showGameOver() {
     setTimeout(() => {
         $("#gameOverModal").modal();
         document.getElementById('gameOverCoins').innerHTML = score;
+      
         if (isHighScore) {
             document.getElementById("newRecord").innerHTML = "New Record!";
         }

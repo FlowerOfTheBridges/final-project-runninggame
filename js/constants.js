@@ -7,7 +7,7 @@ const MOVING_TORSO = 280;
 const MOVING_BONES = 300;
 const MOVING_FALL = 1000;
 const MOVING_GAZELLE = 500;
-const MOVING_JUMP = 350;
+const MOVING_JUMP = 300;
 //run
 const UPPER_LEG_FINAL = { x: -1.0 };
 const LEG_FINAL = { x: 1.0 };

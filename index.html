@@ -5,8 +5,35 @@
 	<meta charset="utf-8">
 	<title>Running Game</title>
 	<style>
+
+        @font-face {
+               font-family: 'Press Start 2P';
+               src: url('resources/font/PressStart2P-vaV7.TTF');
+            }
+
+		
+        div,p {
+
+			font-family: 'Press Start 2P';
+		}
+
+		.blink_text {
+               animation:1s blinker linear infinite;
+        }
+
+		
+        
+		.blink_text b {color:black;}
+                @keyframes blinker { 
+                0% { opacity: 1.0; }
+                50% { opacity: 0.0; }
+                100% { opacity: 1.0; }
+            }
+		
+		
 		body {
 			margin: 0;
+			font-family:'Press Start 2P'
 		}
 
 		canvas {
@@ -143,14 +170,14 @@
 				<div class="col-12">
 					<div class="it-hero-text-wrapper">
 						<span class="it-category"></span>
-						<h1 class="no_toc">DIAG-MAN</h1>
-						<p class="d-none d-lg-block">Make your way through trees, rocks, buildings, cars...and gazelles!
+						<img src="resources/logo/logodiagman.png" width="300px" height="100px"/>
+						<p style="font-family:'Press Start 2P'; font-size: small"  class="d-none d-lg-block">Make your way through trees, rocks, buildings, cars...and gazelles!
 							Pick a level and start running, without losing alll your bags!</p>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="container">
+		<div class="container" style="font-family:'Press Start 2P'">
 			<div class="row">
 
 				<div class="col-md-6 col-sm-6">
@@ -205,13 +232,13 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="it-hero-wrapper it-hero-small-size">
+		</div><br /><br />
+		<div class="it-hero-wrapper it-hero-small-size" style="font-family:'Press Start 2P'">
 			<div class="row">
 				<div class="col-6">
 					<div class="it-hero-text-wrapper">
-						<h1 class="no_toc">COMMANDS:</h1>
-						<ul>
+						<h4 class="no_toc">COMMANDS:</h4>
+						<ul style="font-size: small;">
 							<li><b>LEFT ARROW:</b> left movement</li>
 							<li><b>RIGHT ARROW:</b> right movement</li>
 							<li><b>UP ARROW:</b> jump</li>
@@ -230,30 +257,31 @@
 				</div>
 			</div>
 		</div>
-		<div class="card-footer text-muted">
+		<div class="card-footer text-muted" style="font-family:'Press Start 2P'; font-size:small;">
 			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
 		</div>
 	</section>
 
 	<!-- GAME OVER MODAL -->
-	<div class="modal fade" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
+	<div class="modal fade element" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
 		<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
 			<!--Content-->
-			<div class="modal-content text-center">
+			<div class="modal-content text-center" style="width:430px; height:300px;">
 				<!--Header-->
-				<div class="modal-header d-flex justify-content-center">
-					<p class="heading">GAME OVER</p>
+				<div class="modal-header d-flex justify-content-center" style="border:none"> 
+					<p class="heading"></p>
 				</div>
 
 				<!--Body-->
 				<div class="modal-body">
-					<p>You have collected <b id="gameOverCoins"></b> coins. </p>
-					<b id="newRecord"></b>
+					<img src="resources/logo/gameover.png"  />
+					<p>Coins collected <b id="gameOverCoins"></b> </p>
+					<b class="blink_text" id="newRecord"></b>
 				</div>
 
 				<!--Footer-->
-				<div class="modal-footer flex-center">
-					<a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">OK</a>
+				<div class="modal-footer flex-center" style="border:none">
+					<center><a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">RETRY</a></center>
 				</div>
 			</div>
 			<!--/.Content-->
