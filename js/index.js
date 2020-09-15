@@ -14,7 +14,7 @@ var lifeCount = 3;
 var update, currentScenario, lastHit = null;
 
 const scene = new Physijs.Scene;
-const stats = IS_DEBUG ? new Stats() : null;
+const stats = new Stats();
 const sound = createjs.Sound;
 const textureLoader = new THREE.TextureLoader();
 
@@ -128,7 +128,7 @@ function start(scenario) {
 
     switch (scenario) {
         case 'city':
-            createCityScenario(scene, dayTime, renderer.capabilities.getMaxAnisotropy());
+            createCityScenario(scene, dayTime);
             update = function (time) {
                 updateCars(time);
                 updateCoins(time);
@@ -138,7 +138,7 @@ function start(scenario) {
             };
             break;
         case 'forest':
-            createForestScenario(scene, dayTime, renderer.capabilities.getMaxAnisotropy());
+            createForestScenario(scene, dayTime);
             update = function (time) {
                 updateRockWalls();
                 updateTrees();
@@ -157,7 +157,7 @@ function start(scenario) {
     createDirectionalLigth(0xFFFFFF, dayTime == 'morning' ? 0.85 : 2, new THREE.Vector3(0, 5, dayTime == 'morning' ? -10 : 40),
         { cast: true, top: 30, bottom: -30, left: -10, right: 10, near: 1, far: 1000, fov: 100 }, scene, IS_DEBUG);
 
-    IS_DEBUG && document.body.appendChild(stats.dom);
+    document.body.appendChild(stats.dom);
 
     animate();
 }
@@ -174,8 +174,7 @@ function startSoundtrack(event) {
 
 
 function animate() {
-
-    requestAnimationFrame(animate);
+    stats.begin();
     let time = - performance.now() / 1000;
 
     if (!gameOver) {
@@ -184,9 +183,9 @@ function animate() {
     }
 
     renderer.render(scene, camera);
-
-    IS_DEBUG && stats.update();
     TWEEN.update();
+    stats.update();
+    requestAnimationFrame(animate);
 }
 
 function updateBag() {

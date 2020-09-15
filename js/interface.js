@@ -92,6 +92,7 @@ function showGameOver() {
     else {
         highScores = {};
         highScores[currentScenario] = score;
+        isHighScore = true;
         sessionStorage.setItem('highScores', JSON.stringify(highScores));
     }
     setTimeout(() => {

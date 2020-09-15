@@ -9,20 +9,18 @@ var gazelles = [];
 var trucks = [];
 var rockWalls = [];
 
-function createCityScenario(scene, dayTime, anisotropy) {
+function createCityScenario(scene, dayTime) {
 
     scene.background = textureLoader.load('resources/textures/skyline' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'))//new THREE.Color(0xa0a0a0);
-    scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
+    scene.fog = new THREE.Fog(0xa0a0a0, 40, 50);
 
     let groundTexture = textureLoader.load('resources/textures/street.jpg');
-    groundTexture.anisotropy = anisotropy;
     groundTexture.repeat.set(50, 10000);
     groundTexture.wrapS = THREE.RepeatWrapping;
     groundTexture.wrapT = THREE.RepeatWrapping;
 
     let leftBarrierTexture = textureLoader.load('resources/textures/building.jpg');
-    leftBarrierTexture.anisotropy = anisotropy;
-    leftBarrierTexture.repeat.set(10, 3);
+    leftBarrierTexture.repeat.set(10, 1);
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
     leftBarrierTexture.wrapT = THREE.RepeatWrapping;
     let leftBarrier = new Physijs.BoxMesh(
@@ -35,8 +33,7 @@ function createCityScenario(scene, dayTime, anisotropy) {
     leftBarrier.receiveShadow = true;
 
     let rightBarrierTexture = textureLoader.load('resources/textures/building.jpg');
-    rightBarrierTexture.anisotropy = anisotropy;
-    rightBarrierTexture.repeat.set(10, 3);
+    rightBarrierTexture.repeat.set(10, 1);
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
     rightBarrierTexture.wrapT = THREE.RepeatWrapping;
     let rightBarrier = new Physijs.BoxMesh(
@@ -78,18 +75,16 @@ function createCityScenario(scene, dayTime, anisotropy) {
 
 }
 
-function createForestScenario(scene, dayTime, anisotropy) {
+function createForestScenario(scene, dayTime) {
     scene.background = textureLoader.load('resources/textures/forest' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'));//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
 
     let groundTexture = textureLoader.load('resources/textures/rocks.jpg');
-    groundTexture.anisotropy = anisotropy;
     groundTexture.repeat.set(80, 1000);
     groundTexture.wrapS = THREE.RepeatWrapping;
     groundTexture.wrapT = THREE.RepeatWrapping;
 
     let leftBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
-    leftBarrierTexture.anisotropy = anisotropy;
     leftBarrierTexture.repeat.set(7, 1);
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
     leftBarrierTexture.wrapT = THREE.RepeatWrapping;
@@ -103,7 +98,6 @@ function createForestScenario(scene, dayTime, anisotropy) {
     leftBarrier.receiveShadow = true;
 
     let rightBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
-    rightBarrierTexture.anisotropy = anisotropy;
     rightBarrierTexture.repeat.set(7, 1);
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
     rightBarrierTexture.wrapT = THREE.RepeatWrapping;
@@ -149,7 +143,7 @@ function createForestScenario(scene, dayTime, anisotropy) {
 function spawnCityObjects(scene) {
     addBuilding(scene, round % 2 == 0);
     addLamp(scene, round % 2 != 0);
-    setTimeout(() => {/**addCar(scene, 0);*/ addBuilding(scene, round % 2 != 0); }, OUTER_OBSTACLES_INTERVAL - 1000);
+    setTimeout(() => {addBuilding(scene, round % 2 != 0); }, OUTER_OBSTACLES_INTERVAL - 1000);
     let carOffset = randomNumber(-1.2, 1.2);
     setTimeout(() => addCar(scene, carOffset), INNER_OBSTACLES_INTERVAL);
     round >= 4 && setTimeout(() => addCoin(scene, round % 2 == 0 ? 3 : -3), COINS_INTERVALS[1]);

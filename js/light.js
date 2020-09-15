@@ -15,7 +15,6 @@ function createDirectionalLigth(color, intensity, position, shadow, scene, helpe
     }
     scene.add(dirLight);
 
-
     if (helperOn) {
         let helper = new THREE.DirectionalLightHelper(dirLight);
         scene.add(helper);
@@ -36,29 +35,7 @@ function createPointLigth(color, intensity, position, helperOn) {
 }
 
 function createHemiLight(color, intensity, position, scene) {
-
-    let hemiLight = new THREE.HemisphereLight(color, intensity); // 0xffffff, 0x444444
-    hemiLight.position.set(position[0], position[1], position[2]); // [0, 20, 0]
+    let hemiLight = new THREE.HemisphereLight(color, intensity);
+    hemiLight.position.set(position[0], position[1], position[2]); 
     scene.add(hemiLight);
-}
-
-function createSpotLight(scene, position) {
-
-    let spotLight = new THREE.SpotLight('yellow');
-    spotLight.position.set(position.x, position.y, position.z);
-
-	spotLight.intensity = 2;
-	// must enable shadow casting ability for the light
-    spotLight.castShadow = true;
-
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
-
-    spotLight.shadow.camera.near = 500;
-    spotLight.shadow.camera.far = 4000;
-    spotLight.shadow.camera.fov = 30;
-
-    scene.add(spotLight);
-
-    return spotLight;
 }

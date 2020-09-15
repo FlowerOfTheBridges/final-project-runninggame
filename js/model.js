@@ -46,25 +46,13 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
     gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
         let model = gltf.scene;
-        console.log(model.position);
         model.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
-                // if (node.material.name != 'Beta_Joints_MAT') {
-                //     node.material.color = new THREE.Color('white');
-                //     let texture = textureLoader.load('resources/textures/diag.jpg');
-                //     texture.wrapS = THREE.RepeatWrapping;
-                //     texture.wrapT = THREE.ClampToEdgeWrapping;
-                //     texture.repeat.set(3, 3);
-                //     node.material.map = texture;
-                //     node.material.map.encoding = THREE.sRGBEncoding;
-                //     node.material.map.flipY = false;
-                //     node.material.needsUpdate = true;
-                // }
             }
 
             if (node.name == 'Armature') {
-                skeleton = new THREE.Skeleton([node.children[0]]);
+                skeleton = node.children[0];
             }
             else if (node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm') {
                 // set character model arms in standard position
