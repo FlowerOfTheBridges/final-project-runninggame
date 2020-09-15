@@ -620,34 +620,57 @@ function resetCharacter() {
     skeleton.children[0].children[0].children[0].children[2].children[0].children[0].rotation.y = 0;
 }
 
-
-function jumpMovement() {
-
-    jumpSetLeftHand();
-
-    // upper legs
+function jumpLegMovement(tweenJump){
+    // leg movement
     let leftUpperLeg = skeleton.children[1];
-    let leftLegTween = new TWEEN.Tween(leftUpperLeg.rotation)
-        .to({ x: -1.4 }, MOVING_JUMP)
-        .easing(TWEEN.Easing.Quadratic.InOut)
+    let tweenLeftUpperLeg = new TWEEN.Tween({ x: leftUpperLeg.rotation.x })
+        .to({ x: -0.7 }, MOVING_JUMP - 500)
+        .interpolation(TWEEN.Interpolation.CatmullRom)
         .onUpdate((d) => {
             leftUpperLeg.rotation.x = d.x;
+            skeleton.position.y-=d.y;
         })
-        .repeat(1)
-        .yoyo(true);
+        .onComplete(() => {
+            tweenJump.start();
+            new TWEEN.Tween(leftUpperLeg.rotation)
+                .to({ x: -1.4 }, MOVING_JUMP - 100)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate((d) => {
+                    leftUpperLeg.rotation.x = d.x;
+                })
+                .repeat(1)
+                .yoyo(true)
+                .start();
+        }).repeat(1).yoyo(true)
 
+
+    tweenLeftUpperLeg.start();
+    //right upper leg
     let rightUpperLeg = skeleton.children[2];
-    let rightLegTween = new TWEEN.Tween(rightUpperLeg.rotation)
-        .to({ x: 1.0 }, MOVING_JUMP)
-        .easing(TWEEN.Easing.Quadratic.InOut)
+    let tweenRightUpperLeg = new TWEEN.Tween({ x: rightUpperLeg.rotation.x })
+        .to({ x: -0.7 }, MOVING_JUMP - 500)
+        .interpolation(TWEEN.Interpolation.CatmullRom)
         .onUpdate((d) => {
             rightUpperLeg.rotation.x = d.x;
         })
-        .repeat(1)
-        .yoyo(true);
+        .onComplete(() => {
+            new TWEEN.Tween(rightUpperLeg.rotation)
+                .to({ x: 1.0 }, MOVING_JUMP - 100)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate((d) => {
+                    rightUpperLeg.rotation.x = d.x;
+                })
+                .repeat(1)
+                .yoyo(true)
+                .start();
+        }).repeat(1).yoyo(true);
 
-    leftLegTween.start();
-    rightLegTween.start();
+    tweenRightUpperLeg.start();
+}
+function jumpBodyMovement() {
+
+    jumpSetLeftHand();
+
     // left upper arm
     let leftUpperArm = skeleton.children[0].children[0].children[0].children[1].children[0];
     let tweenleftUpperArm = new TWEEN.Tween(leftUpperArm.rotation)
@@ -778,10 +801,8 @@ function jump() {
     isJump = true;
     let model = player;
     let boxPosition = playerBox.position.clone();
-    //let bagPosition = player.parent.children[2].position.clone();
     let initialRotation = camera.rotation.x;
-
-
+    
     let tweenJump = new TWEEN.Tween(model.position)
         .to({ y: model.position.y + 2.3 }, MOVING_JUMP)
         .easing(TWEEN.Easing.Elastic.Out)
@@ -798,9 +819,8 @@ function jump() {
 
     runTween.leftLeg.stop();
     runTween.rightLeg.stop();
-    tweenJump.start();
-
-    jumpMovement();
+    jumpLegMovement(tweenJump);
+    jumpBodyMovement();
     sound.play('jump');
 }
 
