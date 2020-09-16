@@ -17,9 +17,21 @@
 			font-family: 'Press Start 2P';
 		}
 
-		.blink_text {
-               animation:1s blinker linear infinite;
+       .blink_text {
+               animation:5s blinker linear infinite;
         }
+
+	.gameover{
+       
+		animation: 5s goa linear;
+		animation-fill-mode: forwards;
+	}
+
+	@keyframes goa { 
+                from { position: relative; top: -50px; }
+                to { position: relative; top: 130px; }
+				}
+		
 
 		
         
@@ -263,10 +275,11 @@
 	</section>
 
 	<!-- GAME OVER MODAL -->
-	<div class="modal fade element" id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
-		<div class="modal-dialog modal-sm modal-notify modal-danger" role="document">
+	
+	<div class="modal fade element " id="gameOverModal" data-backdrop="static" data-keyboard="false" data-toggle="modal">
+		<div class="modal-dialog modal-sm modal-notify modal-danger " role="document">
 			<!--Content-->
-			<div class="modal-content text-center" style="width:430px; height:300px;">
+			<div class="modal-content text-center gameover" style="width:460px; height:300px;border:15px ridge brown; background-color:#fefee9;">
 				<!--Header-->
 				<div class="modal-header d-flex justify-content-center" style="border:none"> 
 					<p class="heading"></p>
@@ -281,12 +294,13 @@
 
 				<!--Footer-->
 				<div class="modal-footer flex-center" style="border:none">
-					<center><a type="button" class="btn  btn-outline-success" data-dismiss="modal" onclick="restart()">RETRY</a></center>
+			       <a type="button" class="btn" style="border:7px ridge brown;position:relative; right:130px" browndata-dismiss="modal" onclick="restart()">RETRY</a>
 				</div>
 			</div>
 			<!--/.Content-->
 		</div>
 	</div>
+
 </body>
 
 </html>
