@@ -1,13 +1,16 @@
 var defaultCarModel, coinGeometry, defaultLamp, defaultTree, rockGeometry, defaultTruck, bag = null;
-var player = new THREE.Group(); //hierarchical model
+var player = new THREE.Group(); // hierarchical model of the player
 const gltfLoader = new THREE.GLTFLoader();
 const dracoLoader = new THREE.DRACOLoader();
-
+// set gltfloader to read draco geometry
 dracoLoader.setDecoderPath('js/libs/draco/gltf/');
 gltfLoader.setDRACOLoader(dracoLoader);
 
 THREE.ImageUtils.crossOrigin = '';
 
+/**
+ * function to write the hierarchical structure of a gltf model. used for devolpment purpouse only
+ */
 function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     let localPrefix = isLast ? '└─' : '├─';
     lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
@@ -20,6 +23,9 @@ function dumpObject(obj, lines = [], isLast = true, prefix = '') {
     return lines;
 }
 
+/**
+ * loads the bag model
+ */
 function createBag() {
     gltfLoader.load('resources/models/bag.gltf', (gltf) => {
         bag = gltf.scene;
@@ -28,20 +34,22 @@ function createBag() {
         bag.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
-
             }
-
         });
     },
-    (gltf) => {
-        // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
-        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
+    (gltf) => { // called when loading is in progresses
+        gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
+        IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded'); 
     });
 }
 
+/**
+ * load and show the gltf model of the character
+ * @param {*} scene the scene where the character will be rendered
+ * @param {*} runningCallback the function related to the running animation
+ * @param {*} collisionCallback the function that needs to be called whenever a collision happens
+ */
 function loadCharacter(scene, runningCallback, collisionCallback) {
-
 
     gltfLoader.load(CHARACTER_URL, (gltf) => {
         // called when resource is loaded
@@ -52,7 +60,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
             }
 
             if (node.name == 'Armature') {
-                skeleton = node.children[0];
+                skeleton = node.children[0]; // assign bones to skeleton variable, used within animation.js
             }
             else if (node.name == 'mixamorigRightArm' || node.name == 'mixamorigLeftArm') {
                 // set character model arms in standard position
@@ -61,7 +69,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         });
 
         IS_DEBUG && console.log("CHARACTER:\n" + dumpObject(model).join('\n'));
-
+        // transparent box (for collisions)
         playerBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.5, 1.5, 0.5),
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -79,7 +87,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
 
     }, (gltf) => {
         // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
+        gltf.loaded == gltf.total && assetsLoaded++;// if loading is completed, update number of assets loaded
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
 
     }, (error) => {
@@ -89,23 +97,29 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
     });
 }
 
+/**
+ * the bag is added to the player's hierarchical model (two children: the bag and the character) 
+ */
 function addBagToPlayer(){
     player.add(bag);
 }
 
+/**
+ * loads the character model
+ */
 function createCar() {
     gltfLoader.load(CAR_URL, function (gltf) {
 
         defaultCarModel = gltf.scene.children[0];
-
+        // set body materials
         defaultCarModel.getObjectByName('body').material = CAR_BODY_MATERIAL;
-
+        // set details material
         defaultCarModel.getObjectByName('rim_fl').material = CAR_DETAILS_MATERIAL;
         defaultCarModel.getObjectByName('rim_fr').material = CAR_DETAILS_MATERIAL;
         defaultCarModel.getObjectByName('rim_rr').material = CAR_DETAILS_MATERIAL;
         defaultCarModel.getObjectByName('rim_rl').material = CAR_DETAILS_MATERIAL;
         defaultCarModel.getObjectByName('trim').material = CAR_DETAILS_MATERIAL;
-
+        // set glass material
         defaultCarModel.getObjectByName('glass').material = CAR_GLASS_MATERIAL;
 
         IS_DEBUG && console.log("CAR:\n" + dumpObject(defaultCarModel).join('\n'));
@@ -114,16 +128,20 @@ function createCar() {
             if (node.isMesh) {
                 node.castShadow = true;
             }
-        },
-        );
+        });
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
+        gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
     });
 }
 
+/**
+ * add a car to the scene
+ * @param {*} scene the scene where the car needs to be rendered
+ * @param {number} offset position along the x axis where the car will be placed  
+ */
 function addCar(scene, offset) {
     let id = Date.now();
     let carModel = defaultCarModel.clone();
@@ -132,7 +150,7 @@ function addCar(scene, offset) {
 
     carModel.position.x = offset;
     carModel.position.z = OBJ_DISTANCE;
-
+    // transparent mesh (for collisions)
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 2, 4.5),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -142,7 +160,7 @@ function addCar(scene, offset) {
     carBox.name = "car_" + id;
     carBox.position.set(offset, 0, OBJ_DISTANCE);
 
-    let wheels = [];
+    let wheels = []; // add wheels into an array, so that they can be animated within the function updateCars in scenario.js
     wheels.push(
         carModel.getObjectByName('wheel_fl'),
         carModel.getObjectByName('wheel_fr'),
@@ -155,7 +173,11 @@ function addCar(scene, offset) {
     scene.add(carBox);
     scene.add(carModel);
 }
-
+/**
+ * add a building to the scene
+ * @param {*} scene 
+ * @param {boolean} isRight true if the building will be placed on the right side of the scenario, false otherwise
+ */
 function addBuilding(scene, isRight) {
     let box = new Physijs.BoxMesh(
         new THREE.CubeGeometry(2, 8, 2),
@@ -168,14 +190,22 @@ function addBuilding(scene, isRight) {
     scene.add(box);
 }
 
+/**
+ * creates the coin geometry
+ */
 function createCoin() {
     coinGeometry = new THREE.CylinderGeometry(
         0.25, 0.25, 0.06, 16
     );
     coinGeometry.rotateX(Math.PI / 2);
-    assetsLoaded++;
+    assetsLoaded++; // if loading is completed, update number of assets loaded
 }
 
+/**
+ * add a coin to the scene
+ * @param {*} scene 
+ * @param {number} offset position along the x-coordinate where the coin will be placed
+ */
 function addCoin(scene, offset) {
     let coin = new Physijs.BoxMesh(
         coinGeometry.clone(),
@@ -189,6 +219,9 @@ function addCoin(scene, offset) {
     scene.add(coin);
 }
 
+/**
+ * loads the model of the tree
+ */
 function createTree() {
     gltfLoader.load('resources/models/tree.glb', function (gltf) {
 
@@ -205,11 +238,16 @@ function createTree() {
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
+        gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
     });
 }
 
+/**
+ * add a tree to the scene
+ * @param {*} scene 
+ * @param {boolean} isRight true if the tree will be on the right side of the scenario, false otherwise
+ */
 function addTree(scene, isRight) {
     let id = Date.now()
     let treeModel = defaultTree.clone();
@@ -229,12 +267,20 @@ function addTree(scene, isRight) {
     scene.add(treeBox);
 }
 
+/**
+ * creates the rock geometry
+ */
 function createRock() {
     rockGeometry = new THREE.IcosahedronBufferGeometry(1, 1);
     rockGeometry.rotateX(Math.PI / 2);
-    assetsLoaded++;
+    assetsLoaded++; // if loading is completed, update number of assets loaded
 }
 
+/**
+ * add a rock to the scene
+ * @param {*} scene 
+ * @param {*} isRight true if the rock will be placed on the right side of the screen, false otherwise
+ */
 function addRock(scene, isRight) {
     let rockMesh = new THREE.MeshPhysicalMaterial({
         map: textureLoader.load('resources/textures/rock.jpg'),
@@ -253,7 +299,11 @@ function addRock(scene, isRight) {
     rocks.push(rock);
     scene.add(rock);
 }
-
+/**
+ * load a gazelle model and add it to the scene
+ * @param {*} scene 
+ * @param {number} offset position along the x-axis where the gazelle will be placed
+ */
 function addGazelle(scene, offset) {
 
     gltfLoader.load('resources/models/gazelle.glb', function (gltf) {
@@ -272,6 +322,7 @@ function addGazelle(scene, offset) {
                 node.castShadow = true;
             }
         });
+        // transparent box (for collisions)
         let gazelleBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.8, 2.4, 4),
             new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -289,6 +340,9 @@ function addGazelle(scene, offset) {
 
 }
 
+/**
+ * load the gltf model of a city lamp
+ */
 function createLamp() {
     gltfLoader.load('resources/models/lamp.gltf', function (gltf) {
 
@@ -305,18 +359,23 @@ function createLamp() {
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
+        gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
     });
 }
 
+/**
+ * add a city lamp to the scene
+ * @param {*} scene 
+ * @param {*} isRight true if the lamp will be placed on the right side of the scenario, false otherwise
+ */
 function addLamp(scene, isRight) {
     let id = Date.now();
 
     let lampModel = defaultLamp.clone();
     lampModel.name = "lamp_" + id + "_model";
     lampModel.position.set((isRight ? -1 : 1) * 3, 1, OBJ_DISTANCE);
-
+    // transparent box (for collisions)
     let lampBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(0.2, 8, 1),
         new THREE.MeshBasicMaterial({ color: 'white', transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -329,7 +388,9 @@ function addLamp(scene, isRight) {
     scene.add(lampModel);
     scene.add(lampBox);
 }
-
+/**
+ * load a truck model from a gltf file
+ */
 function createTruck() {
     gltfLoader.load('resources/models/CesiumMilkTruck.gltf', function (gltf) {
 
@@ -344,21 +405,25 @@ function createTruck() {
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
-        gltf.loaded == gltf.total && assetsLoaded++;
+        gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
         IS_DEBUG && console.log((gltf.loaded / gltf.total * 100) + '% loaded');
     });
 }
-
+/**
+ * add a truck wall to the scene
+ * @param {*} scene 
+ */
 function addTruck(scene) {
+    // first truck 
     let truckModel = defaultTruck.clone();
     truckModel.scale.set(0.8, 0.7, 0.7);
     truckModel.position.set(2, 0, OBJ_DISTANCE);
-
+    // second truck
     let truckModel2 = defaultTruck.clone();
     truckModel2.scale.set(0.8, 0.7, 0.7);
     truckModel2.position.set(-2, 0, OBJ_DISTANCE);
     truckModel2.rotation.y = Math.PI;
-
+    // transparent box (for collisions)
     let truckBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(7, 3.7, 1),
         new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
@@ -373,6 +438,10 @@ function addTruck(scene) {
     scene.add(truckBox);
 }
 
+/**
+ * add a rock wall to the scene
+ * @param {*} scene 
+ */
 function addRockWall(scene) {
     let rockWall = new Physijs.BoxMesh(
         new THREE.CubeGeometry(9, 3.7, 1),
@@ -388,6 +457,10 @@ function addRockWall(scene) {
     scene.add(rockWall);
 }
 
+/**
+ * the velocity of the box is restored along x and y axis
+ * @param {*} box physijs mesh that needs to be constrained
+ */
 function boxConstraints(box) {
     box.setAngularVelocity(new THREE.Vector3(0, 0, 0));
     (box.getLinearVelocity().x != 0 || box.getLinearVelocity().y != 0) && box.setLinearVelocity(new THREE.Vector3(0, 0, box.getLinearVelocity().z));

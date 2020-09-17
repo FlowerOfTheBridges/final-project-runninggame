@@ -11,7 +11,7 @@ var gameCheckInterval = null;
 var round = 0;
 var score = 0;
 var lifeCount = 3;
-var update, currentScenario, lastHit = null;
+var updateScenario, currentScenario, lastHit = null;
 
 const scene = new Physijs.Scene;
 const stats = new Stats();
@@ -23,11 +23,16 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
 
-
+/**
+ * after menu page is loaded, get high scores
+ */
 window.onload = function () {
     getHighScores();
 }
 
+/**
+ * callback used whenever the page is resized by the user
+ */
 function onWindowResize() {
 
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -37,6 +42,9 @@ function onWindowResize() {
 
 }
 
+/**
+ * load all the sound within the application
+ */
 function loadSounds() {
     sound.addEventListener("fileload", startSoundtrack);
     sound.registerSound("resources/audio/soundtrack.ogg", 'soundtrack');
@@ -49,13 +57,22 @@ function loadSounds() {
     sound.registerSound("resources/audio/car_crash.ogg", 'car_crash');
     sound.registerSound("resources/audio/lamp.ogg", 'lamp');
     sound.registerSound("resources/audio/gazelle.ogg", 'gazelle');
+    sound.registerSound("resources/audio/game_over.ogg", 'game_over');
 
 }
 
+/** 
+ * function called to init the page
+ */
 function init() {
     loadSounds();
 }
 
+/**
+ * check whether all the objects are loaded correctly
+ * @param {number} numberOfAssets to be loaded
+ * @param {boolean} condition that needs to be satisfied before starting the game
+ */
 function checkAssets(numberOfAssets, condition) {
     if (assetsLoaded < numberOfAssets) {
         updateLoading(assetsLoaded, numberOfAssets);
@@ -77,9 +94,14 @@ function checkAssets(numberOfAssets, condition) {
     }
 }
 
+/**
+ * start the game
+ * @param {string} scenario the name of the scenario that needs to be created
+ */
 function start(scenario) {
     createCoin();
     createBag();
+    // load models and check whether they are finished
     switch (scenario) {
         case 'city':
             createCar();
@@ -94,13 +116,11 @@ function start(scenario) {
             createTree();
             createRock();
             gameCheckInterval = setInterval(() => {
-                let startCondition = defaultTree != null && rockGeometry != null && coinGeometry!=null && bag != null && player != null && playerBox != null;
+                let startCondition = defaultTree != null && rockGeometry != null && coinGeometry != null && bag != null && player != null && playerBox != null;
                 checkAssets(5, startCondition);
             }, 1000);
             break;
     }
-
-    
 
     gameOver = false;
     let dayTime = getDayTime(scenario);
@@ -108,14 +128,15 @@ function start(scenario) {
 
     scene.setGravity(new THREE.Vector3(0, 0, Z_SPEED));
     camera.position.set(0, CAMERA_Y, CAMERA_Z);
-
+    // render options
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
-    createUI();
 
+    createUI();
+    // orbit control, to fix the camera around the player
     controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enablePan = false;
     controls.enableZoom = false;
@@ -129,7 +150,8 @@ function start(scenario) {
     switch (scenario) {
         case 'city':
             createCityScenario(scene, dayTime);
-            update = function (time) {
+            // update is a function that will be called within the render function (animate)
+            updateScenario = function (time) { // scenario objects update
                 updateCars(time);
                 updateCoins(time);
                 updateBuildings();
@@ -139,7 +161,7 @@ function start(scenario) {
             break;
         case 'forest':
             createForestScenario(scene, dayTime);
-            update = function (time) {
+            updateScenario = function (time) { // scenario objects update
                 updateRockWalls();
                 updateTrees();
                 updateRocks(time);
@@ -150,7 +172,7 @@ function start(scenario) {
     }
 
     currentScenario = scenario;
-
+    // lights
     createHemiLight(0xffffff, 0x444444, [0, 20, 0], scene);
     createPointLigth(0xff4422, 0.5, [-2, 1, 3], IS_DEBUG);
     createPointLigth(0xff4422, 0.5, [2, 1, 3], IS_DEBUG);
@@ -162,24 +184,34 @@ function start(scenario) {
     animate();
 }
 
+/**
+ * restart the game, by refreshing the page
+ */
 function restart() {
     location.reload();
 }
-
+/**
+ * start the main soundtrack of the game
+ * @param {*} event source of the audio file 
+ */
 function startSoundtrack(event) {
     if (event.id == "soundtrack") {
         soundtrack = sound.play(event.src);
+        soundtrack.volume = 0.1;
     }
 }
 
-
+/**
+ * function called on every frame. it renders the scene,
+ * updates physics and tweens computation
+ */
 function animate() {
     stats.begin();
-    let time = - performance.now() / 1000;
+    let time = - performance.now() / 1000; // get rotation speed from performances
 
     if (!gameOver) {
         scene.simulate(); // run physics
-        update(time);
+        updateScenario(time);
     }
 
     renderer.render(scene, camera);
@@ -188,13 +220,21 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
+/**
+ * remove the bag from the player whenever an obstacle has been hit
+ */
 function updateBag() {
     let bag = player.children[1];
     let newBag = bag.clone();
-    dropBag(bag);
+    dropBag(bag); // animation
     lifeCount != 0 && setTimeout(() => { player.add(newBag) }, 300);
 }
 
+/**
+ * callback attached to the keydown event, it's used to control the 
+ * character movement (left, right or jump) across the scene
+ * @param {number} keyCode key pressed by the player
+ */
 function moveCharacter(keyCode) {
     switch (keyCode) {
         case 37:
@@ -216,12 +256,23 @@ function moveCharacter(keyCode) {
             }
             break;
         case 38:
-            //up 
-            !isJump && jump(camera);
+            // Up 
+            !isJump && jump(camera); // animation
             break;
     }
 }
 
+/**
+ * callback attached to the collision event listener of the character's physijs mesh.
+ * It checks what type of object has been hit:
+ * - if it's a coin, it updates the score
+ * - otherwise, it decrements the life count. depending on the model, a different animation may be raised
+ * Also, whenever there are the conditions for the game over, the game ends and the ending screen is shown
+ * @param {*} otherObject the object hit by the player
+ * @param {*} relativeVelocity 
+ * @param {*} relativeRotation 
+ * @param {*} contactNormal 
+ */
 function collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal) {
     IS_DEBUG && console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, otherObject, relativeVelocity, relativeRotation, contactNormal);
     if (!otherObject.name.includes("coin")) {
@@ -230,8 +281,14 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
             if (lifeCount == 0) {
                 clearInterval(objectInterval);
                 clearInterval(groundInterval);
-                stopAnimation(runTween);
-                collision();
+                stopAnimation(runTween); // stop run animation
+                collision(); // animation
+
+                if (currentScenario == 'forest') { // if scenario is forest, stop all gazelles animation
+                    gazelles.forEach(gazelle => {
+                        stopAnimation(gazelle.tweens);
+                    })
+                }
                 soundtrack.stop();
                 !IS_DEBUG && showGameOver();
                 gameOver = true;
@@ -245,21 +302,16 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                 updateBag();
             }
             sound.play('scream');
-            if (currentScenario == 'forest') {
-                gazelles.forEach(gazelle => {
-                    stopAnimation(gazelle.tweens);
-                })
-            }
             if (otherObject.name.includes("car")) {
-                carCollision(scene.getObjectByName(otherObject.name + "_model"));
+                carCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
                 sound.play('car_crash');
             }
             else if (otherObject.name.includes("lamp")) {
-                lampCollision(scene.getObjectByName(otherObject.name + "_model"));
+                lampCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
                 sound.play('lamp');
             }
             else if (otherObject.name.includes("tree")) {
-                treeCollision(scene.getObjectByName(otherObject.name + "_model"));
+                treeCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
                 sound.play('tree');
             }
             else if (otherObject.name.includes("gazelle")) {
@@ -267,13 +319,11 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                 sound.play('gazelle');
             }
         }
-        else {
-            console.log("same object has before...ignore")
-        }
+        // if one object is detected multiple times, we ignore it.
         lastHit = otherObject.uuid;
 
     }
-    else {
+    else { // if a coin has been hit, update the score and remove the coin from the scene
         score++;
         updateScore(score);
         sound.play('money');

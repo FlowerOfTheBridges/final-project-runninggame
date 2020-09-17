@@ -96,6 +96,7 @@ function showGameOver() {
         sessionStorage.setItem('highScores', JSON.stringify(highScores));
     }
     setTimeout(() => {
+        sound.play('game_over');
         $("#gameOverModal").modal();
         document.getElementById('gameOverCoins').innerHTML = score;
       
