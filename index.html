@@ -17,13 +17,25 @@
 		}
 
 		.blink_text {
-			animation: 5s blinker linear infinite;
+			animation: 1s blinker linear infinite;
 		}
 
 		.gameover {
 
 			animation: 5s goa linear;
 			animation-fill-mode: forwards;
+		}
+
+		.logo  {
+
+             animation: 2s goa ease-in-out;
+             animation-fill-mode: backwards;
+         }
+
+		.positionLogo  {
+			width: 70vh;
+		    height: 20vh; 
+			margin-top: 15vh
 		}
 
 		@keyframes goa {
@@ -40,6 +52,10 @@
 
 		.blink_text b {
 			color: black;
+		}
+
+		.blink_text button {
+			color: cornsilk;
 		}
 
 		@keyframes blinker {
@@ -159,6 +175,34 @@
 			-webkit-transition: all .5s ease;
 			transition: all .5s ease;
 		}
+
+		.credits {
+			font-family:'Press Start 2P'; 
+			font-size:small;
+			margin-top: 5.2vh;
+		}
+
+		#presentation-display {
+			background-color: black; 
+			height: 103vh; 
+			background-image: url('resources/logo/sapienzalogo.png');
+			background-size: 40%;
+			background-position: top;
+		    opacity: 0.9;
+            background-repeat:no-repeat;
+        }
+
+		#clickMe {
+			border: none; 
+			background-color: inherit;
+			color: cornsilk; 
+			margin-top: 50vh;
+			font-size: 20px;
+		}
+
+		#startGame {
+			display: none;
+		}
 	</style>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -191,8 +235,26 @@
 	<script src="js/model.js"></script>
 	<script src="js/light.js"></script>
 	<script src="js/index.js"></script>
-	<section class="sect-services" id="menu">
-		<div class="container">
+	<script>
+	function homeDisplay() { 
+	    document.getElementById('clickMe').style.display="none";
+	    document.getElementById('presentation-display').style.display="none";
+	    document.getElementById('startGame').style.display="block";
+	}
+	</script>
+
+    <div id="presentation-display" >
+	    <center><img src="resources/logo/LogoPresentation.png" class="logo positionLogo"  /></center>
+	    <center><button class="blink_text" id = "clickMe" onclick=" homeDisplay()" >Click me to start</button></center>
+	    <div class="card-footer text-muted credits">
+		    <b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
+	    </div>
+    </div>
+	
+	<!--Menù section Presented-->
+	<div id="startGame" >
+	<section class="sect-services" id="menu" >
+		<div class="container" >
 			<div class="row">
 				<div class="col-12">
 					<div class="it-hero-text-wrapper">
@@ -285,11 +347,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="card-footer text-muted" style="font-family:'Press Start 2P'; font-size:small;">
-			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
+		
 		</div>
 	</section>
-
+</div>
 	<!-- GAME OVER MODAL -->
 
 	<div class="modal fade element " id="gameOverModal" data-backdrop="static" data-keyboard="false"
