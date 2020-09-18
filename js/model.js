@@ -11,16 +11,20 @@ THREE.ImageUtils.crossOrigin = '';
 /**
  * function to write the hierarchical structure of a gltf model. used for devolpment purpouse only
  */
-function dumpObject(obj, lines = [], isLast = true, prefix = '') {
-    let localPrefix = isLast ? '└─' : '├─';
-    lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || '*no-name*'} [${obj.type}]`);
-    let newPrefix = prefix + (isLast ? '  ' : '│ ');
-    let lastNdx = obj.children.length - 1;
-    obj.children.forEach((child, ndx) => {
-        let isLast = ndx === lastNdx;
-        dumpObject(child, lines, isLast, newPrefix);
+function dumpObject(obj, name) {
+    name && console.log(name);
+    let line = (obj.name || "no-name")+" has "+obj.children.length+" children: ";
+    obj.children.forEach((child, index) => {
+        line+=child.name+"["+index+"]"
+        if(obj.children.length - 1 == index){
+            console.log(line);
+        }
+        else{
+            line+=","
+        } 
+        dumpObject(child);
     });
-    return lines;
+    
 }
 
 /**
@@ -36,6 +40,7 @@ function createBag() {
                 node.castShadow = true;
             }
         });
+        IS_DEBUG && dumpObject(bag, "BAG:");
     },
     (gltf) => { // called when loading is in progresses
         gltf.loaded == gltf.total && assetsLoaded++; // if loading is completed, update number of assets loaded
@@ -68,7 +73,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
             }
         });
 
-        IS_DEBUG && console.log("CHARACTER:\n" + dumpObject(model).join('\n'));
+        IS_DEBUG && dumpObject(model, "CHARACTER");
         // transparent box (for collisions)
         playerBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.5, 1.5, 0.5),
@@ -122,7 +127,7 @@ function createCar() {
         // set glass material
         defaultCarModel.getObjectByName('glass').material = CAR_GLASS_MATERIAL;
 
-        IS_DEBUG && console.log("CAR:\n" + dumpObject(defaultCarModel).join('\n'));
+        IS_DEBUG && dumpObject(defaultCarModel, "CAR:");
 
         defaultCarModel.traverse((node) => {
             if (node.isMesh) {
@@ -233,7 +238,7 @@ function createTree() {
             }
         });
 
-        IS_DEBUG && console.log("TREE:\n" + dumpObject(defaultTree).join('\n'));
+        IS_DEBUG && dumpObject(defaultTree, "TREE:");
 
     }.bind(this),
     (gltf) => {
@@ -315,7 +320,7 @@ function addGazelle(scene, offset) {
         gazelleModel.castShadow = true;
         gazelleModel.rotation.y = Math.PI / 2;
         gazelleModel.position.set(offset, 0, OBJ_DISTANCE);
-        IS_DEBUG && console.log("GAZELLE:\n" + dumpObject(gazelleModel).join('\n'));
+        IS_DEBUG && dumpObject(gazelleModel, "GAZELLE:");
         // add box to gazelle (collision  check)
         gazelleModel.traverse((node) => {
             if (node.isMesh) {
@@ -355,7 +360,7 @@ function createLamp() {
                 node.castShadow = true;
             }
         });
-        IS_DEBUG && console.log("LAMP:\n" + dumpObject(defaultLamp).join('\n'));
+        IS_DEBUG && dumpObject(defaultLamp, "LAMP:");
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
@@ -401,7 +406,7 @@ function createTruck() {
                 node.castShadow = true;
             }
         });
-        IS_DEBUG && console.log("TRUCK:\n" + dumpObject(defaultTruck).join('\n'));
+        IS_DEBUG && dumpObject(defaultTruck, "TRUCK:");
     }.bind(this),
     (gltf) => {
         // called when loading is in progresses
