@@ -1,5 +1,5 @@
 var skeleton, playerBox = null;
-
+/** tweens used within the run animation */
 var runTween = {
     leftLeg: null,
     rightLeg: null,
@@ -14,7 +14,10 @@ var runTween = {
     leftShoulder: null,
     rightShoulder: null
 }
-
+/**
+ * stop a set of tween animations
+ * @param {*} animationTween 
+ */
 function stopAnimation(animationTween) {
     if (Array.isArray(animationTween)) {
         animationTween.forEach(tween => {
@@ -27,7 +30,9 @@ function stopAnimation(animationTween) {
         });
     }
 }
-
+/**
+ * starts the run animation
+ */
 function run() {
     while (!skeleton) {
         // waiting for skeleton to be loaded
@@ -37,12 +42,14 @@ function run() {
     skeleton.position.y = 130;
     moveShoulders();
     moveLegs();
-    moveFoot();
+    moveFeet();
     moveArms();
     initBody()
     moveCharacter();
 }
-
+/**
+ * set the body of the character in the run starting position
+ */
 function initBody() {
     let bones = skeleton;
     let bonesInit = { y: bones.position.y = 130 }
@@ -59,6 +66,9 @@ function initBody() {
     runTween.bones.start();
 }
 
+/**
+ * move the legs of the character while running
+ */
 function moveLegs() {
 
     let leftUpperLeg = skeleton.children[1];
@@ -133,8 +143,10 @@ function moveLegs() {
     runTween.leftUpperLeg.start();
     runTween.leftLeg.start();
 }
-
-function moveFoot() {
+/**
+ * move the feet of the character while running
+ */
+function moveFeet() {
     let leftFoot = skeleton.children[1].children[0];
     runTween.leftFoot = new TWEEN.Tween(leftFoot.rotation)
         .to(FOOT_FINAL, RUNNING_SPEED)
@@ -175,6 +187,9 @@ function moveFoot() {
     runTween.rightFoot.start();
 }
 
+/**
+ * move the arms of the character while running
+ */
 function moveArms() {
     let leftArm = skeleton.children[0].children[0].children[0].children[1].children[0];
     runTween.leftArm = new TWEEN.Tween({ x: leftArm.rotation.x = -Math.PI / 4, y: leftArm.rotation.y, z: leftArm.rotation.z })
@@ -236,8 +251,9 @@ function moveArms() {
     runTween.rightHand.start();
 }
 
-
-
+/**
+ * move the shoulder of the character while running
+ */
 function moveShoulders() {
 
     let leftShoulder = skeleton.children[0].children[0].children[0].children[1];
@@ -317,6 +333,9 @@ function moveShoulders() {
 
 }
 
+/**
+ * performs the collision animation of the character
+ */
 function fallDown() {
 
     //left Upper Leg
@@ -533,12 +552,17 @@ function fallDown() {
 
 }
 
+/**
+ * starts the collision animation
+ */
 function collision() {
     resetCharacter();
     fallDown();
     setTimeout(() => moveHead(), 4000);
 }
-
+/**
+ * move the head of the character
+ */
 function moveHead() {
     let head = skeleton.children[0].children[0].children[0].children[0];
     let tweenHead = new TWEEN.Tween(head.rotation)
@@ -557,9 +581,10 @@ function moveHead() {
     tweenHead.start();
 
 }
-
+/**
+ * change the left hand fingers position
+ */
 function jumpSetLeftHand() {
-
     //Hand left
     skeleton.children[0].children[0].children[0].children[1].children[0].children[0].children[0].rotation.x = -1.1;
     //Left Hand phalanx 1
@@ -581,7 +606,9 @@ function jumpSetLeftHand() {
     skeleton.children[0].children[0].children[0].children[1].children[0].children[0].children[0].children[3].children[0].children[0].rotation.x = 3.14
     skeleton.children[0].children[0].children[0].children[1].children[0].children[0].children[0].children[4].children[0].children[0].rotation.x = 3.14
 }
-
+/**
+ * reset the character position
+ */
 function resetCharacter() {
     //spine
     skeleton.children[0].rotation.x = 0;
@@ -619,8 +646,11 @@ function resetCharacter() {
     skeleton.children[0].children[0].children[0].children[1].children[0].children[0].rotation.y = 0;
     skeleton.children[0].children[0].children[0].children[2].children[0].children[0].rotation.y = 0;
 }
-
-function jumpLegMovement(tweenJump){
+/**
+ * prepare the leg of the character for the jump animation, and then start the jump tween
+ * @param {*} tweenJump the tween related to the jump lifting animation
+ */
+function jumpLegMovement(tweenJump) {
     // leg movement
     let leftUpperLeg = skeleton.children[1];
     let tweenLeftUpperLeg = new TWEEN.Tween({ x: leftUpperLeg.rotation.x })
@@ -628,7 +658,7 @@ function jumpLegMovement(tweenJump){
         .interpolation(TWEEN.Interpolation.CatmullRom)
         .onUpdate((d) => {
             leftUpperLeg.rotation.x = d.x;
-            skeleton.position.y-=d.y;
+            skeleton.position.y -= d.y;
         })
         .onComplete(() => {
             tweenJump.start();
@@ -667,6 +697,10 @@ function jumpLegMovement(tweenJump){
 
     tweenRightUpperLeg.start();
 }
+
+/**
+ * perform the character movement while jumping
+ */
 function jumpBodyMovement() {
 
     jumpSetLeftHand();
@@ -794,6 +828,9 @@ function jumpBodyMovement() {
     tweenRightFoot.start();
 }
 
+/**
+ * starts the jump animation
+ */
 function jump() {
     stopAnimation(runTween);
     resetCharacter();
@@ -802,7 +839,7 @@ function jump() {
     let model = player;
     let boxPosition = playerBox.position.clone();
     let initialRotation = camera.rotation.x;
-    
+
     let tweenJump = new TWEEN.Tween(model.position)
         .to({ y: model.position.y + 2.3 }, JUMP_SPEED)
         .easing(TWEEN.Easing.Elastic.Out)
@@ -824,6 +861,10 @@ function jump() {
     sound.play('jump');
 }
 
+/**
+ * performs the car animation after collision
+ * @param {*} car the car 3d model which will perform the animation
+ */
 function carCollision(car) {
 
     let main = car.children[0];
@@ -857,7 +898,11 @@ function carCollision(car) {
     wheelsCollision(wheelsR, true);
     wheelsCollision(wheelsL, false);
 }
-
+/**
+ * performs the animation of the car's wheels
+ * @param {*} wheelsArray array of wheels 3d objects
+ * @param {boolean} isRight true if the wheel is on the right side of the chassis, false otherwise 
+ */
 function wheelsCollision(wheelsArray, isRight) {
     wheelsArray.forEach((wheel, index) => {
         new TWEEN.Tween(wheel.position)
@@ -889,6 +934,10 @@ function wheelsCollision(wheelsArray, isRight) {
     })
 }
 
+/**
+ * starts the lamp animation after a collision
+ * @param {*} lamp the 3d model which will perform the animation 
+ */
 function lampCollision(lamp) {
     new TWEEN.Tween({ x: 0.1 })
         .to({ x: 0.15 }, 300)
@@ -926,7 +975,10 @@ function lampCollision(lamp) {
         .yoyo(true)
         .start();
 }
-
+/**
+ * starts the animation of a gazelle
+ * @param {*} gazelle the 3d object which will perform the animation
+ */
 function moveGazelle(gazelle) {
     let gazelleTweens = [];
     //this array contains legs of the gazelle, the animation is done within the moveGazelleLegs function
@@ -953,11 +1005,16 @@ function moveGazelle(gazelle) {
     return gazelleTweens;
 }
 
+/**
+ * performs the movement of the gazelle's legs
+ * @param {*} legs array of legs
+ * @param {*} gazelleTweens array of tweens
+ */
 function moveGazelleLegs(legs, gazelleTweens) {
     legs.forEach((leg, index) => {
 
         switch (index) {
-            case 0:
+            case 0: // back left leg
                 let legUpperLeftBackTween = new TWEEN.Tween({ y: 0.7 })
                     .to({ y: leg.rotation.y }, GAZELLE_SPEED)
                     .interpolation(TWEEN.Interpolation.CatmullRom)
@@ -986,7 +1043,7 @@ function moveGazelleLegs(legs, gazelleTweens) {
                 gazelleTweens.push(legUpperBackTween)
                 break;
 
-            case 2:
+            case 2: // front left leg
                 let legUpperFrontLeftTween = new TWEEN.Tween(leg.rotation)
                     .to({ y: -0.7 }, GAZELLE_SPEED)
                     .interpolation(TWEEN.Interpolation.CatmullRom)
@@ -1010,7 +1067,7 @@ function moveGazelleLegs(legs, gazelleTweens) {
                 gazelleTweens.push(legUpperFrontLeftTween)
                 gazelleTweens.push(legLowerFrontLeftTween)
                 break;
-            case 3:
+            case 3: // front right leg
                 let legUpperFrontRightTween = new TWEEN.Tween({ y: -0.7 })
                     .to({ y: 0.0 }, GAZELLE_SPEED)
                     .interpolation(TWEEN.Interpolation.CatmullRom)
@@ -1037,7 +1094,10 @@ function moveGazelleLegs(legs, gazelleTweens) {
         }
     });
 }
-
+/**
+ * performs the animation of a tree after a collision
+ * @param {*} tree the 3d object which will perform the animation
+ */
 function treeCollision(tree) {
 
     let leaf = tree.children[0].children[1];
@@ -1069,6 +1129,10 @@ function treeCollision(tree) {
         .start();
 }
 
+/**
+ * starts the gazelle's collision animation
+ * @param {*} gazelle the 3d object which will perform the animation
+ */
 function gazelleCollision(gazelle) {
     let collisionSpeed = GAZELLE_SPEED + 100;
     gazelle.position.y = 2;
@@ -1162,6 +1226,10 @@ function gazelleCollision(gazelle) {
         .start()
 }
 
+/**
+ * starts the animation which drops the bag from the player's shoulder after a collision
+ * @param {*} bag the 3d object which will perform the naimation
+ */
 function dropBag(bag) {
     new TWEEN.Tween(bag.position)
         .to({ y: 0, z: -1 }, 600)

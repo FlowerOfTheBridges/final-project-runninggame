@@ -1,4 +1,8 @@
 var objectInterval, groundInterval = null;
+/** 
+ * objects array. each type of model is stored inside its corresponding array, where it will be managed by
+ * the corresponding update function  
+ */
 var cars = [];
 var coins = [];
 var buildings = [];
@@ -8,17 +12,17 @@ var rocks = [];
 var gazelles = [];
 var trucks = [];
 var rockWalls = [];
-
+/**
+ * creates the city scenario
+ * @param {*} scene the scene where the scenario will be rendered 
+ * @param {string} dayTime 'morning' or 'sunset' (it will change the background)
+ */
 function createCityScenario(scene, dayTime) {
 
     scene.background = textureLoader.load('resources/textures/skyline' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'))//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 40, 50);
 
-    let groundTexture = textureLoader.load('resources/textures/street.jpg');
-    groundTexture.repeat.set(50, 10000);
-    groundTexture.wrapS = THREE.RepeatWrapping;
-    groundTexture.wrapT = THREE.RepeatWrapping;
-
+    //left barrier
     let leftBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     leftBarrierTexture.repeat.set(10, 1);
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
@@ -31,7 +35,7 @@ function createCityScenario(scene, dayTime) {
     leftBarrier.position.set(5, 1, 0);
     leftBarrier.castShadow = true;
     leftBarrier.receiveShadow = true;
-
+    // right barrier
     let rightBarrierTexture = textureLoader.load('resources/textures/building.jpg');
     rightBarrierTexture.repeat.set(10, 1);
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
@@ -47,17 +51,21 @@ function createCityScenario(scene, dayTime) {
 
     scene.add(leftBarrier);
     scene.add(rightBarrier);
-
+    // ground   
+    let groundTexture = textureLoader.load('resources/textures/street.jpg');
+    groundTexture.repeat.set(50, 10000);
+    groundTexture.wrapS = THREE.RepeatWrapping;
+    groundTexture.wrapT = THREE.RepeatWrapping;
     let groundMaterial = Physijs.createMaterial(
         new THREE.MeshLambertMaterial({ map: groundTexture }),
         .8, // high friction
         .4 // low restitution
     );
 
-    let mesh = new Physijs.PlaneMesh(new THREE.PlaneGeometry(50, 10000), groundMaterial, 5);
-    mesh.rotation.x = - Math.PI / 2;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+    let ground = new Physijs.PlaneMesh(new THREE.PlaneGeometry(50, 10000), groundMaterial, 5);
+    ground.rotation.x = - Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     groundInterval = setInterval(() => {
         rightBarrierTexture.offset.x += WALLS_SPEED;
@@ -75,15 +83,16 @@ function createCityScenario(scene, dayTime) {
 
 }
 
+/**
+ * creates the forest scenario
+ * @param {*} scene 
+ * @param {string} dayTime 
+ */
 function createForestScenario(scene, dayTime) {
+    // background
     scene.background = textureLoader.load('resources/textures/forest' + (dayTime == 'morning' ? '_day.jpg' : '.jpg'));//new THREE.Color(0xa0a0a0);
     scene.fog = new THREE.Fog(0xa0a0a0, 50, 50);
-
-    let groundTexture = textureLoader.load('resources/textures/rocks.jpg');
-    groundTexture.repeat.set(80, 1000);
-    groundTexture.wrapS = THREE.RepeatWrapping;
-    groundTexture.wrapT = THREE.RepeatWrapping;
-
+    // left barrier
     let leftBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
     leftBarrierTexture.repeat.set(7, 1);
     leftBarrierTexture.wrapS = THREE.RepeatWrapping;
@@ -96,7 +105,7 @@ function createForestScenario(scene, dayTime) {
     leftBarrier.position.set(10, 1, 0);
     leftBarrier.castShadow = true;
     leftBarrier.receiveShadow = true;
-
+    // right barrier
     let rightBarrierTexture = textureLoader.load('resources/textures/rock.jpg');
     rightBarrierTexture.repeat.set(7, 1);
     rightBarrierTexture.wrapS = THREE.RepeatWrapping;
@@ -112,17 +121,21 @@ function createForestScenario(scene, dayTime) {
 
     scene.add(leftBarrier);
     scene.add(rightBarrier);
-
+    // ground
+    let groundTexture = textureLoader.load('resources/textures/rocks.jpg');
+    groundTexture.repeat.set(80, 1000);
+    groundTexture.wrapS = THREE.RepeatWrapping;
+    groundTexture.wrapT = THREE.RepeatWrapping;
     let groundMaterial = Physijs.createMaterial(
         new THREE.MeshLambertMaterial({ map: groundTexture }),
         .8, // high friction
         .4 // low restitution
     );
 
-    let mesh = new Physijs.PlaneMesh(new THREE.PlaneGeometry(80, 1000), groundMaterial, 5);
-    mesh.rotation.x = - Math.PI / 2;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+    let ground = new Physijs.PlaneMesh(new THREE.PlaneGeometry(80, 1000), groundMaterial, 5);
+    ground.rotation.x = - Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     objectInterval = setInterval(() => {
         if (isGameReady) {
@@ -139,11 +152,15 @@ function createForestScenario(scene, dayTime) {
     }, WALLS_INTERVAL)
 }
 
-
+/**
+ * Functions that creates objects to insert within the city scenario. depending on the round, different
+ * configurations may be used
+ * @param {*} scene 
+ */
 function spawnCityObjects(scene) {
     addBuilding(scene, round % 2 == 0);
     addLamp(scene, round % 2 != 0);
-    setTimeout(() => {addBuilding(scene, round % 2 != 0); }, OUTER_OBSTACLES_INTERVAL - 1000);
+    setTimeout(() => { addBuilding(scene, round % 2 != 0); }, OUTER_OBSTACLES_INTERVAL - 1000);
     let carOffset = randomNumber(-1.2, 1.2);
     setTimeout(() => addCar(scene, carOffset), INNER_OBSTACLES_INTERVAL);
     round >= 4 && setTimeout(() => addCoin(scene, round % 2 == 0 ? 3 : -3), COINS_INTERVALS[1]);
@@ -153,7 +170,11 @@ function spawnCityObjects(scene) {
     coinOffset = coinOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => { addCoin(scene, round % 2 == 0 ? 3 : -3); addLamp(scene, round % 2 == 0); addCar(scene, coinOffset); }, COINS_INTERVALS[2]);
 }
-
+/**
+ * Functions that creates objects to insert within the forest scenario. depending on the round, different
+ * configurations may be used
+ * @param {*} scene 
+ */
 function spawnForestObjects(scene) {
     addTree(scene, round % 2 == 0);
     addRock(scene, round % 2 != 0);
@@ -167,7 +188,10 @@ function spawnForestObjects(scene) {
     coinOffset = coinOffset >= 0.6 ? randomNumber(-1.2, 0.6) : randomNumber(0.6, 1.2);
     setTimeout(() => { addCoin(scene, round % 2 != 0 ? 3 : -3); addRock(scene, round % 2 == 0); addGazelle(scene, coinOffset); }, COINS_INTERVALS[2]);
 }
-
+/**
+ * function that updates car positions, and removes those cars that are not more within the character range.
+ * @param {*} wheelRotation rotation to apply at each car's wheels
+ */
 function updateCars(wheelRotation) {
     cars.forEach((car, index) => {
         if (playerBox.position.z - 15 <= car.box.position.z) {
@@ -187,7 +211,10 @@ function updateCars(wheelRotation) {
         });
     })
 }
-
+/**
+ * function that updates coin positions, and removes those coins that are not more within the character range.
+ * @param {*} wheelRotation rotation to apply at each coin
+ */
 function updateCoins(rotationTime) {
     coins.forEach((coin, index) => {
         coin.rotation.y = rotationTime * Math.PI;
@@ -202,7 +229,9 @@ function updateCoins(rotationTime) {
         }
     })
 }
-
+/**
+ * function that updates building positions, and removes those buildings that are not more within the character range.
+ */
 function updateBuildings() {
     buildings.forEach((building, index) => {
         if (playerBox.position.z - 10 >= building.position.z) {
@@ -216,7 +245,9 @@ function updateBuildings() {
         }
     })
 }
-
+/**
+ * function that updates lamp positions, and removes those lamps that are not more within the character range.
+ */
 function updateLamps() {
     lamps.forEach((lamp, index) => {
         if (playerBox.position.z - 10 >= lamp.model.position.z) {
@@ -233,7 +264,9 @@ function updateLamps() {
         }
     })
 }
-
+/**
+ * function that updates tree positions, and removes those trees that are not more within the character range.
+ */
 function updateTrees() {
     trees.forEach((tree, index) => {
         if (playerBox.position.z - 10 >= tree.model.position.z) {
@@ -250,7 +283,9 @@ function updateTrees() {
         }
     })
 }
-
+/**
+ * function that updates rock positions, and removes those rocks that are not more within the character range.
+ */
 function updateRocks(rotation) {
     rocks.forEach((rock, index) => {
         if (playerBox.position.z - 15 > rock.position.z) {
@@ -266,7 +301,9 @@ function updateRocks(rotation) {
         }
     })
 }
-
+/**
+ * function that updates gazelle positions, and removes those gazelles that are not more within the character range.
+ */
 function updateGazelles() {
     gazelles.forEach((gazelle, index) => {
         if (playerBox.position.z - 15 <= gazelle.box.position.z) {
@@ -284,7 +321,9 @@ function updateGazelles() {
         }
     })
 }
-
+/**
+ * function that updates truck positions, and removes those trucks that are not more within the character range.
+ */
 function updateTrucks() {
     trucks.forEach((truck, index) => {
         if (playerBox.position.z - 15 <= truck.box.position.z) {
@@ -304,7 +343,9 @@ function updateTrucks() {
         }
     })
 }
-
+/**
+ * function that updates rock walls positions, and removes those walls that are not more within the character range.
+ */
 function updateRockWalls() {
     rockWalls.forEach((rockWall, index) => {
         if (playerBox.position.z - 15 <= rockWall.position.z) {
