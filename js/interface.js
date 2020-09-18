@@ -1,3 +1,15 @@
+/**
+ * show the home screen
+ */
+function homeDisplay() { 
+    document.getElementById('clickMe').style.display="none";
+    document.getElementById('presentation-display').style.display="none";
+    document.getElementById('startGame').style.display="block";
+}
+
+/**
+ * retrieve high score from local storage and show them on main menu
+ */
 function getHighScores() {
     let highScores = JSON.parse(sessionStorage.getItem("highScores"));
 
@@ -11,6 +23,10 @@ function getHighScores() {
     }
 }
 
+/**
+ * get the day time chosen for the scenario which will be played by the player
+ * @param {string} scenario the scenario chosen by the player
+ */
 function getDayTime(scenario) {
     let dayTimesRadio = document.getElementsByName(scenario + 'Radio');
     let dayTime = null;
@@ -22,6 +38,9 @@ function getDayTime(scenario) {
     return dayTime;
 }
 
+/**
+ * creates the user interfaces that will be displayed during the game (score and life count)
+ */
 function createUI() {
     document.getElementById("menu").hidden = true;
     // score
@@ -71,11 +90,17 @@ function createUI() {
     document.body.appendChild(loading);
 }
 
+/**
+ * remove a bag image from the screen
+ */
 function removeBag() {
     let div = document.getElementById("life_" + lifeCount);
     div.remove();
 }
 
+/**
+ * show the game over modal while checking if a new high score has been made by the player
+ */
 function showGameOver() {
     let isHighScore = false;
     let highScores = JSON.parse(sessionStorage.getItem("highScores"));
@@ -106,10 +131,19 @@ function showGameOver() {
     }, 5000);
 }
 
+/**
+ * update the score count
+ * @param {number} score the new score count
+ */
 function updateScore(score) {
     document.getElementById("coinCount").innerHTML = score;
 }
 
+/**
+ * update the loading count written on the screen
+ * @param {number} assets loaded at the moment 
+ * @param {number} total number of assets 
+ */
 function updateLoading(assets, total) {
     let loading = document.getElementById("loading").childNodes[0];
     if (assets != null && total != null) {
@@ -120,6 +154,9 @@ function updateLoading(assets, total) {
     }
 }
 
+/**
+ * remove the loading writing from the screen
+ */
 function removeLoading(){
     let loading = document.getElementById("loading");
     loading.remove();
