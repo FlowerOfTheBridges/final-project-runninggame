@@ -18,11 +18,11 @@ This repository contains all the resources for the *Final Project* of the *Inter
 * *up arrow*: jump
 
 ## Documentation
-You can read the documentation here.
+You can read the report describing all the technical aspects of the game [here](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-runninggame/blob/master/report.pdf).
 
 # Play The Game
-You can play the game [Here](https://sapienzainteractivegraphicscourse.github.io/final-project-runninggame/).
+You can play the game [here](https://sapienzainteractivegraphicscourse.github.io/final-project-runninggame/).
 
 ## Known Issues
-The game may not work properly with a slow connection or with a busy PC, due to the amount of resources needed by the physic engine used within the game. 
+The game may not work properly with a slow connection or web browsers with a limited amount of resoruces, due to the physic engine used within the game. 
 
