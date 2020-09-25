@@ -291,7 +291,7 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                     })
                 }
                 soundtrack.stop();
-                !IS_DEBUG && showGameOver();
+                showGameOver();
                 gameOver = true;
             }
             else {
