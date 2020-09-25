@@ -110,7 +110,6 @@ function start(scenario) {
             createTruck();
             gameCheckInterval = setInterval(() => {
                 let startCondition = defaultCarModel != null && coinGeometry != null && defaultLamp != null && defaultTruck != null && bag != null && player != null && playerBox != null;
-                console.log(defaultCarModel, coinGeometry, defaultLamp, defaultTruck, bag, player, playerBox);
                 checkAssets(6, startCondition);
             }, 500);
             break;
