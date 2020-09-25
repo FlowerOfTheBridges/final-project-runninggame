@@ -37,14 +37,14 @@ const CHARACTER_URL = 'resources/models/character.glb';
 const CAR_URL = 'resources/models/car.glb';
 // materials
 const CAR_BODY_MATERIAL = new THREE.MeshPhysicalMaterial({
-    color: 0xff0000, metalness: 0.6, roughness: 0.4, clearcoat: 0.05, clearcoatRoughness: 0.05
+    color: 0xff0000, metalness: 0.6, roughness: 0.4
 });
 const CAR_DETAILS_MATERIAL = new THREE.MeshStandardMaterial({
     color: 0xffffff, metalness: 1.0, roughness: 0.5
 });
 
 const CAR_GLASS_MATERIAL = new THREE.MeshPhysicalMaterial({
-    color: 0xffffff, metalness: 0, roughness: 0.1, transmission: 0.9, transparent: true
+    color: 0xffffff, metalness: 0, roughness: 0.1, transparent: true, opacity: 0.3
 });
 
 const COIN_MATERIAL = new THREE.MeshPhysicalMaterial({
@@ -52,8 +52,7 @@ const COIN_MATERIAL = new THREE.MeshPhysicalMaterial({
     metalness: 0.7,
     roughness: 0.3,
 });
-// objs settings
-const BOX_OPACITY = 0.01;
+/** objs settings */
 const OBJ_DISTANCE = 55;
 /** CAMERA SETTINGS */
 const CAMERA_Y = 2;
@@ -72,8 +71,8 @@ const INNER_OBSTACLES_INTERVAL = 2400;
 const WALL_OBASTACLES_INTERVAL = 4000;
 const COINS_INTERVALS = [1000, 3600, 5000];
 
-const IS_DEBUG = false; // set to true to enable helpers and collision boxes
-
+var IS_DEBUG = false; // set to true to enable helpers and collision boxes
+var IS_SOUND_ON = true; // set to true to enable sounds
 /** UTIL FUNCTIONS */
 function randomNumber(min, max) {
     return Math.random() * (max - min) + min;

@@ -26,15 +26,15 @@
 			animation-fill-mode: forwards;
 		}
 
-		.logo  {
+		.logo {
 
-             animation: 2s goa ease-in-out;
-             animation-fill-mode: backwards;
-         }
+			animation: 2s goa ease-in-out;
+			animation-fill-mode: backwards;
+		}
 
-		.positionLogo  {
+		.positionLogo {
 			width: 70vh;
-		    height: 20vh; 
+			height: 20vh;
 			margin-top: 15vh
 		}
 
@@ -177,25 +177,25 @@
 		}
 
 		.credits {
-			font-family:'Press Start 2P'; 
-			font-size:small;
+			font-family: 'Press Start 2P';
+			font-size: small;
 			margin-top: 5.2vh;
 		}
 
 		#presentation-display {
-			background-color: black; 
-			height: 103vh; 
+			background-color: black;
+			height: 110vh;
 			background-image: url('resources/logo/sapienzalogo.png');
 			background-size: 40%;
 			background-position: top;
-		    opacity: 0.9;
-            background-repeat:no-repeat;
-        }
+			opacity: 0.9;
+			background-repeat: no-repeat;
+		}
 
 		#clickMe {
-			border: none; 
+			border: none;
 			background-color: inherit;
-			color: cornsilk; 
+			color: cornsilk;
 			margin-top: 50vh;
 			font-size: 20px;
 		}
@@ -236,114 +236,132 @@
 	<script src="js/light.js"></script>
 	<script src="js/index.js"></script>
 
-    <div id="presentation-display" >
-	    <center><img src="resources/logo/LogoPresentation.png" class="logo positionLogo"  /></center>
-	    <center><button class="blink_text" id = "clickMe" onclick=" homeDisplay()" >Click here to start</button></center>
-	    <div class="card-footer text-muted credits">
-		    <b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
-	    </div>
-    </div>
-	
+	<div id="presentation-display">
+		<center>
+			<img src="resources/logo/LogoPresentation.png" class="logo positionLogo" />
+		</center>
+		<center><button class="blink_text" id="clickMe" onclick=" homeDisplay()">
+				Click here to start</button>
+		</center>
+		<br/>
+		<div class="custom-control custom-switch" style="padding-left: 60px;">
+			<input type="checkbox" class="custom-control-input"  id="volumeSwitch" checked value="">
+			<label class="custom-control-label" for="volumeSwitch">Volume</label>
+		</div>
+		<div class="card-footer text-muted credits">
+			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
+		</div>
+	</div>
+
 	<!--Menù section Presented-->
-	<div id="startGame" >
-	<section class="sect-services" id="menu" >
-		<div class="container" >
-			<div class="row">
-				<div class="col-12">
-					<div class="it-hero-text-wrapper">
-						<span class="it-category"></span>
-						<img src="resources/logo/logodiagman.png" width="300px" height="100px" />
-						<p style="font-family:'Press Start 2P'; font-size: small" class="d-none d-lg-block">Make your
-							way through trees, rocks, buildings, cars...and gazelles!
-							Pick a level and start running, without losing alll your bags!</p>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="container" style="font-family:'Press Start 2P'">
-			<div class="row">
-
-				<div class="col-md-6 col-sm-6">
-
-					<div class="services-item">
-						<a href="#" class="services-item-image"
-							style="background-image: url(resources/textures/forest.jpg); ">
-							<i class="fa fa-eye" aria-hidden="true" onclick="start('forest')"></i>
-						</a>
-						<h3>Forest</h3>
-						<h4><b>High Score:</b>
-							<p id="forestHighScore"></p>
-						</h4>
-						<div>
-							<div class="form-check form-check-inline">
-								<input type="radio" name="forestRadio" id="forestDay" value="morning" checked="true" />
-								<label for="forestDay">Morning</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input type="radio" name="forestRadio" id="forestSunset" value="sunset" />
-								<label for="forestSunset">Sunset</label>
-								</label>
-							</div>
-						</div>
-						<br />
-						<a href="#" class="button" onclick="start('forest')"><b>Play!</b></a>
-
-					</div>
-				</div>
-				<div class="col-md-6 col-sm-6">
-					<div class="services-item">
-						<a href="#" class="services-item-image" id="cityImage"
-							style="background-image: url(resources/textures/skyline.jpg); ">
-							<i class="fa fa-eye" aria-hidden="true" onclick="start('city')"></i>
-						</a>
-						<h3>City</h3>
-						<h4><b>High Score:</b>
-							<p id="cityHighScore"></p>
-						</h4>
-						<div>
-							<div class="form-check form-check-inline">
-								<input type="radio" name="cityRadio" id="cityDay" value="morning" checked />
-								<label for="cityDay">Morning</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input type="radio" name="cityRadio" id="citySunset" value="sunset" />
-								<label for="citySunset">Sunset</label>
-							</div>
-						</div>
-						<br />
-						<a href="#" class="button" onclick="start('city')"><b>Play!</b></a>
-					</div>
-				</div>
-			</div>
-		</div><br /><br />
-		<div class="it-hero-wrapper it-hero-small-size" style="font-family:'Press Start 2P'">
-			<div class="row">
-				<div class="col-6">
-					<div class="it-hero-text-wrapper">
-						<h4 class="no_toc">COMMANDS:</h4>
-						<ul style="font-size: small;">
-							<li><b>LEFT ARROW:</b> left movement</li>
-							<li><b>RIGHT ARROW:</b> right movement</li>
-							<li><b>UP ARROW:</b> jump</li>
-						</ul>
-
-					</div>
-				</div>
-				<div class="col-6">
-
-					<div class="img-responsive-wrapper">
-						<div class="img-responsive">
-							<div class="img-wrapper"><img src="resources/textures/commands.JPG" title="commands"
-									alt="commands"></div>
+	<div id="startGame">
+		<section class="sect-services" id="menu">
+			<div class="container">
+				<div class="row">
+					<div class="col-12">
+						<div class="it-hero-text-wrapper">
+							<span class="it-category"></span>
+							<img src="resources/logo/logodiagman.png" width="300px" height="100px" />
+							<p style="font-family:'Press Start 2P'; font-size: small" class="d-none d-lg-block">Make
+								your
+								way through trees, rocks, buildings, cars...and gazelles!
+								Pick a level and start running, without losing alll your bags!</p>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		
-		</div>
+			<div class="container" style="font-family:'Press Start 2P'">
+				<div class="row">
+
+					<div class="col-md-6 col-sm-6">
+
+						<div class="services-item">
+							<a href="#" class="services-item-image"
+								style="background-image: url(resources/textures/forest.jpg); ">
+								<i class="fa fa-eye" aria-hidden="true" onclick="start('forest')"></i>
+							</a>
+							<h3>Forest</h3>
+							<h4><b>High Score:</b>
+								<p id="forestHighScore"></p>
+							</h4>
+							<div>
+								<div class="form-check form-check-inline">
+									<input type="radio" name="forestRadio" id="forestDay" value="morning"
+										checked="true" />
+									<label for="forestDay">Morning</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input type="radio" name="forestRadio" id="forestSunset" value="sunset" />
+									<label for="forestSunset">Sunset</label>
+									</label>
+								</div>
+							</div>
+							<br />
+							<a href="#" class="button" onclick="start('forest')"><b>Play!</b></a>
+							<div class="form-check">
+								<input id="debug_forest" type="checkbox">
+								<label for="debug_forest">Debug</label>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-6">
+						<div class="services-item">
+							<a href="#" class="services-item-image" id="cityImage"
+								style="background-image: url(resources/textures/skyline.jpg); ">
+								<i class="fa fa-eye" aria-hidden="true" onclick="start('city')"></i>
+							</a>
+							<h3>City</h3>
+							<h4><b>High Score:</b>
+								<p id="cityHighScore"></p>
+							</h4>
+							<div>
+								<div class="form-check form-check-inline">
+									<input type="radio" name="cityRadio" id="cityDay" value="morning" checked />
+									<label for="cityDay">Morning</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input type="radio" name="cityRadio" id="citySunset" value="sunset" />
+									<label for="citySunset">Sunset</label>
+								</div>
+							</div>
+							<br />
+							<a href="#" class="button" onclick="start('city')"><b>Play!</b></a>
+							<div class="form-check">
+								<input id="debug_city" type="checkbox">
+								<label for="debug_city">Debug</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div><br /><br />
+			<div class="it-hero-wrapper it-hero-small-size" style="font-family:'Press Start 2P'">
+				<div class="row">
+					<div class="col-6">
+						<div class="it-hero-text-wrapper">
+							<h4 class="no_toc">COMMANDS:</h4>
+							<ul style="font-size: small;">
+								<li><b>LEFT ARROW:</b> left movement</li>
+								<li><b>RIGHT ARROW:</b> right movement</li>
+								<li><b>UP ARROW:</b> jump</li>
+							</ul>
+
+						</div>
+					</div>
+					<div class="col-6">
+
+						<div class="img-responsive-wrapper">
+							<div class="img-responsive">
+								<div class="img-wrapper"><img src="resources/textures/commands.JPG" title="commands"
+										alt="commands"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+	</div>
 	</section>
-</div>
+	</div>
 	<!-- GAME OVER MODAL -->
 
 	<div class="modal fade element " id="gameOverModal" data-backdrop="static" data-keyboard="false"

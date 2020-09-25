@@ -28,6 +28,8 @@ const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerH
  */
 window.onload = function () {
     getHighScores();
+    document.getElementById("debug_city").checked = false;
+    document.getElementById("debug_forest").checked = false;
 }
 
 /**
@@ -58,7 +60,6 @@ function loadSounds() {
     sound.registerSound("resources/audio/lamp.ogg", 'lamp');
     sound.registerSound("resources/audio/gazelle.ogg", 'gazelle');
     sound.registerSound("resources/audio/game_over.ogg", 'game_over');
-
 }
 
 /** 
@@ -123,6 +124,7 @@ function start(scenario) {
             break;
     }
 
+    IS_DEBUG = document.getElementById("debug_"+scenario).checked;
     gameOver = false;
     let dayTime = getDayTime(scenario);
     loadCharacter(scene, run, collisionCallback);
@@ -277,7 +279,7 @@ function moveCharacter(keyCode) {
 function collisionCallback(otherObject, relativeVelocity, relativeRotation, contactNormal) {
     IS_DEBUG && console.log("%o has collided with %o with an impact speed of %o  and a rotational force of %o and at normal %o", this, otherObject, relativeVelocity, relativeRotation, contactNormal);
     if (!otherObject.name.includes("coin")) {
-        sound.play('hit');
+        IS_SOUND_ON && sound.play('hit');
         if ((lastHit != null && otherObject.uuid != lastHit) || !lastHit) {
             if (lifeCount == 0) {
                 clearInterval(objectInterval);
@@ -290,7 +292,7 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                         stopAnimation(gazelle.tweens);
                     })
                 }
-                soundtrack.stop();
+                IS_SOUND_ON && soundtrack.stop();
                 showGameOver();
                 gameOver = true;
             }
@@ -302,22 +304,22 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
                 console.log("you have been hit. %d life remainings", lifeCount);
                 updateBag();
             }
-            sound.play('scream');
+            IS_SOUND_ON && sound.play('scream');
             if (otherObject.name.includes("car")) {
                 carCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
-                sound.play('car_crash');
+                IS_SOUND_ON && sound.play('car_crash');
             }
             else if (otherObject.name.includes("lamp")) {
                 lampCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
-                sound.play('lamp');
+                IS_SOUND_ON && sound.play('lamp');
             }
             else if (otherObject.name.includes("tree")) {
                 treeCollision(scene.getObjectByName(otherObject.name + "_model")); // animation
-                sound.play('tree');
+                IS_SOUND_ON && sound.play('tree');
             }
             else if (otherObject.name.includes("gazelle")) {
                 gazelleCollision(scene.getObjectByName(otherObject.name + "_model"));
-                sound.play('gazelle');
+                IS_SOUND_ON && sound.play('gazelle');
             }
         }
         // if one object is detected multiple times, we ignore it.
@@ -327,7 +329,7 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
     else { // if a coin has been hit, update the score and remove the coin from the scene
         score++;
         updateScore(score);
-        sound.play('money');
+        IS_SOUND_ON && sound.play('money');
         coins.some((coin, index) => {
             if (coin.name == otherObject.name) {
                 scene.remove(coin);
@@ -337,5 +339,3 @@ function collisionCallback(otherObject, relativeVelocity, relativeRotation, cont
         });
     }
 }
-
-init();

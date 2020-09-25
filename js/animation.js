@@ -108,7 +108,7 @@ function moveLegs() {
             runTween.leftUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
             runTween.leftUpperLeg.start();
 
-            sound.play('footstep');
+            IS_SOUND_ON && sound.play('footstep');
         })
         .repeat(1)
         .yoyo(true);
@@ -132,7 +132,7 @@ function moveLegs() {
     runTween.leftUpperLeg.onComplete(() => {
         runTween.rightUpperLeg.to(UPPER_LEG_FINAL, RUNNING_SPEED).repeat(1);
         runTween.rightUpperLeg.start();
-        sound.play('footstep');
+        IS_SOUND_ON && sound.play('footstep');
     })
 
     runTween.leftLeg.onComplete(() => {
@@ -858,7 +858,7 @@ function jump() {
     runTween.rightLeg.stop();
     jumpLegMovement(tweenJump);
     jumpBodyMovement();
-    sound.play('jump');
+    IS_SOUND_ON && sound.play('jump');
 }
 
 /**

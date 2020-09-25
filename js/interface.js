@@ -5,6 +5,8 @@ function homeDisplay() {
     document.getElementById('clickMe').style.display="none";
     document.getElementById('presentation-display').style.display="none";
     document.getElementById('startGame').style.display="block";
+    IS_SOUND_ON = document.getElementById("volumeSwitch").checked;
+    IS_SOUND_ON && loadSounds();
 }
 
 /**
@@ -121,7 +123,7 @@ function showGameOver() {
         sessionStorage.setItem('highScores', JSON.stringify(highScores));
     }
     setTimeout(() => {
-        sound.play('game_over');
+        IS_SOUND_ON && sound.play('game_over');
         $("#gameOverModal").modal();
         document.getElementById('gameOverCoins').innerHTML = score;
       

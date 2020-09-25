@@ -32,7 +32,7 @@ function createCityScenario(scene, dayTime) {
         new THREE.MeshBasicMaterial({ map: leftBarrierTexture }),
         0
     );
-    leftBarrier.position.set(5, 1, 0);
+    leftBarrier.position.set(5.5, 1, 0);
     leftBarrier.castShadow = true;
     leftBarrier.receiveShadow = true;
     // right barrier
@@ -45,7 +45,7 @@ function createCityScenario(scene, dayTime) {
         new THREE.MeshBasicMaterial({ map: rightBarrierTexture }),
         0
     );
-    rightBarrier.position.set(-5, 1, 0);
+    rightBarrier.position.set(-5.5, 1, 0);
     rightBarrier.castShadow = true;
     rightBarrier.receiveShadow = true;
 

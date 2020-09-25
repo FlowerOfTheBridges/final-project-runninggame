@@ -77,7 +77,7 @@ function loadCharacter(scene, runningCallback, collisionCallback) {
         // transparent box (for collisions)
         playerBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.5, 1.5, 0.5),
-            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG }),
             0
         );
         playerBox.position.set(0, 0.9, 0);
@@ -158,7 +158,7 @@ function addCar(scene, offset) {
     // transparent mesh (for collisions)
     let carBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(1, 2, 4.5),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG  }),
         OBJ_MASS / 10
     );
 
@@ -261,7 +261,7 @@ function addTree(scene, isRight) {
 
     let treeBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(0.7, 15, 3),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG }),
         OBJ_MASS
     );
     treeBox.name = "tree_" + id;
@@ -330,7 +330,7 @@ function addGazelle(scene, offset) {
         // transparent box (for collisions)
         let gazelleBox = new Physijs.BoxMesh(
             new THREE.CubeGeometry(0.8, 2.4, 4),
-            new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG  }),
             OBJ_MASS / 10
         );
         gazelleBox.name = "gazelle_" + id;
@@ -383,7 +383,7 @@ function addLamp(scene, isRight) {
     // transparent box (for collisions)
     let lampBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(0.2, 8, 1),
-        new THREE.MeshBasicMaterial({ color: 'white', transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG }),
         OBJ_MASS
     );
     lampBox.name = "lamp_" + id;
@@ -431,7 +431,7 @@ function addTruck(scene) {
     // transparent box (for collisions)
     let truckBox = new Physijs.BoxMesh(
         new THREE.CubeGeometry(7, 3.7, 1),
-        new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, wireframe: true, opacity: IS_DEBUG ? 1 : BOX_OPACITY }),
+        new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, visible: IS_DEBUG }),
         OBJ_MASS
     );
 
