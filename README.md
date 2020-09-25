@@ -18,7 +18,7 @@ This repository contains all the resources for the *Final Project* of the *Inter
 * *up arrow*: jump
 
 # Documentation
-You can read the report describing all the technical aspects of the game [here](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-runninggame/blob/master/report.pdf).
+You can read the report describing all the technical aspects of the game [here](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-runninggame/raw/master/report.pdf).
 ## Authors 
 * *Giovanni Fiordeponti*
 * *Silvia Marchiori*
