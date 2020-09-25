@@ -77,7 +77,8 @@ function checkAssets(numberOfAssets, condition) {
     if (assetsLoaded < numberOfAssets) {
         updateLoading(assetsLoaded, numberOfAssets);
     }
-    else if (condition) {
+    
+    if (condition) {
         addBagToPlayer();
         removeLoading();
         document.addEventListener(
