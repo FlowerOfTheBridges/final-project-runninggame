@@ -17,10 +17,14 @@ This repository contains all the resources for the *Final Project* of the *Inter
 * *right arrow*: move right
 * *up arrow*: jump
 
-## Documentation
+# Documentation
 You can read the report describing all the technical aspects of the game [here](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-runninggame/blob/master/report.pdf).
+## Authors 
+* *Giovanni Fiordeponti*
+* *Silvia Marchiori*
 
 # Play The Game
+
 ## GitHub Pages
 You can play the game [here](https://sapienzainteractivegraphicscourse.github.io/final-project-runninggame/). 
 ## Local
