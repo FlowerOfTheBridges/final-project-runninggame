@@ -109,8 +109,9 @@ function start(scenario) {
             createTruck();
             gameCheckInterval = setInterval(() => {
                 let startCondition = defaultCarModel != null && coinGeometry != null && defaultLamp != null && defaultTruck != null && bag != null && player != null && playerBox != null;
+                console.log(defaultCarModel, coinGeometry, defaultLamp, defaultTruck, bag, player, playerBox);
                 checkAssets(6, startCondition);
-            }, 1000);
+            }, 500);
             break;
         case 'forest':
             createTree();
@@ -118,7 +119,7 @@ function start(scenario) {
             gameCheckInterval = setInterval(() => {
                 let startCondition = defaultTree != null && rockGeometry != null && coinGeometry != null && bag != null && player != null && playerBox != null;
                 checkAssets(5, startCondition);
-            }, 1000);
+            }, 500);
             break;
     }
 
