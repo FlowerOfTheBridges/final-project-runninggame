@@ -179,12 +179,12 @@
 		.credits {
 			font-family: 'Press Start 2P';
 			font-size: small;
-			margin-top: 5.2vh;
+			margin-top: 4.2vh;
 		}
 
 		#presentation-display {
 			background-color: black;
-			height: 110vh;
+			height: 100vh;
 			background-image: url('resources/logo/sapienzalogo.png');
 			background-size: 40%;
 			background-position: top;
@@ -196,7 +196,7 @@
 			border: none;
 			background-color: inherit;
 			color: cornsilk;
-			margin-top: 50vh;
+			margin-top: 40vh;
 			font-size: 20px;
 		}
 
@@ -237,6 +237,10 @@
 	<script src="js/index.js"></script>
 
 	<div id="presentation-display">
+		<br/><div class="custom-control custom-switch" style="padding-left: 60px;color:cornsilk;">
+			<input type="checkbox" class="custom-control-input"  id="volumeSwitch" checked value="">
+			<label class="custom-control-label" for="volumeSwitch">Volume</label>
+		</div>
 		<center>
 			<img src="resources/logo/LogoPresentation.png" class="logo positionLogo" />
 		</center>
@@ -244,10 +248,6 @@
 				Click here to start</button>
 		</center>
 		<br/>
-		<div class="custom-control custom-switch" style="padding-left: 60px;">
-			<input type="checkbox" class="custom-control-input"  id="volumeSwitch" checked value="">
-			<label class="custom-control-label" for="volumeSwitch">Volume</label>
-		</div>
 		<div class="card-footer text-muted credits">
 			<b>Credits:</b> Giovanni Fiordeponti - Silvia Marchiori
 		</div>

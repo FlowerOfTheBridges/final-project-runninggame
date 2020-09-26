@@ -34,7 +34,7 @@ function createBag() {
     gltfLoader.load('resources/models/bag.gltf', (gltf) => {
         bag = gltf.scene;
         bag.scale.set(0.1, 0.1, 0.2);
-        bag.position.set(0, 1.27, -0.2);
+        bag.position.set(0, 1.35, -0.2);
         bag.traverse((node) => {
             if (node.isMesh) {
                 node.castShadow = true;
